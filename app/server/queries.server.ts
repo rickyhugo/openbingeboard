@@ -68,7 +68,7 @@ export const listTitles = (region: string, filters: Filters) =>
         SELECT 1 FROM offer o
         WHERE o.title_id = t.id
           AND o.region = ${region}
-          ${filters.provider ? sql`AND o.provider_id = ${filters.provider}` : sql``}
+          ${filters.providers.length > 0 ? sql`AND o.provider_id IN ${sql.in(filters.providers)}` : sql``}
           ${filters.monetization !== "all" ? sql`AND o.monetization = ${filters.monetization}` : sql``}
       )`,
     ];
@@ -84,6 +84,21 @@ export const listTitles = (region: string, filters: Filters) =>
 
     if (filters.kind !== "all") {
       conditions.push(sql`t.kind = ${filters.kind}`);
+    }
+
+    if (filters.genre !== null) {
+      conditions.push(
+        sql`EXISTS (
+          SELECT 1 FROM title_genre tg
+          WHERE tg.title_id = t.id AND tg.genre_id = ${filters.genre}
+        )`,
+      );
+    }
+
+    if (filters.decade !== null) {
+      conditions.push(
+        sql`t.year >= ${filters.decade} AND t.year < ${filters.decade + 10}`,
+      );
     }
 
     if (filters.minRating > 0) {

@@ -6,10 +6,12 @@ import { TitleCard } from "~/components/title-card";
 import {
   hasActiveFilters,
   parseFilters,
+  SORT_LABELS,
   toSearchParams,
   type Filters,
 } from "~/lib/filters";
 import { runQuery } from "~/server/effect.server";
+import { listGenres } from "~/server/extras.server";
 import { listProviders, listTitles } from "~/server/queries.server";
 import type { Route } from "./+types/home";
 
@@ -26,20 +28,14 @@ export function meta() {
 
 export async function loader({ request }: Route.LoaderArgs) {
   const filters = parseFilters(request.url);
-  const [result, providers] = await Promise.all([
+  const [result, providers, genres] = await Promise.all([
     runQuery(listTitles(env.REGION, filters)),
     runQuery(listProviders),
+    runQuery(listGenres),
   ]);
 
-  return { filters, providers, result };
+  return { filters, providers, genres, result };
 }
-
-const SORT_LABELS: Record<Filters["sort"], string> = {
-  rating: "best rated",
-  year: "newest",
-  popularity: "most popular",
-  title: "A to Z",
-};
 
 function pageHref(filters: Filters, page: number): string {
   const params = toSearchParams(filters, { page });
@@ -48,7 +44,7 @@ function pageHref(filters: Filters, page: number): string {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { filters, providers, result } = loaderData;
+  const { filters, providers, genres, result } = loaderData;
   const active = hasActiveFilters(filters);
   const sorted = SORT_LABELS[filters.sort];
 
@@ -66,9 +62,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4">
-        <FilterBar filters={filters} providers={providers} />
-      </div>
+      <FilterBar filters={filters} providers={providers} genres={genres} />
 
       <section className="mx-auto max-w-6xl px-4 py-6">
         <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
