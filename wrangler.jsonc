@@ -5,6 +5,7 @@
   "main": "./workers/app.ts",
   "vars": {
     "REGION": "SE",
+    "BETTER_AUTH_URL": "https://openbingeboard.hugoplanet.se",
   },
   "routes": [
     {

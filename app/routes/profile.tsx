@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouteLoaderData } from "react-router";
+import { AuthStatus } from "~/components/auth-status";
 import { ProfileTitleList } from "~/components/profile-title-list";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -51,15 +52,31 @@ export default function Profile() {
             watched.
           </p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={surprise}
-          disabled={state.watched.length === 0 && state.want.length === 0}
-        >
-          Surprise me
-        </Button>
+        <div className="flex items-center gap-2">
+          <AuthStatus />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={surprise}
+            disabled={state.watched.length === 0 && state.want.length === 0}
+          >
+            Surprise me
+          </Button>
+        </div>
       </div>
+
+      {!profile.user ? (
+        <p className="mt-3 border border-dashed p-3 text-xs text-muted-foreground">
+          Browsing as a guest. Your lists stay in this browser.{" "}
+          <Link
+            to="/login"
+            className="underline underline-offset-4 hover:text-foreground"
+          >
+            Sign in to sync
+          </Link>
+          .
+        </p>
+      ) : null}
 
       <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {[

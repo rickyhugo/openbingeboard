@@ -12,6 +12,7 @@ Live at [openbingeboard.hugoplanet.se](https://openbingeboard.hugoplanet.se).
 - Effect v4 for data access
 - Cloudflare D1 (SQLite) with FTS5 search
 - shadcn/ui, Lyra style
+- Better Auth for accounts, with guest mode
 - mise for tools, hk for Git hooks, Doppler for secrets
 
 ## Setup
@@ -22,6 +23,8 @@ doppler login
 doppler setup --project openbingeboard --config dev
 hk install --mise
 pnpm install
+echo "BETTER_AUTH_URL=http://localhost:5173" > .dev.vars
+echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" >> .dev.vars
 pnpm db:migrate:local
 pnpm db:seed
 pnpm dev
@@ -51,11 +54,21 @@ This repo uses a repo-scoped Doppler CLI token for the `hugoplanet` workplace. T
 
 GitHub Actions uses one read-only Doppler service token scoped to the `prd` config, stored as the repository secret `DOPPLER_TOKEN`. No other secrets live in GitHub. The ingest workflow fails fast if the key is missing.
 
-The Worker needs no runtime secrets today, because it only reads D1. If a runtime secret appears, keep Doppler as the source of truth and push it with `wrangler secret put NAME`.
+The Worker needs `BETTER_AUTH_SECRET` at runtime. Keep it in Doppler and push it with `wrangler secret put BETTER_AUTH_SECRET`. Local development reads it from `.dev.vars`. `BETTER_AUTH_URL` is a public var in `wrangler.jsonc`.
 
 To share access, invite the person to the `openbingeboard` project in the `hugoplanet` workplace. They run `doppler login` and `doppler setup` in the repo, and the same `doppler.yaml` selects the project. Revoking access is one dashboard action.
 
 `pnpm secrets` lists variable names without values. `hk` runs `detect_private_key` and `check_added_large_files` before every commit.
+
+## Accounts
+
+Browse and filter without an account. Guests keep services, saved views, watched, and want-to-watch in localStorage.
+
+Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`.
+
+```sh
+wrangler secret put BETTER_AUTH_SECRET
+```
 
 ## Commands
 

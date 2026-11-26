@@ -4,25 +4,21 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
-
-export interface SavedFilter {
-  id: string;
-  name: string;
-  query: string;
-}
-
-export interface ProfileState {
-  services: number[];
-  watched: string[];
-  want: string[];
-  saved: SavedFilter[];
-}
+import {
+  EMPTY_PROFILE,
+  mergeProfiles,
+  parseProfile,
+  type ProfileState,
+  type ProfileUser,
+} from "~/lib/profile";
 
 interface ProfileContextValue {
   state: ProfileState;
+  user: ProfileUser | null;
   hydrated: boolean;
   toggleService: (id: number) => void;
   hasService: (id: number) => boolean;
@@ -32,53 +28,12 @@ interface ProfileContextValue {
   isWant: (id: string) => boolean;
   saveFilter: (name: string, query: string) => void;
   removeFilter: (id: string) => void;
+  reset: () => void;
 }
 
 const STORAGE_KEY = "openbingeboard.profile.v1";
 
-const EMPTY: ProfileState = {
-  services: [],
-  watched: [],
-  want: [],
-  saved: [],
-};
-
 const ProfileContext = createContext<ProfileContextValue | null>(null);
-
-function unique<T>(value: T[]): T[] {
-  return [...new Set(value)];
-}
-
-function parseState(raw: string | null): ProfileState {
-  if (!raw) return EMPTY;
-  try {
-    const value = JSON.parse(raw) as Partial<ProfileState>;
-    return {
-      services: Array.isArray(value.services)
-        ? unique(value.services.filter((id) => Number.isInteger(id)))
-        : [],
-      watched: Array.isArray(value.watched)
-        ? unique(value.watched.filter((id) => typeof id === "string"))
-        : [],
-      want: Array.isArray(value.want)
-        ? unique(value.want.filter((id) => typeof id === "string"))
-        : [],
-      saved: Array.isArray(value.saved)
-        ? value.saved
-            .filter(
-              (item) =>
-                item &&
-                typeof item.id === "string" &&
-                typeof item.name === "string" &&
-                typeof item.query === "string",
-            )
-            .slice(0, 20)
-        : [],
-    };
-  } catch {
-    return EMPTY;
-  }
-}
 
 function toggleValue<T>(list: T[], value: T): T[] {
   return list.includes(value)
@@ -86,19 +41,60 @@ function toggleValue<T>(list: T[], value: T): T[] {
     : [...list, value];
 }
 
-export function ProfileProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<ProfileState>(EMPTY);
+export function ProfileProvider({
+  user,
+  children,
+}: {
+  user: ProfileUser | null;
+  children: ReactNode;
+}) {
+  const [state, setState] = useState<ProfileState>(EMPTY_PROFILE);
   const [hydrated, setHydrated] = useState(false);
+  const timer = useRef<number | null>(null);
 
   useEffect(() => {
-    setState(parseState(window.localStorage.getItem(STORAGE_KEY)));
+    setState(parseProfile(window.localStorage.getItem(STORAGE_KEY)));
     setHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!hydrated || !user) return;
+    let cancelled = false;
+
+    fetch("/api/profile")
+      .then(async (response) =>
+        response.ok ? parseProfile(await response.json()) : null,
+      )
+      .then((server) => {
+        if (cancelled || !server) return;
+        const local = parseProfile(window.localStorage.getItem(STORAGE_KEY));
+        setState(mergeProfiles(server, local));
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, [hydrated, user?.id]);
+
+  useEffect(() => {
     if (!hydrated) return;
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state, hydrated]);
+    if (!user) return;
+
+    if (timer.current) window.clearTimeout(timer.current);
+    timer.current = window.setTimeout(() => {
+      void fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(state),
+      }).catch(() => {});
+    }, 400);
+
+    return () => {
+      if (timer.current) window.clearTimeout(timer.current);
+    };
+  }, [state, hydrated, user?.id]);
 
   const toggleService = useCallback((id: number) => {
     setState((current) => ({
@@ -164,9 +160,15 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const reset = useCallback(() => {
+    setState(EMPTY_PROFILE);
+    window.localStorage.removeItem(STORAGE_KEY);
+  }, []);
+
   const value = useMemo<ProfileContextValue>(
     () => ({
       state,
+      user,
       hydrated,
       toggleService,
       hasService: (id) => state.services.includes(id),
@@ -176,15 +178,18 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       isWant: (id) => state.want.includes(id),
       saveFilter,
       removeFilter,
+      reset,
     }),
     [
       state,
+      user,
       hydrated,
       toggleService,
       toggleWatched,
       toggleWant,
       saveFilter,
       removeFilter,
+      reset,
     ],
   );
 
