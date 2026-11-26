@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "openbingeboard",
+  "compatibility_date": "2026-11-23",
+  "main": "./workers/app.ts",
+  "vars": {
+    "REGION": "SE",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "openbingeboard",
+      "database_id": "3f4b6d2a-1c9e-4f7b-8a2d-5e6f7a8b9c0d",
+      "migrations_dir": "db/migrations",
+    },
+  ],
+  "observability": {
+    "enabled": true,
+  },
+  "upload_source_maps": true,
+}
