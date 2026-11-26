@@ -32,6 +32,7 @@ interface ProfileContextValue {
 }
 
 const STORAGE_KEY = "openbingeboard.profile.v1";
+const LAST_USER_KEY = "openbingeboard.profile.user";
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
 
@@ -68,7 +69,10 @@ export function ProfileProvider({
       .then((server) => {
         if (cancelled || !server) return;
         const local = parseProfile(window.localStorage.getItem(STORAGE_KEY));
-        setState(mergeProfiles(server, local));
+        const firstSync =
+          window.localStorage.getItem(LAST_USER_KEY) !== user.id;
+        setState(firstSync ? mergeProfiles(server, local) : server);
+        window.localStorage.setItem(LAST_USER_KEY, user.id);
       })
       .catch(() => {});
 
@@ -163,6 +167,7 @@ export function ProfileProvider({
   const reset = useCallback(() => {
     setState(EMPTY_PROFILE);
     window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(LAST_USER_KEY);
   }, []);
 
   const value = useMemo<ProfileContextValue>(
