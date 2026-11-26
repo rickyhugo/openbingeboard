@@ -91,9 +91,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               </a>
               .
             </p>
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em]">
-              Not affiliated with any streaming service
-            </p>
           </div>
         </footer>
 
