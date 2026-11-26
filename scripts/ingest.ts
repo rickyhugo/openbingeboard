@@ -70,6 +70,12 @@ interface TmdbWatch {
   free?: TmdbProvider[];
 }
 
+interface TmdbTranslation {
+  iso_639_1: string;
+  iso_3166_1: string;
+  data?: { overview?: string; title?: string; name?: string };
+}
+
 interface TmdbDetail {
   id: number;
   title?: string;
@@ -88,6 +94,7 @@ interface TmdbDetail {
   popularity?: number;
   genres?: { id: number; name: string }[];
   external_ids?: { imdb_id?: string | null };
+  translations?: { translations?: TmdbTranslation[] };
   "watch/providers"?: { results?: Record<string, TmdbWatch> };
 }
 
@@ -338,7 +345,7 @@ async function discover(kind: Kind, providerId: number, page: number) {
 async function titleDetail(kind: Kind, id: number) {
   return tmdb<TmdbDetail>("/" + mediaPath(kind) + "/" + id, {
     language,
-    append_to_response: "external_ids,watch/providers",
+    append_to_response: "external_ids,watch/providers,translations",
   });
 }
 
@@ -372,6 +379,12 @@ function toTitle(
     kind === "movie"
       ? (detail.runtime ?? null)
       : (detail.episode_run_time?.[0] ?? null);
+  const translations = detail.translations?.translations ?? [];
+  const english =
+    translations.find(
+      (item) => item.iso_639_1 === "en" && item.iso_3166_1 === "US",
+    ) ?? translations.find((item) => item.iso_639_1 === "en");
+  const overview = english?.data?.overview?.trim() || detail.overview || null;
 
   return {
     id: "tmdb:" + kind + ":" + detail.id,
@@ -382,7 +395,7 @@ function toTitle(
     originalName:
       (kind === "movie" ? detail.original_title : detail.original_name) ?? null,
     year: Number.isInteger(parsedYear) ? parsedYear : null,
-    overview: detail.overview ?? null,
+    overview,
     posterPath: detail.poster_path ?? null,
     backdropPath: detail.backdrop_path ?? null,
     runtime,
