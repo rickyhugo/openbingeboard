@@ -9,6 +9,7 @@
 
 # Ingest output
 /db/generated/
+/.cache/
 
 # Cloudflare
 .mf

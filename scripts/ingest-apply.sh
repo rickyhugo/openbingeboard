@@ -7,5 +7,18 @@ if [[ "${CI:-}" != "true" && "${CONFIRM:-}" != "1" ]]; then
 	exit 1
 fi
 
-tsx scripts/ingest.ts --out db/generated/ingest.sql "$@"
-wrangler d1 execute openbingeboard --remote --file=db/generated/ingest.sql
+rm -f db/generated/ingest.part-*.sql
+tsx scripts/ingest.ts --out db/generated/ingest "$@"
+
+shopt -s nullglob
+files=(db/generated/ingest.part-*.sql)
+
+if ((${#files[@]} == 0)); then
+	echo "No SQL chunks generated." >&2
+	exit 1
+fi
+
+for file in "${files[@]}"; do
+	echo "applying ${file}"
+	wrangler d1 execute openbingeboard --remote --file "${file}"
+done

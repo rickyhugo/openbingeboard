@@ -100,18 +100,18 @@ doppler secrets set TMDB_API_KEY=... OMDB_API_KEY=... --config dev
 doppler secrets set TMDB_API_KEY=... OMDB_API_KEY=... --config prd
 ```
 
-The free OMDb tier allows 1,000 requests per day. Each title with an IMDb id costs one request, so a full backfill of several thousand titles takes multiple nightly runs or a paid OMDb tier.
+The free OMDb tier allows 1,000 requests per day. IMDb scores come from the bulk IMDb dataset and cost no requests. Only Rotten Tomatoes and Metacritic calls use OMDb, so keep `--omdb-limit` under the daily quota.
 
 ## Ingest
 
-`scripts/ingest.ts` reads TMDB discover endpoints for the configured providers, expands each result with `append_to_response=external_ids,watch/providers`, and adds OMDb scores when an IMDb id exists. It writes idempotent SQL instead of talking to D1 directly, so the workflow applies the file with `wrangler d1 execute`.
+`scripts/ingest.ts` pages the configured Swedish providers, ranks the union by popularity, and expands each title with `append_to_response=external_ids,watch/providers`. IMDb scores come from the daily `datasets.imdbws.com` ratings file, so they cost no API requests. OMDb supplies Rotten Tomatoes and Metacritic for the first `--omdb-limit` titles. Output is split into idempotent SQL chunks.
 
 ```sh
-pnpm ingest:dry -- --providers=8,76,119 --pages=2 --limit=60
-pnpm ingest -- --pages=2 --limit=60
+pnpm ingest:dry -- --providers=8 --pages=1 --limit=20
+pnpm ingest -- --pages=10 --limit=1000 --omdb-limit=200
 ```
 
-Provider ids default to Netflix (8), Viaplay (76), and Amazon Prime Video (119).
+The default list covers Netflix, Prime Video, Disney+, Viaplay, SkyShowtime, HBO Max, TV4 Play, SVT Play, SF Anytime, Rakuten TV, Apple TV, Blockbuster, Pluto TV, MUBI, Crunchyroll, and Tele2 Play. Use `--providers=auto` to select by TMDB display priority, or pass explicit ids.
 
 `.github/workflows/ingest.yml` runs at 04:00 UTC and applies the result. It authenticates with `DOPPLER_TOKEN` and reads the Cloudflare credentials from the `prd` config.
 
