@@ -27,7 +27,7 @@ interface Offer {
 }
 
 interface Rating {
-  source: "imdb" | "rt" | "metacritic";
+  source: "imdb" | "rt" | "metacritic" | "tmdb";
   score: number;
   scale: number;
   votes: number | null;
@@ -786,6 +786,16 @@ async function main() {
           scale: 10,
           votes: rating.votes,
           url: "https://www.imdb.com/title/" + title.imdbId + "/",
+        });
+      }
+
+      if (title.tmdbVote !== null) {
+        title.ratings.push({
+          source: "tmdb",
+          score: title.tmdbVote,
+          scale: 10,
+          votes: title.tmdbVotes,
+          url: null,
         });
       }
 
