@@ -6,11 +6,17 @@
   "vars": {
     "REGION": "SE",
   },
+  "routes": [
+    {
+      "pattern": "openbingeboard.hugoplanet.se",
+      "custom_domain": true,
+    },
+  ],
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "openbingeboard",
-      "database_id": "3f4b6d2a-1c9e-4f7b-8a2d-5e6f7a8b9c0d",
+      "database_id": "be5efb5b-b4fd-4409-a38f-4def80adc89a",
       "migrations_dir": "db/migrations",
     },
   ],

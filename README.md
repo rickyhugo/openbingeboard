@@ -4,6 +4,8 @@ Find what is available to stream, rent, or buy in Sweden, with IMDb, Rotten Toma
 
 The first region is `SE`. Availability is stored per region, so adding another country is data, not a schema change.
 
+Live at [openbingeboard.hugoplanet.se](https://openbingeboard.hugoplanet.se).
+
 ## Stack
 
 - React Router v8 (framework mode) on Cloudflare Workers
@@ -77,6 +79,29 @@ To share access, invite the person to the `openbingeboard` project in the `hugop
 
 `title` holds a film or series. `rating` has one row per source, so adding a source is an insert. `offer` is keyed by `(title_id, provider_id, region, monetization)`, which makes a missing region impossible. `title_fts` is an FTS5 table for search, and `ingest_run` records each nightly refresh.
 
+## Getting API keys
+
+TMDB:
+
+1. Create an account at [themoviedb.org/signup](https://www.themoviedb.org/signup) and verify the email.
+2. Open [Settings → API](https://www.themoviedb.org/settings/api) and request a developer key.
+3. Use the site URL `https://openbingeboard.hugoplanet.se` and describe it as a non-commercial streaming availability catalogue.
+4. Copy either the v3 API key or the v4 read access token. Both work as `TMDB_API_KEY`.
+
+OMDb:
+
+1. Open [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx).
+2. Choose the free tier and submit your email.
+3. Open the activation email and click the link.
+4. Copy the key.
+
+```sh
+doppler secrets set TMDB_API_KEY=... OMDB_API_KEY=... --config dev
+doppler secrets set TMDB_API_KEY=... OMDB_API_KEY=... --config prd
+```
+
+The free OMDb tier allows 1,000 requests per day. Each title with an IMDb id costs one request, so a full backfill of several thousand titles takes multiple nightly runs or a paid OMDb tier.
+
 ## Ingest
 
 `scripts/ingest.ts` reads TMDB discover endpoints for the configured providers, expands each result with `append_to_response=external_ids,watch/providers`, and adds OMDb scores when an IMDb id exists. It writes idempotent SQL instead of talking to D1 directly, so the workflow applies the file with `wrangler d1 execute`.
@@ -92,19 +117,15 @@ Provider ids default to Netflix (8), Viaplay (76), and Amazon Prime Video (119).
 
 ## Deploy
 
+The production D1 database is `be5efb5b-b4fd-4409-a38f-4def80adc89a`. The Worker is bound to `openbingeboard.hugoplanet.se` as a custom domain, and `workers.dev` is disabled. Both are declared in `wrangler.jsonc`.
+
 ```sh
 wrangler login
-wrangler d1 create openbingeboard
-```
-
-Replace `database_id` in `wrangler.jsonc` with the id from `d1 create`, then:
-
-```sh
 pnpm db:migrate:remote
 pnpm deploy
 ```
 
-`wrangler login` is only needed for the first local link. `pnpm db:migrate:remote` and `pnpm deploy` read `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` from the `prd` config.
+`wrangler login` is only needed once per machine. CI needs a Cloudflare API token with Workers Scripts Edit, D1 Edit, and Workers Routes Edit in the `prd` Doppler config, plus `CLOUDFLARE_ACCOUNT_ID`.
 
 ## Licensing
 
