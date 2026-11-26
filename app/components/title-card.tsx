@@ -74,7 +74,7 @@ export function TitleCard({
                 name={offer.providerName}
                 monetization={offer.monetization}
                 compact
-                className="border-white/20 bg-black/80 text-white"
+                tone="overlay"
               />
             ))}
             {uniqueProviders.length > 1 && (

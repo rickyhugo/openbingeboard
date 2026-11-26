@@ -8,14 +8,6 @@ const SOURCE_LABELS = {
   tmdb: "TMDB",
 } as const;
 
-const SOURCE_STYLES = {
-  imdb: "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400",
-  rt: "border-red-500/30 bg-red-500/10 text-red-700 dark:text-red-400",
-  metacritic:
-    "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-  tmdb: "border-border bg-muted text-muted-foreground",
-} as const;
-
 const OVERLAY_STYLE = "border-white/20 bg-black/80 text-white";
 
 export function formatScore(
@@ -47,7 +39,9 @@ export function RatingBadge({
       variant="outline"
       className={cn(
         "gap-1 font-mono text-[10px] tracking-tight",
-        tone === "overlay" ? OVERLAY_STYLE : SOURCE_STYLES[source],
+        tone === "overlay"
+          ? OVERLAY_STYLE
+          : "border-border bg-muted text-foreground",
         className,
       )}
       title={`${SOURCE_LABELS[source]} ${formatScore(score, scale, source)}`}
