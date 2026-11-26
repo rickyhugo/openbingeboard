@@ -43,6 +43,7 @@ export function FilterBar({
   const [saveOpen, setSaveOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [serviceDraft, setServiceDraft] = useState(filters.providers);
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => setQuery(filters.q), [filters.q]);
   useEffect(() => {
@@ -206,134 +207,158 @@ export function FilterBar({
             </PopoverContent>
           </Popover>
 
-          <NativeSelect
-            value={filters.genre === null ? "" : String(filters.genre)}
-            onChange={(event) =>
-              apply({
-                genre: event.target.value ? Number(event.target.value) : null,
-              })
-            }
-            aria-label="Genre"
-            className="w-full sm:w-auto"
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="md:hidden"
+            onClick={() => setFiltersOpen((open) => !open)}
           >
-            <NativeSelectOption value="">All genres</NativeSelectOption>
-            {genres.map((genre) => (
-              <NativeSelectOption key={genre.id} value={genre.id}>
-                {genre.name}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
+            {filtersOpen ? "Hide filters" : "Filters"}
+          </Button>
 
-          <NativeSelect
-            value={filters.decade === null ? "" : String(filters.decade)}
-            onChange={(event) =>
-              apply({
-                decade: event.target.value ? Number(event.target.value) : null,
-              })
+          <div
+            className={
+              filtersOpen
+                ? "flex w-full flex-wrap items-center gap-2 md:w-auto"
+                : "hidden w-full flex-wrap items-center gap-2 md:flex md:w-auto"
             }
-            aria-label="Decade"
-            className="w-full sm:w-auto"
           >
-            <NativeSelectOption value="">Any year</NativeSelectOption>
-            {DECADES.map((decade) => (
-              <NativeSelectOption key={decade} value={decade}>
-                {decade}s
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-
-          <NativeSelect
-            value={filters.monetization}
-            onChange={(event) =>
-              apply({
-                monetization: event.target.value as Filters["monetization"],
-              })
-            }
-            aria-label="How to watch"
-            className="w-full sm:w-auto"
-          >
-            <NativeSelectOption value="all">Any access</NativeSelectOption>
-            <NativeSelectOption value="flatrate">Stream</NativeSelectOption>
-            <NativeSelectOption value="rent">Rent</NativeSelectOption>
-            <NativeSelectOption value="buy">Buy</NativeSelectOption>
-          </NativeSelect>
-
-          <NativeSelect
-            value={filters.kind}
-            onChange={(event) =>
-              apply({ kind: event.target.value as Filters["kind"] })
-            }
-            aria-label="Type"
-            className="w-full sm:w-auto"
-          >
-            <NativeSelectOption value="all">Films & series</NativeSelectOption>
-            <NativeSelectOption value="movie">Films</NativeSelectOption>
-            <NativeSelectOption value="series">Series</NativeSelectOption>
-          </NativeSelect>
-
-          <NativeSelect
-            value={filters.minRating === 0 ? "" : String(filters.minRating)}
-            onChange={(event) =>
-              apply({
-                minRating: event.target.value ? Number(event.target.value) : 0,
-              })
-            }
-            aria-label="Minimum IMDb rating"
-            className="w-full sm:w-auto"
-          >
-            <NativeSelectOption value="">Any rating</NativeSelectOption>
-            {RATING_OPTIONS.map((rating) => (
-              <NativeSelectOption key={rating} value={rating}>
-                IMDb {rating}+
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-
-          <NativeSelect
-            value={filters.sort}
-            onChange={(event) =>
-              apply({ sort: event.target.value as Filters["sort"] })
-            }
-            aria-label="Sort order"
-            className="w-full sm:w-auto"
-          >
-            {Object.entries(SORT_LABELS).map(([value, label]) => (
-              <NativeSelectOption key={value} value={value}>
-                {label}
-              </NativeSelectOption>
-            ))}
-          </NativeSelect>
-
-          <Popover open={saveOpen} onOpenChange={setSaveOpen}>
-            <PopoverTrigger
-              type="button"
-              disabled={!hydrated}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+            <NativeSelect
+              value={filters.genre === null ? "" : String(filters.genre)}
+              onChange={(event) =>
+                apply({
+                  genre: event.target.value ? Number(event.target.value) : null,
+                })
+              }
+              aria-label="Genre"
+              className="w-full sm:w-auto"
             >
-              Save view
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-64">
-              <p className="text-xs font-medium">Save this view</p>
-              <Input
-                value={viewName}
-                onChange={(event) => setViewName(event.target.value)}
-                placeholder="e.g. Netflix 8+"
-                className="h-8"
-              />
-              <Button
+              <NativeSelectOption value="">All genres</NativeSelectOption>
+              {genres.map((genre) => (
+                <NativeSelectOption key={genre.id} value={genre.id}>
+                  {genre.name}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+
+            <NativeSelect
+              value={filters.decade === null ? "" : String(filters.decade)}
+              onChange={(event) =>
+                apply({
+                  decade: event.target.value
+                    ? Number(event.target.value)
+                    : null,
+                })
+              }
+              aria-label="Decade"
+              className="w-full sm:w-auto"
+            >
+              <NativeSelectOption value="">Any year</NativeSelectOption>
+              {DECADES.map((decade) => (
+                <NativeSelectOption key={decade} value={decade}>
+                  {decade}s
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+
+            <NativeSelect
+              value={filters.monetization}
+              onChange={(event) =>
+                apply({
+                  monetization: event.target.value as Filters["monetization"],
+                })
+              }
+              aria-label="How to watch"
+              className="w-full sm:w-auto"
+            >
+              <NativeSelectOption value="all">Any access</NativeSelectOption>
+              <NativeSelectOption value="flatrate">Stream</NativeSelectOption>
+              <NativeSelectOption value="rent">Rent</NativeSelectOption>
+              <NativeSelectOption value="buy">Buy</NativeSelectOption>
+            </NativeSelect>
+
+            <NativeSelect
+              value={filters.kind}
+              onChange={(event) =>
+                apply({ kind: event.target.value as Filters["kind"] })
+              }
+              aria-label="Type"
+              className="w-full sm:w-auto"
+            >
+              <NativeSelectOption value="all">
+                Films & series
+              </NativeSelectOption>
+              <NativeSelectOption value="movie">Films</NativeSelectOption>
+              <NativeSelectOption value="series">Series</NativeSelectOption>
+            </NativeSelect>
+
+            <NativeSelect
+              value={filters.minRating === 0 ? "" : String(filters.minRating)}
+              onChange={(event) =>
+                apply({
+                  minRating: event.target.value
+                    ? Number(event.target.value)
+                    : 0,
+                })
+              }
+              aria-label="Minimum IMDb rating"
+              className="w-full sm:w-auto"
+            >
+              <NativeSelectOption value="">Any rating</NativeSelectOption>
+              {RATING_OPTIONS.map((rating) => (
+                <NativeSelectOption key={rating} value={rating}>
+                  IMDb {rating}+
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+
+            <NativeSelect
+              value={filters.sort}
+              onChange={(event) =>
+                apply({ sort: event.target.value as Filters["sort"] })
+              }
+              aria-label="Sort order"
+              className="w-full sm:w-auto"
+            >
+              {Object.entries(SORT_LABELS).map(([value, label]) => (
+                <NativeSelectOption key={value} value={value}>
+                  {label}
+                </NativeSelectOption>
+              ))}
+            </NativeSelect>
+
+            <Popover open={saveOpen} onOpenChange={setSaveOpen}>
+              <PopoverTrigger
                 type="button"
-                size="sm"
-                disabled={!viewName.trim()}
-                onClick={() => {
-                  saveFilter(viewName, location.search);
-                  setViewName("");
-                  setSaveOpen(false);
-                }}
+                disabled={!hydrated}
+                className={buttonVariants({ variant: "outline", size: "sm" })}
               >
                 Save view
-              </Button>
-            </PopoverContent>
-          </Popover>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-64">
+                <p className="text-xs font-medium">Save this view</p>
+                <Input
+                  value={viewName}
+                  onChange={(event) => setViewName(event.target.value)}
+                  placeholder="e.g. Netflix 8+"
+                  className="h-8"
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={!viewName.trim()}
+                  onClick={() => {
+                    saveFilter(viewName, location.search);
+                    setViewName("");
+                    setSaveOpen(false);
+                  }}
+                >
+                  Save view
+                </Button>
+              </PopoverContent>
+            </Popover>
+          </div>
 
           {hasActiveFilters(filters) ? (
             <Link
