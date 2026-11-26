@@ -42,9 +42,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
 
             <div className="flex items-center gap-3">
-              <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground sm:inline">
-                Sweden / nightly data
-              </span>
               <Badge
                 variant="outline"
                 className="font-mono text-[9px] uppercase tracking-widest"
