@@ -7,6 +7,8 @@ const MONETIZATIONS = ["flatrate", "rent", "buy", "ads", "free"] as const;
 type Kind = "movie" | "series";
 type Monetization = (typeof MONETIZATIONS)[number];
 
+const mediaPath = (kind: Kind) => (kind === "movie" ? "movie" : "tv");
+
 interface TmdbProvider {
   provider_id: number;
   provider_name: string;
@@ -52,6 +54,7 @@ interface DiscoverPage {
 
 interface OmdbResponse {
   Response: "True" | "False";
+  Error?: string;
   imdbRating?: string;
   imdbVotes?: string;
   Ratings?: { Source: string; Value: string }[];
@@ -138,7 +141,10 @@ async function omdb(imdbId: string): Promise<OmdbResponse | null> {
   if (!response.ok) return null;
 
   const body = (await response.json()) as OmdbResponse;
-  return body.Response === "True" ? body : null;
+  if (body.Response === "False") {
+    throw new Error(`OMDb: ${body.Error ?? "request failed"}`);
+  }
+  return body;
 }
 
 const yearOf = (detail: TmdbDetail, kind: Kind): number | null => {
@@ -148,7 +154,7 @@ const yearOf = (detail: TmdbDetail, kind: Kind): number | null => {
 };
 
 async function discover(kind: Kind, providerId: number, page: number) {
-  return tmdb<DiscoverPage>(`/discover/${kind}`, {
+  return tmdb<DiscoverPage>(`/discover/${mediaPath(kind)}`, {
     language: "sv-SE",
     watch_region: region,
     with_watch_providers: providerId,
@@ -192,10 +198,13 @@ async function main() {
 
   for (const [index, item] of items.entries()) {
     try {
-      const detail = await tmdb<TmdbDetail>(`/${item.kind}/${item.id}`, {
-        language: "sv-SE",
-        append_to_response: "external_ids,watch/providers",
-      });
+      const detail = await tmdb<TmdbDetail>(
+        `/${mediaPath(item.kind)}/${item.id}`,
+        {
+          language: "sv-SE",
+          append_to_response: "external_ids,watch/providers",
+        },
+      );
 
       const titleId = `tmdb:${item.kind}:${item.id}`;
       const name =
