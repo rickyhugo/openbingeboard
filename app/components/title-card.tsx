@@ -48,15 +48,6 @@ export function TitleCard({
                 tone="overlay"
               />
             )}
-            {title.rtScore !== null && (
-              <RatingBadge
-                source="rt"
-                score={title.rtScore}
-                scale={100}
-                tone="overlay"
-                className="hidden sm:inline-flex"
-              />
-            )}
           </div>
           <Badge
             variant="outline"
@@ -92,11 +83,6 @@ export function TitleCard({
         </p>
         <p className="font-mono text-[10px] text-muted-foreground">
           {title.year ?? "—"}
-          {title.tmdbVote !== null && (
-            <span className="ml-2 opacity-70">
-              TMDB {title.tmdbVote.toFixed(1)}
-            </span>
-          )}
         </p>
       </div>
     </Link>
