@@ -1,0 +1,29 @@
+name: Ingest availability
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: Discover pages per provider
+        default: "2"
+      limit:
+        description: Maximum titles to refresh
+        default: "60"
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jdx/mise-action@v5
+        with:
+          install: true
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm ingest:apply:prd -- --pages=${{ inputs.pages || '2' }} --limit=${{ inputs.limit || '60' }}
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}

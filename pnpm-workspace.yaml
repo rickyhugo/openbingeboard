@@ -1,0 +1,10 @@
+allowBuilds:
+  esbuild: true
+  workerd: true
+minimumReleaseAgeExclude:
+  - "@effect/platform-cloudflare@4.1.6"
+  - "@effect/sql-d1@4.1.6"
+  - "@effect/sql-sqlite-do@4.1.6"
+  - effect@4.1.6
+  - "@shadcn/registry@0.2.2"
+  - shadcn@4.23.1

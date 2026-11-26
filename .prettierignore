@@ -1,0 +1,8 @@
+build
+node_modules
+.react-router
+.wrangler
+db/generated
+.cache
+worker-configuration.d.ts
+pnpm-lock.yaml

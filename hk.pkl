@@ -1,0 +1,22 @@
+amends "package://github.com/jdx/hk/releases/download/v2.14.0/hk@2.14.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.14.0/hk@2.14.0#/Builtins.pkl"
+
+hooks {
+  ["commit-msg"] {
+    steps {
+      ["conventional-commit"] = Builtins.check_conventional_commit
+    }
+  }
+}
+
+steps {
+  ["prettier"] = Builtins.prettier
+  ["trailing_whitespace"] = Builtins.trailing_whitespace
+  ["newlines"] = Builtins.newlines
+  ["detect_private_key"] = Builtins.detect_private_key
+  ["check_added_large_files"] = Builtins.check_added_large_files
+  ["typecheck"] {
+    check = "pnpm typecheck:ci"
+    glob = List("**/*.ts", "**/*.tsx", "**/*.json")
+  }
+}
