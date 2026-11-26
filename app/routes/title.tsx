@@ -3,9 +3,11 @@ import { data, isRouteErrorResponse, Link } from "react-router";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { ProviderChip } from "~/components/provider-chip";
-import { RatingBadge } from "~/components/rating-badge";
+import { ScorePopover } from "~/components/score-popover";
+import { TitleActions } from "~/components/title-actions";
 import { formatRuntime, imdbUrl, initials, posterUrl } from "~/lib/tmdb";
 import { runQuery } from "~/server/effect.server";
+import { getImdbStats } from "~/server/extras.server";
 import { getTitle } from "~/server/queries.server";
 import type { Route } from "./+types/title";
 
@@ -35,11 +37,14 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw data("Title not found", { status: 404 });
   }
 
-  return { title };
+  const imdb = title.ratings.find((rating) => rating.source === "imdb");
+  const stats = imdb ? await runQuery(getImdbStats(imdb.score)) : null;
+
+  return { title, stats };
 }
 
 export default function Title({ loaderData }: Route.ComponentProps) {
-  const { title } = loaderData;
+  const { title, stats } = loaderData;
   const poster = posterUrl(title.posterPath, "w500");
   const runtime = formatRuntime(title.runtime);
   const imdb = imdbUrl(title.imdbId);
@@ -71,11 +76,11 @@ export default function Title({ loaderData }: Route.ComponentProps) {
 
           <div className="mt-3 flex flex-wrap gap-1">
             {title.ratings.map((rating) => (
-              <RatingBadge
+              <ScorePopover
                 key={rating.source}
-                source={rating.source}
-                score={rating.score}
-                scale={rating.scale}
+                rating={rating}
+                ratings={title.ratings}
+                stats={stats}
               />
             ))}
           </div>
@@ -128,6 +133,8 @@ export default function Title({ loaderData }: Route.ComponentProps) {
               {title.overview}
             </p>
           )}
+
+          <TitleActions titleId={title.id} />
 
           {imdb && (
             <a
