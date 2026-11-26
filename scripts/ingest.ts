@@ -41,6 +41,7 @@ interface Title {
   imdbId: string | null;
   name: string;
   originalName: string | null;
+  searchTitle: string;
   year: number | null;
   overview: string | null;
   posterPath: string | null;
@@ -115,6 +116,24 @@ interface OmdbResponse {
   Ratings?: { Source: string; Value: string }[];
 }
 
+interface JwOffer {
+  monetizationType?: string;
+  standardWebURL?: string;
+  package?: { packageId?: number };
+}
+
+interface JwNode {
+  objectType?: string;
+  content?: { title?: string; originalReleaseYear?: number };
+  offers?: JwOffer[];
+}
+
+interface JwResponse {
+  data?: {
+    popularTitles?: { edges?: { node: JwNode }[] };
+  };
+}
+
 interface ImdbRating {
   rating: number;
   votes: number;
@@ -136,6 +155,9 @@ const DEFAULT_PROVIDERS = [
 const EXCLUDED_PROVIDERS = new Set([175, 1825, 1968, 2791]);
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const IMDB_RATINGS_URL = "https://datasets.imdbws.com/title.ratings.tsv.gz";
+const JUSTWATCH_URL = "https://apis.justwatch.com/graphql";
+const JUSTWATCH_QUERY =
+  "query($country: Country!, $language: Language!, $first: Int!, $filter: TitleFilter) { popularTitles(country: $country, first: $first, filter: $filter) { edges { node { objectType content(country: $country, language: $language) { title originalReleaseYear } offers(country: $country, platform: WEB) { monetizationType standardWebURL package { packageId } } } } } }";
 
 const args = new Map<string, string>();
 for (const raw of process.argv.slice(2)) {
@@ -161,6 +183,8 @@ const chunkBytes = numberArg("chunk-bytes", 4_000_000);
 const out = args.get("out") ?? "db/generated/ingest";
 const dryRun = args.get("dry-run") === "true";
 const useImdb = args.get("no-imdb") !== "true";
+const useJustWatch = args.get("no-justwatch") !== "true";
+const justwatchDelay = numberArg("justwatch-delay", 100);
 const imdbCache = args.get("imdb-cache") ?? ".cache/imdb-ratings.tsv.gz";
 
 const providerArg = args.get("providers");
@@ -385,6 +409,16 @@ function toTitle(
       (item) => item.iso_639_1 === "en" && item.iso_3166_1 === "US",
     ) ?? translations.find((item) => item.iso_639_1 === "en");
   const overview = english?.data?.overview?.trim() || detail.overview || null;
+  const nonEmpty = (value: string | null | undefined) => {
+    const trimmed = value?.trim();
+    return trimmed ? trimmed : undefined;
+  };
+  const searchTitle =
+    nonEmpty(english?.data?.title) ??
+    nonEmpty(english?.data?.name) ??
+    nonEmpty(kind === "movie" ? detail.original_title : detail.original_name) ??
+    nonEmpty(kind === "movie" ? detail.title : detail.name) ??
+    "Untitled";
 
   return {
     id: "tmdb:" + kind + ":" + detail.id,
@@ -394,6 +428,7 @@ function toTitle(
     name: (kind === "movie" ? detail.title : detail.name) ?? "Untitled",
     originalName:
       (kind === "movie" ? detail.original_title : detail.original_name) ?? null,
+    searchTitle,
     year: Number.isInteger(parsedYear) ? parsedYear : null,
     overview,
     posterPath: detail.poster_path ?? null,
@@ -481,6 +516,69 @@ async function omdb(imdbId: string) {
     if (rating.Source === "Metacritic") result.mc = score;
   }
   return result;
+}
+
+async function justwatchLinks(
+  title: Title,
+): Promise<Map<string, string> | null> {
+  const body = JSON.stringify({
+    query: JUSTWATCH_QUERY,
+    variables: {
+      country: region,
+      language: "en",
+      first: 5,
+      filter: { searchQuery: title.searchTitle },
+    },
+  });
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    try {
+      const response = await fetch(JUSTWATCH_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+        },
+        body,
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (!response.ok) {
+        if (response.status === 429 || response.status >= 500) {
+          await sleep(1000 * (attempt + 1));
+          continue;
+        }
+        return null;
+      }
+
+      const json = (await response.json()) as JwResponse;
+      const wanted = title.kind === "movie" ? "MOVIE" : "SHOW";
+      const nodes = (json.data?.popularTitles?.edges ?? [])
+        .map((edge) => edge.node)
+        .filter((node) => node.objectType === wanted);
+      const chosen =
+        (title.year
+          ? nodes.find(
+              (node) => node.content?.originalReleaseYear === title.year,
+            )
+          : undefined) ?? nodes[0];
+      const links = new Map<string, string>();
+
+      for (const offer of chosen?.offers ?? []) {
+        const providerId = offer.package?.packageId;
+        const monetization = offer.monetizationType?.toLowerCase();
+        if (!providerId || !monetization || !offer.standardWebURL) continue;
+        links.set(providerId + ":" + monetization, offer.standardWebURL);
+      }
+
+      return links;
+    } catch {
+      if (attempt === 0) await sleep(500);
+    }
+  }
+
+  return null;
 }
 
 function providerStatement(provider: Provider) {
@@ -671,6 +769,9 @@ async function main() {
   let offers = 0;
   let omdbCalls = 0;
   let omdbExhausted = false;
+  let deepLinkCount = 0;
+  let justWatchFailures = 0;
+  let justWatchDisabled = !useJustWatch;
 
   for (const [index, item] of items.entries()) {
     try {
@@ -717,6 +818,30 @@ async function main() {
         await sleep(50);
       }
 
+      let linked = 0;
+      if (!justWatchDisabled) {
+        const deepLinks = await justwatchLinks(title);
+        if (deepLinks === null) {
+          justWatchFailures += 1;
+          if (justWatchFailures >= 5) {
+            justWatchDisabled = true;
+            log("JustWatch disabled after 5 failures");
+          }
+        } else {
+          for (const offer of title.offers) {
+            const deepLink =
+              deepLinks.get(offer.provider.id + ":" + offer.monetization) ??
+              null;
+            offer.link = deepLink;
+            if (deepLink) {
+              linked += 1;
+              deepLinkCount += 1;
+            }
+          }
+        }
+        await sleep(justwatchDelay);
+      }
+
       writeTitle(writer, title, startedAt);
       titles += 1;
       offers += title.offers.length;
@@ -728,7 +853,9 @@ async function main() {
           " " +
           title.id +
           " offers=" +
-          title.offers.length,
+          title.offers.length +
+          " links=" +
+          linked,
       );
       await sleep(40);
     } catch (error) {
@@ -759,6 +886,8 @@ async function main() {
       " titles, " +
       offers +
       " offers, " +
+      deepLinkCount +
+      " deep links, " +
       failures +
       " failures, " +
       omdbCalls +

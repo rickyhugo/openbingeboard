@@ -104,7 +104,7 @@ The free OMDb tier allows 1,000 requests per day. IMDb scores come from the bulk
 
 ## Ingest
 
-`scripts/ingest.ts` pages the configured Swedish providers, ranks the union by popularity, and expands each title with `append_to_response=external_ids,watch/providers`. IMDb scores come from the daily `datasets.imdbws.com` ratings file, so they cost no API requests. OMDb supplies Rotten Tomatoes and Metacritic for the first `--omdb-limit` titles. Output is split into idempotent SQL chunks.
+`scripts/ingest.ts` pages the configured Swedish providers, ranks the union by popularity, and expands each title with `append_to_response=external_ids,watch/providers`. IMDb scores come from the daily `datasets.imdbws.com` ratings file, so they cost no API requests. OMDb supplies Rotten Tomatoes and Metacritic for the first `--omdb-limit` titles. JustWatch search fills each offer with the provider's own URL, which opens the service app on mobile when the provider supports universal links. Output is split into idempotent SQL chunks.
 
 ```sh
 pnpm ingest:dry -- --providers=8 --pages=1 --limit=20
