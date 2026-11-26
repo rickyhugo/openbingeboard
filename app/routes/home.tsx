@@ -54,31 +54,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <main>
-      <section className="relative overflow-hidden border-b">
-        <div className="pointer-events-none absolute inset-0 grid-noise opacity-60" />
-        <div className="relative mx-auto max-w-6xl px-4 py-10 md:py-14">
-          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-            Region SE / Sweden / nightly refresh
-          </p>
-          <h1 className="mt-3 max-w-3xl text-3xl font-semibold tracking-tight text-balance md:text-4xl">
-            Everything worth watching in Sweden, and where to watch it.
+      <section className="border-b">
+        <div className="mx-auto max-w-6xl px-4 py-6">
+          <h1 className="text-xl font-semibold tracking-tight">
+            Films and series available in Sweden
           </h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-            Streaming, rental, and purchase availability combined with IMDb,
-            Rotten Tomatoes, and Metacritic scores. One list, no subscriptions.
+          <p className="mt-1 text-xs text-muted-foreground">
+            {result.total} titles across {providers.length} services. Stream,
+            rent, or buy.
           </p>
-          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-            <span>
-              <span className="text-foreground">{result.total}</span> titles
-            </span>
-            <span>
-              <span className="text-foreground">{providers.length}</span>{" "}
-              services
-            </span>
-            <span>
-              provider data <span className="text-foreground">JustWatch</span>
-            </span>
-          </div>
         </div>
       </section>
 
