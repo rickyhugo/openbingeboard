@@ -11,10 +11,10 @@ import {
 import { AppSidebar } from "~/components/app-sidebar";
 import { ProfileProvider } from "~/components/profile-provider";
 import { ThemeToggle } from "~/components/theme-toggle";
-import { Badge } from "~/components/ui/badge";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
 import { ATTRIBUTION } from "~/lib/tmdb";
 import { themeFromRequest } from "~/lib/theme.server";
+import { auth } from "~/server/auth.server";
 import { runQuery } from "~/server/effect.server";
 import { listProviders } from "~/server/queries.server";
 
@@ -22,12 +22,24 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const providers = await runQuery(listProviders);
-  return { providers, theme: themeFromRequest(request) };
+  const [providers, session] = await Promise.all([
+    runQuery(listProviders),
+    auth.api.getSession({ headers: request.headers }),
+  ]);
+
+  const user = session?.user
+    ? {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+      }
+    : null;
+
+  return { providers, theme: themeFromRequest(request), user };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { providers, theme } = useLoaderData<typeof loader>();
+  const { providers, theme, user } = useLoaderData<typeof loader>();
 
   return (
     <html lang="en" className={theme === "dark" ? "dark" : ""}>
@@ -38,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">
-        <ProfileProvider>
+        <ProfileProvider user={user}>
           <SidebarProvider>
             <a
               href="#main"

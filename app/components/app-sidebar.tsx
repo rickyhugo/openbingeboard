@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router";
+import { AuthStatus } from "~/components/auth-status";
 import {
   Sidebar,
   SidebarContent,
@@ -111,6 +112,7 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
+        <AuthStatus />
         <p className="px-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           {state.watched.length} watched / {state.want.length} to watch
         </p>
