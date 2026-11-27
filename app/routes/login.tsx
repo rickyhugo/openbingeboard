@@ -5,14 +5,14 @@ import {
   useRouteLoaderData,
   useSearchParams,
 } from "react-router";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+  CheckmarkCircle02Icon,
+  Mail01Icon,
+  SparklesIcon,
+} from "@hugeicons/core-free-icons";
+import { AuthShell } from "~/components/auth-shell";
+import { Button, buttonVariants } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
 import { safeNext } from "~/lib/auth-redirect";
@@ -208,40 +208,52 @@ export default function Login() {
 
   if (user) {
     return (
-      <main className="mx-auto max-w-md px-4 py-10">
-        <Card>
-          <CardHeader>
-            <CardTitle>You are signed in</CardTitle>
-            <CardDescription>{user.email}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link
-              to={next}
-              className={buttonVariants({ variant: "default", size: "sm" })}
-            >
-              Continue
-            </Link>
-          </CardContent>
-        </Card>
-      </main>
+      <AuthShell>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
+          <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+            <HugeiconsIcon
+              icon={CheckmarkCircle02Icon}
+              strokeWidth={2}
+              className="size-5"
+            />
+          </span>
+          <h1 className="mt-4 font-display text-3xl tracking-tight">
+            You are signed in
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
+          <Link
+            to={next}
+            className={buttonVariants({ className: "mt-6 w-full" })}
+          >
+            Continue
+          </Link>
+        </div>
+      </AuthShell>
     );
   }
 
   if (verificationEmail) {
     return (
-      <main className="mx-auto max-w-md px-4 py-10">
-        <Card>
-          <CardHeader>
-            <CardTitle>Check your email</CardTitle>
-            <CardDescription>
-              We sent a verification link to{" "}
-              <span className="font-mono text-foreground">
-                {verificationEmail}
-              </span>
-              . Open it, then sign in.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
+      <AuthShell>
+        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
+          <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+            <HugeiconsIcon
+              icon={Mail01Icon}
+              strokeWidth={2}
+              className="size-5"
+            />
+          </span>
+          <h1 className="mt-4 font-display text-3xl tracking-tight">
+            Check your email
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            We sent a verification link to{" "}
+            <span className="font-medium text-foreground">
+              {verificationEmail}
+            </span>
+            . Open it, then sign in.
+          </p>
+          <div className="mt-5 space-y-2">
             {message ? (
               <p className="text-xs text-muted-foreground" role="status">
                 {message}
@@ -252,7 +264,176 @@ export default function Login() {
                 {error}
               </p>
             ) : null}
-            <div className="flex flex-wrap items-center gap-2">
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={resendVerification}
+              disabled={pending || cooldown > 0}
+            >
+              {cooldown > 0
+                ? `Resend in ${cooldown}s`
+                : pending
+                  ? "Sending..."
+                  : "Resend email"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setVerificationEmail("");
+                changeMode("signin");
+              }}
+            >
+              Back to sign in
+            </Button>
+          </div>
+          <Link
+            to={next === "/profile" ? "/" : next}
+            className="mt-5 inline-block text-[11px] text-muted-foreground underline underline-offset-4 hover:text-foreground"
+          >
+            Continue as guest
+          </Link>
+        </div>
+      </AuthShell>
+    );
+  }
+
+  const title =
+    mode === "signin"
+      ? "Welcome back"
+      : mode === "signup"
+        ? "Create an account"
+        : "Reset your password";
+  const subtitle =
+    mode === "signin"
+      ? "Pick up where you left off."
+      : mode === "signup"
+        ? "Keep your services and lists in sync."
+        : "We will email you a link to choose a new password.";
+
+  return (
+    <AuthShell>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
+        <div className="flex items-center gap-2 text-primary">
+          <HugeiconsIcon
+            icon={SparklesIcon}
+            strokeWidth={2}
+            className="size-4"
+          />
+          <span className="eyebrow text-primary">
+            {mode === "signin"
+              ? "Your account"
+              : mode === "signup"
+                ? "Join the board"
+                : "Account recovery"}
+          </span>
+        </div>
+        <h1 className="mt-3 font-display text-3xl tracking-tight">{title}</h1>
+        <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
+
+        <form onSubmit={submit} className="mt-6 space-y-3">
+          {mode === "signup" ? (
+            <label className="block space-y-1.5 text-xs">
+              <span className="text-[11px] font-medium text-muted-foreground">
+                Name
+              </span>
+              <Input
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                autoComplete="name"
+                maxLength={80}
+                required
+              />
+            </label>
+          ) : null}
+
+          <label className="block space-y-1.5 text-xs">
+            <span className="text-[11px] font-medium text-muted-foreground">
+              Email
+            </span>
+            <Input
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              autoComplete="email"
+              required
+            />
+          </label>
+
+          {mode !== "forgot" ? (
+            <label className="block space-y-1.5 text-xs">
+              <span className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-medium text-muted-foreground">
+                  Password
+                </span>
+                {mode === "signin" && emailEnabled ? (
+                  <button
+                    type="button"
+                    className="text-[11px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                    onClick={() => changeMode("forgot")}
+                  >
+                    Forgot?
+                  </button>
+                ) : null}
+              </span>
+              <Input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                autoComplete={
+                  mode === "signin" ? "current-password" : "new-password"
+                }
+                minLength={8}
+                required
+              />
+              {mode === "signup" ? (
+                <span className="block text-[10px] text-muted-foreground">
+                  At least 8 characters.
+                </span>
+              ) : null}
+            </label>
+          ) : null}
+
+          {mode === "signup" ? (
+            <label className="block space-y-1.5 text-xs">
+              <span className="text-[11px] font-medium text-muted-foreground">
+                Confirm password
+              </span>
+              <Input
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                autoComplete="new-password"
+                minLength={8}
+                required
+              />
+            </label>
+          ) : null}
+
+          {error ? (
+            <p
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-[11px] leading-5 text-destructive"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+
+          {message ? (
+            <p
+              className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-5 text-muted-foreground"
+              role="status"
+            >
+              {message}
+            </p>
+          ) : null}
+
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            {needsVerification ? (
               <Button
                 type="button"
                 variant="outline"
@@ -264,193 +445,50 @@ export default function Login() {
                   ? `Resend in ${cooldown}s`
                   : pending
                     ? "Sending..."
-                    : "Resend email"}
+                    : "Resend verification"}
               </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setVerificationEmail("");
-                  changeMode("signin");
-                }}
-              >
-                Back to sign in
-              </Button>
-            </div>
-            <Link
-              to={next === "/profile" ? "/" : next}
-              className="inline-block text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-            >
-              Continue as guest
-            </Link>
-          </CardContent>
-        </Card>
-      </main>
-    );
-  }
-
-  const title =
-    mode === "signin"
-      ? "Log in"
-      : mode === "signup"
-        ? "Create an account"
-        : "Reset your password";
-
-  return (
-    <main className="mx-auto max-w-md px-4 py-10">
-      <Card>
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>
-            Sync your services, watchlist, and saved views across devices.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className="space-y-3">
-            {mode === "signup" ? (
-              <label className="block space-y-1 text-xs">
-                <span className="text-muted-foreground">Name</span>
-                <Input
-                  value={name}
-                  onChange={(event) => setName(event.target.value)}
-                  autoComplete="name"
-                  maxLength={80}
-                  required
-                  className="h-8"
-                />
-              </label>
             ) : null}
 
-            <label className="block space-y-1 text-xs">
-              <span className="text-muted-foreground">Email</span>
-              <Input
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                autoComplete="email"
-                required
-                className="h-8"
-              />
-            </label>
-
-            {mode !== "forgot" ? (
-              <label className="block space-y-1 text-xs">
-                <span className="text-muted-foreground">Password</span>
-                <Input
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  autoComplete={
-                    mode === "signin" ? "current-password" : "new-password"
-                  }
-                  minLength={8}
-                  required
-                  className="h-8"
-                />
-                {mode === "signup" ? (
-                  <span className="block text-[10px] text-muted-foreground">
-                    At least 8 characters.
-                  </span>
-                ) : null}
-              </label>
-            ) : null}
-
-            {mode === "signup" ? (
-              <label className="block space-y-1 text-xs">
-                <span className="text-muted-foreground">Confirm password</span>
-                <Input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(event) => setConfirmPassword(event.target.value)}
-                  autoComplete="new-password"
-                  minLength={8}
-                  required
-                  className="h-8"
-                />
-              </label>
-            ) : null}
-
-            {mode === "signin" && emailEnabled ? (
-              <button
-                type="button"
-                className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
-                onClick={() => changeMode("forgot")}
-              >
-                Forgot password?
-              </button>
-            ) : null}
-
-            {error ? (
-              <p className="text-xs text-destructive" role="alert">
-                {error}
-              </p>
-            ) : null}
-
-            {message ? (
-              <p className="text-xs text-muted-foreground" role="status">
-                {message}
-              </p>
-            ) : null}
-
-            <div className="flex flex-wrap items-center gap-2">
-              {needsVerification ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={resendVerification}
-                  disabled={pending || cooldown > 0}
-                >
-                  {cooldown > 0
-                    ? `Resend in ${cooldown}s`
-                    : pending
-                      ? "Sending..."
-                      : "Resend verification"}
-                </Button>
-              ) : null}
-
-              <Button type="submit" size="sm" disabled={pending}>
-                {pending
-                  ? "Working..."
-                  : mode === "signin"
-                    ? "Log in"
-                    : mode === "signup"
-                      ? "Create account"
-                      : "Send reset link"}
-              </Button>
-            </div>
-          </form>
-
-          <div className="mt-4 flex items-center justify-between gap-2 text-xs text-muted-foreground">
-            <button
-              type="button"
-              className="underline underline-offset-4 hover:text-foreground"
-              onClick={() =>
-                changeMode(
-                  mode === "signin"
-                    ? "signup"
-                    : mode === "signup"
-                      ? "signin"
-                      : "signin",
-                )
-              }
-            >
-              {mode === "signin"
-                ? "Create an account"
-                : mode === "forgot"
-                  ? "Back to sign in"
-                  : "I already have an account"}
-            </button>
-            <Link
-              to={next === "/profile" ? "/" : next}
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              Continue as guest
-            </Link>
+            <Button type="submit" className="w-full" disabled={pending}>
+              {pending
+                ? "Working..."
+                : mode === "signin"
+                  ? "Log in"
+                  : mode === "signup"
+                    ? "Create account"
+                    : "Send reset link"}
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </main>
+        </form>
+
+        <div className="mt-5 flex items-center justify-between gap-2 border-t border-border/70 pt-4 text-[11px] text-muted-foreground">
+          <button
+            type="button"
+            className="underline-offset-4 hover:text-foreground hover:underline"
+            onClick={() =>
+              changeMode(
+                mode === "signin"
+                  ? "signup"
+                  : mode === "signup"
+                    ? "signin"
+                    : "signin",
+              )
+            }
+          >
+            {mode === "signin"
+              ? "Create an account"
+              : mode === "forgot"
+                ? "Back to sign in"
+                : "I already have an account"}
+          </button>
+          <Link
+            to={next === "/profile" ? "/" : next}
+            className="underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Browse as guest
+          </Link>
+        </div>
+      </div>
+    </AuthShell>
   );
 }

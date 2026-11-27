@@ -22,7 +22,7 @@ export function CountrySelect() {
         aria-label="Country"
         aria-busy={pending}
         disabled={pending}
-        className="w-full font-mono"
+        className="w-full"
       >
         {COUNTRIES.map((country) => (
           <NativeSelectOption key={country.code} value={country.code}>

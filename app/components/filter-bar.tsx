@@ -1,5 +1,16 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  Bookmark02Icon,
+  Cancel01Icon,
+  FilterHorizontalIcon,
+  PlayCircleIcon,
+  Search01Icon,
+} from "@hugeicons/core-free-icons";
+import { cn } from "cn";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { ProviderLogo } from "~/components/provider-logo";
@@ -27,6 +38,12 @@ import type { ProviderRow } from "~/server/queries.server";
 
 const RATING_OPTIONS = [9, 8, 7, 6];
 
+const KINDS = [
+  { value: "all", label: "All" },
+  { value: "movie", label: "Films" },
+  { value: "series", label: "Series" },
+] as const;
+
 export function FilterBar({
   filters,
   providers,
@@ -44,7 +61,7 @@ export function FilterBar({
   const [saveOpen, setSaveOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [serviceDraft, setServiceDraft] = useState(filters.providers);
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
   useEffect(() => setQuery(filters.q), [filters.q]);
   useEffect(() => {
@@ -66,6 +83,12 @@ export function FilterBar({
     providers.find((provider) => provider.id === id)?.name ?? String(id);
   const genreName = (id: number) =>
     genres.find((genre) => genre.id === id)?.name ?? String(id);
+
+  const advancedCount =
+    (filters.genre !== null ? 1 : 0) +
+    (filters.decade !== null ? 1 : 0) +
+    (filters.monetization !== "all" ? 1 : 0) +
+    (filters.minRating > 0 ? 1 : 0);
 
   const chips: { key: string; label: string; clear: Partial<Filters> }[] = [];
   if (filters.q) {
@@ -117,88 +140,124 @@ export function FilterBar({
   }
 
   return (
-    <div className="sticky top-14 z-30 border-b bg-background/95 backdrop-blur">
-      <div className="mx-auto max-w-6xl px-4 py-3">
+    <div className="sticky top-16 z-30 border-b border-border/70 bg-background/85 backdrop-blur-xl">
+      <div className="mx-auto max-w-7xl px-4 py-3">
         <div className="flex flex-wrap items-center gap-2">
           <form
             onSubmit={submitSearch}
-            className="flex min-w-[15rem] flex-1 items-center gap-1.5"
+            className="relative w-full md:w-auto md:max-w-sm md:flex-1"
           >
+            <HugeiconsIcon
+              icon={Search01Icon}
+              strokeWidth={2}
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+            />
             <Input
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search titles"
               aria-label="Search titles"
-              className="h-8"
+              className="rounded-full pr-10 pl-9"
             />
-            <Button type="submit" size="sm">
-              Search
-            </Button>
+            <button
+              type="submit"
+              aria-label="Search"
+              className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+            >
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                strokeWidth={2}
+                className="size-3.5"
+              />
+            </button>
           </form>
+
+          <div className="flex h-9 items-center rounded-full border border-border bg-card/60 p-0.5">
+            {KINDS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => apply({ kind: option.value })}
+                aria-pressed={filters.kind === option.value}
+                className={cn(
+                  "h-8 rounded-full px-3 text-[11px] font-medium transition-colors",
+                  filters.kind === option.value
+                    ? "bg-foreground text-background shadow-sm"
+                    : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
 
           <Popover open={servicesOpen} onOpenChange={setServicesOpen}>
             <PopoverTrigger
               type="button"
-              className={
-                buttonVariants({ variant: "outline", size: "sm" }) +
-                " max-w-[12rem]"
-              }
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
-              <span className="truncate">
-                {(() => {
-                  const count = (
-                    servicesOpen ? serviceDraft : filters.providers
-                  ).length;
-                  if (count === 0) return "All services";
-                  return count + (count === 1 ? " service" : " services");
-                })()}
+              <HugeiconsIcon icon={PlayCircleIcon} strokeWidth={2} />
+              <span className="max-w-[9rem] truncate">
+                {filters.providers.length === 0
+                  ? "All services"
+                  : filters.providers.length +
+                    (filters.providers.length === 1 ? " service" : " services")}
               </span>
+              <HugeiconsIcon
+                icon={ArrowDown01Icon}
+                strokeWidth={2}
+                className="size-3 opacity-50"
+              />
             </PopoverTrigger>
-            <PopoverContent align="start" className="w-64">
-              <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-                Services
-              </p>
-              <div className="max-h-64 space-y-0.5 overflow-y-auto pr-1">
-                {providers.map((provider) => (
-                  <label
-                    key={provider.id}
-                    className="flex cursor-pointer items-center gap-2 py-1 text-xs"
-                  >
-                    <input
-                      type="checkbox"
-                      className="size-3.5 accent-foreground"
-                      checked={serviceDraft.includes(provider.id)}
-                      onChange={() =>
-                        setServiceDraft((current) =>
-                          current.includes(provider.id)
-                            ? current.filter((id) => id !== provider.id)
-                            : [...current, provider.id],
-                        )
-                      }
-                    />
-                    <ProviderLogo
-                      path={provider.logoPath}
-                      name={provider.name}
-                      className="h-5 w-5"
-                    />
-                    <span className="truncate">{provider.name}</span>
-                  </label>
-                ))}
-              </div>
-              <div className="flex items-center justify-between gap-2 border-t pt-2">
-                <Button
+            <PopoverContent
+              align="start"
+              className="w-72 max-w-[calc(100vw-2rem)]"
+            >
+              <div className="flex items-baseline justify-between gap-2">
+                <p className="text-sm font-semibold">Services</p>
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setServiceDraft([]);
-                    apply({ providers: [] });
-                    setServicesOpen(false);
-                  }}
+                  onClick={() => setServiceDraft([])}
+                  className="text-[11px] text-muted-foreground hover:text-foreground"
                 >
                   Clear
-                </Button>
+                </button>
+              </div>
+              <div className="max-h-64 space-y-0.5 overflow-y-auto pr-1">
+                {providers.map((provider) => {
+                  const checked = serviceDraft.includes(provider.id);
+                  return (
+                    <label
+                      key={provider.id}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-muted",
+                        checked && "bg-primary/[0.06]",
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        className="size-3.5 accent-primary"
+                        checked={checked}
+                        onChange={() =>
+                          setServiceDraft((current) =>
+                            current.includes(provider.id)
+                              ? current.filter((id) => id !== provider.id)
+                              : [...current, provider.id],
+                          )
+                        }
+                      />
+                      <ProviderLogo
+                        path={provider.logoPath}
+                        name={provider.name}
+                        className="h-5 w-5"
+                      />
+                      <span className="truncate">{provider.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <div className="flex items-center justify-end gap-2 border-t border-border/70 pt-3">
                 <Button
                   type="button"
                   size="sm"
@@ -213,189 +272,238 @@ export function FilterBar({
             </PopoverContent>
           </Popover>
 
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="md:hidden"
-            onClick={() => setFiltersOpen((open) => !open)}
-          >
-            {filtersOpen ? "Hide filters" : "Filters"}
-          </Button>
-
-          <div
-            className={
-              filtersOpen
-                ? "flex w-full flex-wrap items-center gap-2 md:w-auto"
-                : "hidden w-full flex-wrap items-center gap-2 md:flex md:w-auto"
-            }
-          >
-            <NativeSelect
-              value={filters.genre === null ? "" : String(filters.genre)}
-              onChange={(event) =>
-                apply({
-                  genre: event.target.value ? Number(event.target.value) : null,
-                })
-              }
-              aria-label="Genre"
-              className="w-full sm:w-auto"
+          <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+            <PopoverTrigger
+              type="button"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
             >
-              <NativeSelectOption value="">All genres</NativeSelectOption>
-              {genres.map((genre) => (
-                <NativeSelectOption key={genre.id} value={genre.id}>
-                  {genre.name}
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-
-            <NativeSelect
-              value={filters.decade === null ? "" : String(filters.decade)}
-              onChange={(event) =>
-                apply({
-                  decade: event.target.value
-                    ? Number(event.target.value)
-                    : null,
-                })
-              }
-              aria-label="Decade"
-              className="w-full sm:w-auto"
+              <HugeiconsIcon icon={FilterHorizontalIcon} strokeWidth={2} />
+              Filters
+              {advancedCount > 0 ? (
+                <span className="grid size-4 place-items-center rounded-full bg-primary text-[9px] font-semibold text-primary-foreground">
+                  {advancedCount}
+                </span>
+              ) : null}
+            </PopoverTrigger>
+            <PopoverContent
+              align="start"
+              className="w-80 max-w-[calc(100vw-2rem)]"
             >
-              <NativeSelectOption value="">Any year</NativeSelectOption>
-              {DECADES.map((decade) => (
-                <NativeSelectOption key={decade} value={decade}>
-                  {decade}s
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
+              <p className="text-sm font-semibold">Refine</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    Genre
+                  </span>
+                  <NativeSelect
+                    value={filters.genre === null ? "" : String(filters.genre)}
+                    onChange={(event) =>
+                      apply({
+                        genre: event.target.value
+                          ? Number(event.target.value)
+                          : null,
+                      })
+                    }
+                    aria-label="Genre"
+                    className="w-full"
+                  >
+                    <NativeSelectOption value="">All genres</NativeSelectOption>
+                    {genres.map((genre) => (
+                      <NativeSelectOption key={genre.id} value={genre.id}>
+                        {genre.name}
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                </label>
 
-            <NativeSelect
-              value={filters.monetization}
-              onChange={(event) =>
-                apply({
-                  monetization: event.target.value as Filters["monetization"],
-                })
-              }
-              aria-label="How to watch"
-              className="w-full sm:w-auto"
-            >
-              <NativeSelectOption value="all">Any access</NativeSelectOption>
-              <NativeSelectOption value="flatrate">Stream</NativeSelectOption>
-              <NativeSelectOption value="rent">Rent</NativeSelectOption>
-              <NativeSelectOption value="buy">Buy</NativeSelectOption>
-            </NativeSelect>
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    Decade
+                  </span>
+                  <NativeSelect
+                    value={
+                      filters.decade === null ? "" : String(filters.decade)
+                    }
+                    onChange={(event) =>
+                      apply({
+                        decade: event.target.value
+                          ? Number(event.target.value)
+                          : null,
+                      })
+                    }
+                    aria-label="Decade"
+                    className="w-full"
+                  >
+                    <NativeSelectOption value="">Any year</NativeSelectOption>
+                    {DECADES.map((decade) => (
+                      <NativeSelectOption key={decade} value={decade}>
+                        {decade}s
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                </label>
 
-            <NativeSelect
-              value={filters.kind}
-              onChange={(event) =>
-                apply({ kind: event.target.value as Filters["kind"] })
-              }
-              aria-label="Type"
-              className="w-full sm:w-auto"
-            >
-              <NativeSelectOption value="all">
-                Films & series
-              </NativeSelectOption>
-              <NativeSelectOption value="movie">Films</NativeSelectOption>
-              <NativeSelectOption value="series">Series</NativeSelectOption>
-            </NativeSelect>
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    Access
+                  </span>
+                  <NativeSelect
+                    value={filters.monetization}
+                    onChange={(event) =>
+                      apply({
+                        monetization: event.target
+                          .value as Filters["monetization"],
+                      })
+                    }
+                    aria-label="How to watch"
+                    className="w-full"
+                  >
+                    <NativeSelectOption value="all">
+                      Any access
+                    </NativeSelectOption>
+                    <NativeSelectOption value="flatrate">
+                      Stream
+                    </NativeSelectOption>
+                    <NativeSelectOption value="rent">Rent</NativeSelectOption>
+                    <NativeSelectOption value="buy">Buy</NativeSelectOption>
+                  </NativeSelect>
+                </label>
 
-            <NativeSelect
-              value={filters.minRating === 0 ? "" : String(filters.minRating)}
-              onChange={(event) =>
-                apply({
-                  minRating: event.target.value
-                    ? Number(event.target.value)
-                    : 0,
-                })
-              }
-              aria-label="Minimum IMDb rating"
-              className="w-full sm:w-auto"
-            >
-              <NativeSelectOption value="">Any rating</NativeSelectOption>
-              {RATING_OPTIONS.map((rating) => (
-                <NativeSelectOption key={rating} value={rating}>
-                  IMDb {rating}+
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-
-            <NativeSelect
-              value={filters.sort}
-              onChange={(event) =>
-                apply({ sort: event.target.value as Filters["sort"] })
-              }
-              aria-label="Sort order"
-              className="w-full sm:w-auto"
-            >
-              {Object.entries(SORT_LABELS).map(([value, label]) => (
-                <NativeSelectOption key={value} value={value}>
-                  {label}
-                </NativeSelectOption>
-              ))}
-            </NativeSelect>
-
-            <Popover open={saveOpen} onOpenChange={setSaveOpen}>
-              <PopoverTrigger
-                type="button"
-                disabled={!hydrated}
-                className={buttonVariants({ variant: "outline", size: "sm" })}
-              >
-                Save view
-              </PopoverTrigger>
-              <PopoverContent align="end" className="w-64">
-                <p className="text-xs font-medium">Save this view</p>
-                <Input
-                  value={viewName}
-                  onChange={(event) => setViewName(event.target.value)}
-                  placeholder="e.g. Netflix 8+"
-                  className="h-8"
-                />
+                <label className="space-y-1.5">
+                  <span className="text-[11px] font-medium text-muted-foreground">
+                    Rating
+                  </span>
+                  <NativeSelect
+                    value={
+                      filters.minRating === 0 ? "" : String(filters.minRating)
+                    }
+                    onChange={(event) =>
+                      apply({
+                        minRating: event.target.value
+                          ? Number(event.target.value)
+                          : 0,
+                      })
+                    }
+                    aria-label="Minimum IMDb rating"
+                    className="w-full"
+                  >
+                    <NativeSelectOption value="">Any rating</NativeSelectOption>
+                    {RATING_OPTIONS.map((rating) => (
+                      <NativeSelectOption key={rating} value={rating}>
+                        IMDb {rating}+
+                      </NativeSelectOption>
+                    ))}
+                  </NativeSelect>
+                </label>
+              </div>
+              <div className="flex items-center justify-between gap-2 border-t border-border/70 pt-3">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    navigate("/");
+                    setMoreOpen(false);
+                  }}
+                >
+                  Reset all
+                </Button>
                 <Button
                   type="button"
                   size="sm"
-                  disabled={!viewName.trim()}
-                  onClick={() => {
-                    saveFilter(viewName, location.search);
-                    setViewName("");
-                    setSaveOpen(false);
-                  }}
+                  onClick={() => setMoreOpen(false)}
                 >
-                  Save view
+                  Done
                 </Button>
-              </PopoverContent>
-            </Popover>
-          </div>
+              </div>
+            </PopoverContent>
+          </Popover>
 
-          {hasActiveFilters(filters) ? (
-            <Link
-              to="/"
+          <NativeSelect
+            value={filters.sort}
+            onChange={(event) =>
+              apply({ sort: event.target.value as Filters["sort"] })
+            }
+            aria-label="Sort order"
+            className="w-auto"
+          >
+            {Object.entries(SORT_LABELS).map(([value, label]) => (
+              <NativeSelectOption key={value} value={value}>
+                {label}
+              </NativeSelectOption>
+            ))}
+          </NativeSelect>
+
+          <Popover open={saveOpen} onOpenChange={setSaveOpen}>
+            <PopoverTrigger
+              type="button"
+              disabled={!hydrated}
               className={buttonVariants({ variant: "ghost", size: "sm" })}
             >
+              <HugeiconsIcon icon={Bookmark02Icon} strokeWidth={2} />
+              Save
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-64">
+              <p className="text-sm font-semibold">Save this view</p>
+              <p className="text-[11px] text-muted-foreground">
+                Keep the current filters one click away.
+              </p>
+              <Input
+                value={viewName}
+                onChange={(event) => setViewName(event.target.value)}
+                placeholder="e.g. Netflix 8+"
+                aria-label="View name"
+              />
+              <Button
+                type="button"
+                size="sm"
+                disabled={!viewName.trim()}
+                onClick={() => {
+                  saveFilter(viewName, location.search);
+                  setViewName("");
+                  setSaveOpen(false);
+                }}
+              >
+                Save view
+              </Button>
+            </PopoverContent>
+          </Popover>
+
+          {hasActiveFilters(filters) ? (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/")}
+            >
               Clear
-            </Link>
+            </Button>
           ) : null}
         </div>
 
         {chips.length > 0 ? (
-          <div className="mt-2 flex flex-wrap items-center gap-1">
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
             {chips.map((chip) => (
               <button
                 key={chip.key}
                 type="button"
                 onClick={() => apply(chip.clear)}
-                className="inline-flex h-5 items-center gap-1 border bg-muted px-1.5 font-mono text-[10px] text-muted-foreground transition-colors hover:text-foreground"
+                className="inline-flex h-6 items-center gap-1 rounded-full border border-border bg-card px-2.5 text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
               >
                 {chip.label}
-                <span aria-hidden="true">×</span>
+                <HugeiconsIcon
+                  icon={Cancel01Icon}
+                  strokeWidth={2}
+                  className="size-3 opacity-50"
+                />
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="ml-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+            <Link
+              to="/"
+              className="ml-1 text-[11px] font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
             >
               Clear all
-            </button>
+            </Link>
           </div>
         ) : null}
       </div>

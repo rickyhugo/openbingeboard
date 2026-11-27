@@ -7,11 +7,14 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
+  useLocation,
 } from "react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { GithubIcon } from "@hugeicons/core-free-icons";
+import { GithubIcon, SparklesIcon } from "@hugeicons/core-free-icons";
 import { AppSidebar } from "~/components/app-sidebar";
 import { AuthActions } from "~/components/auth-actions";
+import { Brand } from "~/components/brand";
+import { HeaderSearch } from "~/components/header-search";
 import { ProfileProvider } from "~/components/profile-provider";
 import { buttonVariants } from "~/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
@@ -75,6 +78,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const country = data?.country ?? "SE";
   const theme = data?.theme ?? "light";
   const user = data?.user ?? null;
+  const { pathname } = useLocation();
+  const bare = pathname === "/login" || pathname === "/reset-password";
 
   return (
     <html lang="en" className={theme === "dark" ? "dark" : ""}>
@@ -86,50 +91,65 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">
         <ProfileProvider user={user} country={country}>
-          <SidebarProvider>
-            <a
-              href="#main"
-              className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:border focus:bg-background focus:px-3 focus:py-2 focus:text-xs"
-            >
-              Skip to content
-            </a>
-
-            <AppSidebar providers={providers} theme={theme} />
-
-            <div className="flex min-w-0 flex-1 flex-col">
-              <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
-                <SidebarTrigger />
-                <Link to="/" className="flex min-w-0 items-baseline gap-2">
-                  <span className="truncate font-mono text-xs font-bold tracking-tight uppercase sm:text-sm">
-                    OpenBingeBoard
-                  </span>
-                  <span className="hidden font-mono text-[10px] text-muted-foreground sm:inline">
-                    {country}
-                  </span>
-                </Link>
-                <div className="ml-auto flex shrink-0 items-center gap-1.5">
-                  <a
-                    href="https://github.com/rickyhugo/openbingeboard"
-                    target="_blank"
-                    rel="noreferrer"
-                    aria-label="View source on GitHub"
-                    title="View source on GitHub"
-                    className={
-                      "hidden sm:inline-flex " +
-                      buttonVariants({ variant: "ghost", size: "icon-sm" })
-                    }
-                  >
-                    <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
-                  </a>
-                  <AuthActions />
-                </div>
-              </header>
-
-              <div id="main" className="flex-1">
-                {children}
-              </div>
+          {bare ? (
+            <div id="main" className="min-h-dvh">
+              {children}
             </div>
-          </SidebarProvider>
+          ) : (
+            <SidebarProvider>
+              <a
+                href="#main"
+                className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:border focus:bg-background focus:px-3 focus:py-2 focus:text-xs"
+              >
+                Skip to content
+              </a>
+
+              <AppSidebar providers={providers} theme={theme} />
+
+              <div className="flex min-w-0 flex-1 flex-col">
+                <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-background/80 px-4 backdrop-blur-xl">
+                  <SidebarTrigger />
+                  <Brand
+                    className="md:hidden"
+                    wordmarkClassName="text-lg sm:text-xl"
+                  />
+                  <HeaderSearch />
+                  <div className="ml-auto flex shrink-0 items-center gap-1.5">
+                    <div className="hidden items-center gap-1.5 lg:flex">
+                      <Link
+                        to="/ask"
+                        className={buttonVariants({
+                          variant: "ghost",
+                          size: "sm",
+                        })}
+                      >
+                        <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+                        Ask
+                      </Link>
+                      <a
+                        href="https://github.com/rickyhugo/openbingeboard"
+                        target="_blank"
+                        rel="noreferrer"
+                        aria-label="View source on GitHub"
+                        title="View source on GitHub"
+                        className={buttonVariants({
+                          variant: "ghost",
+                          size: "icon-sm",
+                        })}
+                      >
+                        <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
+                      </a>
+                    </div>
+                    <AuthActions />
+                  </div>
+                </header>
+
+                <div id="main" className="min-h-[calc(100dvh-4rem)] flex-1">
+                  {children}
+                </div>
+              </div>
+            </SidebarProvider>
+          )}
         </ProfileProvider>
 
         <ScrollRestoration />
@@ -160,14 +180,14 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-        {message}
-      </p>
-      <h2 className="mt-2 text-2xl font-semibold">{details}</h2>
+    <main className="mx-auto flex min-h-[60dvh] max-w-3xl flex-col items-start justify-center px-4 py-16">
+      <p className="eyebrow">{message}</p>
+      <h1 className="mt-2 font-display text-4xl tracking-tight md:text-5xl">
+        {details}
+      </h1>
       <Link
         to="/"
-        className="mt-4 inline-block font-mono text-[10px] uppercase tracking-wider underline underline-offset-4"
+        className={"mt-5 " + buttonVariants({ variant: "outline", size: "sm" })}
       >
         Back to the catalogue
       </Link>

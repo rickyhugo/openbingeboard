@@ -8,7 +8,7 @@ const SOURCE_LABELS = {
   tmdb: "TMDB",
 } as const;
 
-const OVERLAY_STYLE = "border-white/20 bg-black/80 text-white";
+const OVERLAY_STYLE = "border-white/15 bg-black/55 text-white backdrop-blur-md";
 
 export function formatScore(
   score: number,
@@ -41,7 +41,7 @@ export function RatingBadge({
         "gap-1 font-mono text-[10px] tracking-tight",
         tone === "overlay"
           ? OVERLAY_STYLE
-          : "border-border bg-muted text-foreground",
+          : "border-border/80 bg-card text-foreground",
         className,
       )}
       title={`${SOURCE_LABELS[source]} ${formatScore(score, scale, source)}`}

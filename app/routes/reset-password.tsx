@@ -1,13 +1,9 @@
 import { useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router";
-import { Button, buttonVariants } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { LockPasswordIcon } from "@hugeicons/core-free-icons";
+import { AuthShell } from "~/components/auth-shell";
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
 
@@ -63,67 +59,79 @@ export default function ResetPassword() {
   }
 
   return (
-    <main className="mx-auto max-w-md px-4 py-10">
-      <Card>
-        <CardHeader>
-          <CardTitle>Choose a new password</CardTitle>
-          <CardDescription>
-            The reset link expires. Request a new one from the sign-in page if
-            it no longer works.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className="space-y-3">
-            <label className="block space-y-1 text-xs">
-              <span className="text-muted-foreground">New password</span>
-              <Input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete="new-password"
-                minLength={8}
-                required
-                className="h-8"
-              />
-            </label>
-            <label className="block space-y-1 text-xs">
-              <span className="text-muted-foreground">Confirm password</span>
-              <Input
-                type="password"
-                value={confirm}
-                onChange={(event) => setConfirm(event.target.value)}
-                autoComplete="new-password"
-                minLength={8}
-                required
-                className="h-8"
-              />
-            </label>
+    <AuthShell>
+      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
+        <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+          <HugeiconsIcon
+            icon={LockPasswordIcon}
+            strokeWidth={2}
+            className="size-5"
+          />
+        </span>
+        <h1 className="mt-4 font-display text-3xl tracking-tight">
+          Choose a new password
+        </h1>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">
+          The reset link expires. Request a new one from the sign-in page if it
+          no longer works.
+        </p>
 
-            {error ? (
-              <p className="text-xs text-destructive" role="alert">
-                {error}
-              </p>
-            ) : null}
-            {message ? (
-              <p className="text-xs text-muted-foreground" role="status">
-                {message}
-              </p>
-            ) : null}
+        <form onSubmit={submit} className="mt-6 space-y-3">
+          <label className="block space-y-1.5 text-xs">
+            <span className="text-[11px] font-medium text-muted-foreground">
+              New password
+            </span>
+            <Input
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
+          <label className="block space-y-1.5 text-xs">
+            <span className="text-[11px] font-medium text-muted-foreground">
+              Confirm password
+            </span>
+            <Input
+              type="password"
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
+              autoComplete="new-password"
+              minLength={8}
+              required
+            />
+          </label>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <Button type="submit" size="sm" disabled={pending}>
-                {pending ? "Saving..." : "Update password"}
-              </Button>
-              <Link
-                to="/login?mode=signin"
-                className={buttonVariants({ variant: "ghost", size: "sm" })}
-              >
-                Back to sign in
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </main>
+          {error ? (
+            <p
+              className="rounded-lg bg-destructive/10 px-3 py-2 text-[11px] leading-5 text-destructive"
+              role="alert"
+            >
+              {error}
+            </p>
+          ) : null}
+          {message ? (
+            <p
+              className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-5 text-muted-foreground"
+              role="status"
+            >
+              {message}
+            </p>
+          ) : null}
+
+          <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? "Saving..." : "Update password"}
+          </Button>
+          <Link
+            to="/login?mode=signin"
+            className="block text-center text-[11px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Back to sign in
+          </Link>
+        </form>
+      </div>
+    </AuthShell>
   );
 }

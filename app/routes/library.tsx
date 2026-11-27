@@ -1,7 +1,14 @@
 import { data, Link, useNavigate, useRouteLoaderData } from "react-router";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Bookmark02Icon,
+  CheckmarkCircle02Icon,
+  SparklesIcon,
+} from "@hugeicons/core-free-icons";
 import { LibraryGrid } from "~/components/library-grid";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useProfile } from "~/components/profile-provider";
+import { cn } from "cn";
 import type { loader as rootLoader } from "~/root";
 import type { Route } from "./+types/library";
 
@@ -40,50 +47,104 @@ export default function Library({ loaderData }: Route.ComponentProps) {
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-            Your library
-          </p>
-          <h1 className="mt-2 text-xl font-semibold tracking-tight">{label}</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {hydrated ? ids.length + " saved." : "Loading..."}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={surprise}
-            disabled={!hydrated || ids.length === 0}
-          >
-            Surprise me
-          </Button>
-          <Link
-            to="/"
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            Browse catalogue
-          </Link>
-        </div>
-      </div>
+    <main>
+      <section className="page-glow border-b border-border/70">
+        <div className="mx-auto max-w-7xl px-4 pt-10 pb-8 md:pt-12">
+          <p className="eyebrow">Your library</p>
 
-      <div className="mt-6">
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="font-display text-5xl tracking-tight md:text-6xl">
+                {label}
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                {hydrated
+                  ? ids.length +
+                    (ids.length === 1 ? " title saved." : " titles saved.")
+                  : "Loading..."}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={surprise}
+                disabled={!hydrated || ids.length === 0}
+              >
+                <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+                Surprise me
+              </Button>
+              <Link
+                to="/"
+                className={buttonVariants({ variant: "default", size: "sm" })}
+              >
+                Browse catalogue
+              </Link>
+            </div>
+          </div>
+
+          <div className="mt-6 inline-flex items-center rounded-full border border-border bg-card/60 p-0.5">
+            <Link
+              to="/library/watched"
+              className={cn(
+                "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-medium transition-colors",
+                mode === "watched"
+                  ? "bg-foreground text-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <HugeiconsIcon
+                icon={CheckmarkCircle02Icon}
+                strokeWidth={2}
+                className="size-3.5"
+              />
+              Watched
+              <span className="opacity-60">{state.watched.length}</span>
+            </Link>
+            <Link
+              to="/library/want"
+              className={cn(
+                "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-medium transition-colors",
+                mode === "want"
+                  ? "bg-foreground text-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              <HugeiconsIcon
+                icon={Bookmark02Icon}
+                strokeWidth={2}
+                className="size-3.5"
+              />
+              Want to watch
+              <span className="opacity-60">{state.want.length}</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-8 md:py-10">
         {hydrated ? (
           <LibraryGrid
             ids={orderedIds}
             region={country}
             empty={
               mode === "watched"
-                ? "Mark titles as watched from their detail pages."
-                : "Add titles to your watchlist from their detail pages."
+                ? "Mark titles as watched from their detail pages and they will show up here."
+                : "Add titles to your watchlist from their detail pages and they will show up here."
             }
           />
         ) : (
-          <p className="py-8 text-xs text-muted-foreground">Loading...</p>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <div className="aspect-[2/3] animate-pulse rounded-xl bg-muted" />
+                <div className="h-3 w-3/4 animate-pulse rounded-full bg-muted" />
+                <div className="h-2.5 w-1/2 animate-pulse rounded-full bg-muted" />
+              </div>
+            ))}
+          </div>
         )}
-      </div>
+      </section>
     </main>
   );
 }

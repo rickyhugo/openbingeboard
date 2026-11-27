@@ -13,8 +13,7 @@ function Message({ error, children }: { error: boolean; children: string }) {
     <p
       role={error ? "alert" : "status"}
       className={
-        "mt-2 text-[11px] " +
-        (error ? "text-destructive" : "text-muted-foreground")
+        "text-[11px] " + (error ? "text-destructive" : "text-muted-foreground")
       }
     >
       {children}
@@ -51,6 +50,7 @@ export function AccountPanel() {
 
   const email = user.email;
   const emailEnabled = data?.emailEnabled ?? false;
+  const initial = (user.name || user.email).slice(0, 1).toUpperCase();
 
   async function saveName(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -149,12 +149,12 @@ export function AccountPanel() {
   }
 
   return (
-    <section id="account" className="mt-8">
+    <section id="account">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h2 className="text-sm font-semibold">Account</h2>
         <div className="flex items-center gap-2">
           <Badge variant={user.emailVerified ? "secondary" : "outline"}>
-            {user.emailVerified ? "Email verified" : "Email unverified"}
+            {user.emailVerified ? "Verified" : "Unverified"}
           </Badge>
           <Button variant="outline" size="sm" onClick={signOut}>
             Sign out
@@ -162,17 +162,24 @@ export function AccountPanel() {
         </div>
       </div>
 
-      <div className="mt-3 grid gap-4 lg:grid-cols-2">
-        <div className="border p-4">
-          <h3 className="text-xs font-semibold">Profile</h3>
-          <p className="mt-1 truncate font-mono text-[11px] text-muted-foreground">
-            {user.email}
-          </p>
+      <div className="mt-3 grid gap-3 lg:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-5">
+          <div className="flex items-center gap-3">
+            <span className="grid size-10 place-items-center rounded-full bg-primary/10 font-display text-xl text-primary">
+              {initial}
+            </span>
+            <div className="min-w-0">
+              <h3 className="text-sm font-semibold">Profile</h3>
+              <p className="truncate text-[11px] text-muted-foreground">
+                {email}
+              </p>
+            </div>
+          </div>
 
-          <form onSubmit={saveName} className="mt-4 space-y-2">
+          <form onSubmit={saveName} className="mt-5 space-y-2">
             <label
               htmlFor="display-name"
-              className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+              className="text-[11px] font-medium text-muted-foreground"
             >
               Display name
             </label>
@@ -181,7 +188,6 @@ export function AccountPanel() {
               value={name}
               maxLength={80}
               onChange={(event) => setName(event.target.value)}
-              className="h-8"
             />
             <Button
               type="submit"
@@ -194,8 +200,8 @@ export function AccountPanel() {
           </form>
 
           {!user.emailVerified ? (
-            <div className="mt-4 border-t pt-3">
-              <p className="text-[11px] text-muted-foreground">
+            <div className="mt-5 border-t border-border/70 pt-4">
+              <p className="text-[11px] leading-5 text-muted-foreground">
                 Verify your email to secure password recovery.
               </p>
               {emailEnabled ? (
@@ -219,16 +225,16 @@ export function AccountPanel() {
           ) : null}
         </div>
 
-        <div className="border p-4">
-          <h3 className="text-xs font-semibold">Password</h3>
-          <p className="mt-1 text-[11px] text-muted-foreground">
+        <div className="rounded-xl border border-border bg-card p-5">
+          <h3 className="text-sm font-semibold">Password</h3>
+          <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
             Changing your password signs out other sessions.
           </p>
 
-          <form onSubmit={changePassword} className="mt-4 space-y-2">
+          <form onSubmit={changePassword} className="mt-5 space-y-2">
             <label
               htmlFor="current-password"
-              className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+              className="text-[11px] font-medium text-muted-foreground"
             >
               Current password
             </label>
@@ -238,11 +244,10 @@ export function AccountPanel() {
               autoComplete="current-password"
               value={currentPassword}
               onChange={(event) => setCurrentPassword(event.target.value)}
-              className="h-8"
             />
             <label
               htmlFor="new-password"
-              className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground"
+              className="text-[11px] font-medium text-muted-foreground"
             >
               New password
             </label>
@@ -252,7 +257,6 @@ export function AccountPanel() {
               autoComplete="new-password"
               value={newPassword}
               onChange={(event) => setNewPassword(event.target.value)}
-              className="h-8"
             />
             <Button
               type="submit"
