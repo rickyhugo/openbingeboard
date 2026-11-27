@@ -115,7 +115,7 @@ export default function ResetPassword() {
                 {pending ? "Saving..." : "Update password"}
               </Button>
               <Link
-                to="/login"
+                to="/login?mode=signin"
                 className={buttonVariants({ variant: "ghost", size: "sm" })}
               >
                 Back to sign in

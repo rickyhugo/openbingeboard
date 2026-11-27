@@ -9,6 +9,7 @@ import {
   useLoaderData,
 } from "react-router";
 import { AppSidebar } from "~/components/app-sidebar";
+import { AuthActions } from "~/components/auth-actions";
 import { ProfileProvider } from "~/components/profile-provider";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
 import { countryFromRequest } from "~/lib/country.server";
@@ -79,14 +80,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex min-w-0 flex-1 flex-col">
               <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
                 <SidebarTrigger />
-                <Link to="/" className="flex items-baseline gap-2">
-                  <span className="font-mono text-sm font-bold tracking-tight uppercase">
+                <Link to="/" className="flex min-w-0 items-baseline gap-2">
+                  <span className="truncate font-mono text-xs font-bold tracking-tight uppercase sm:text-sm">
                     OpenBingeBoard
                   </span>
-                  <span className="font-mono text-[10px] text-muted-foreground">
+                  <span className="hidden font-mono text-[10px] text-muted-foreground sm:inline">
                     {country}
                   </span>
                 </Link>
+                <div className="ml-auto flex shrink-0 items-center gap-2">
+                  <AuthActions />
+                </div>
               </header>
 
               <div id="main" className="flex-1">

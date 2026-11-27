@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router";
-import { AuthStatus } from "~/components/auth-status";
+import { AuthActions } from "~/components/auth-actions";
 import { CountrySelect } from "~/components/country-select";
 import { ThemeToggle } from "~/components/theme-toggle";
 import type { Theme } from "~/lib/theme";
@@ -181,7 +181,7 @@ export function AppSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <AuthStatus />
+        <AuthActions compact />
         <div className="flex items-center justify-between gap-2 border-t px-2 pt-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
             Theme
