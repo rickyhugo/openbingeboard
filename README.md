@@ -139,14 +139,16 @@ The default list covers Netflix, Prime Video, Disney+, Viaplay, SkyShowtime, HBO
 
 ## Deploy
 
-The D1 database `be5efb5b-b4fd-4409-a38f-4def80adc89a` and the custom domain `openbingeboard.com` are owned by Terraform in `hugoplanet-infrastructure/modules/bingeboard`. The Worker script and its secret stay in Wrangler. `wrangler.jsonc` declares the account, the D1 binding, and `workers_dev = false`; it deliberately does not declare the custom domain, because a Wrangler deploy replaces the Worker's domain set and would fight Terraform.
+The D1 database `be5efb5b-b4fd-4409-a38f-4def80adc89a` and the custom domains `openbingeboard.com` and `www.openbingeboard.com` are owned by Terraform in `hugoplanet-infrastructure/modules/bingeboard`. The Worker script and its secret stay in Wrangler. `wrangler.jsonc` declares the account, the D1 binding, and `workers_dev = false`; it deliberately does not declare the custom domains, because a Wrangler deploy replaces the Worker's domain set and would fight Terraform.
+
+The Worker redirects `www` to the apex and plain HTTP to HTTPS with a 308. Terraform also sets Cloudflare's `always_use_https` zone setting so HTTP is redirected at the edge before it reaches the Worker.
 
 ```sh
 pnpm db:migrate:remote
 pnpm deploy
 ```
 
-The `prd` Doppler config holds the Terraform-created app token as `CLOUDFLARE_API_TOKEN`. That token allows Workers Scripts Edit and D1 Edit for this account, plus Zone Read and DNS Edit for the app hostname. Do not add the custom domain back to `wrangler.jsonc`, and do not recreate the D1 database by hand. Change the domain or database in Terraform instead.
+The `prd` Doppler config holds the Terraform-created app token as `CLOUDFLARE_API_TOKEN`. That token allows Workers Scripts Edit and D1 Edit for this account, plus Zone Read, DNS Edit, Workers Routes Edit, and Zone Settings Write for the app zone. Do not add the custom domain back to `wrangler.jsonc`, and do not recreate the D1 database by hand. Change the domain or database in Terraform instead.
 
 ## Licensing
 
