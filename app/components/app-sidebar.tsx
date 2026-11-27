@@ -24,7 +24,6 @@ export function AppSidebar({
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const kind = params.get("kind");
-  const tab = params.get("tab");
   const pathname = location.pathname;
   const servicesQuery =
     state.services.length > 0 ? "/?providers=" + state.services.join(",") : "/";
@@ -76,16 +75,8 @@ export function AppSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  isActive={pathname === "/profile" && !tab}
-                  render={<Link to="/profile" />}
-                >
-                  My profile
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={pathname === "/profile" && tab === "watched"}
-                  render={<Link to="/profile?tab=watched" />}
+                  isActive={pathname === "/library/watched"}
+                  render={<Link to="/library/watched" />}
                 >
                   Watched
                   <SidebarMenuBadge>{state.watched.length}</SidebarMenuBadge>
@@ -93,8 +84,8 @@ export function AppSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  isActive={pathname === "/profile" && tab === "want"}
-                  render={<Link to="/profile?tab=want" />}
+                  isActive={pathname === "/library/want"}
+                  render={<Link to="/library/want" />}
                 >
                   Want to watch
                   <SidebarMenuBadge>{state.want.length}</SidebarMenuBadge>
@@ -111,12 +102,18 @@ export function AppSidebar({
               {hydrated && selectedServices.length > 0 ? (
                 selectedServices.slice(0, 6).map((provider) => (
                   <SidebarMenuItem key={provider.id}>
-                    <div className="flex h-8 items-center justify-between gap-2 px-2 text-xs">
-                      <span className="truncate">{provider.name}</span>
+                    <div className="flex h-8 items-center gap-1 px-2 text-xs">
+                      <Link
+                        to={"/?providers=" + provider.id}
+                        className="min-w-0 flex-1 truncate hover:text-foreground hover:underline"
+                        title={"Browse " + provider.name}
+                      >
+                        {provider.name}
+                      </Link>
                       <button
                         type="button"
                         aria-label={"Remove " + provider.name}
-                        className="text-muted-foreground hover:text-foreground"
+                        className="shrink-0 text-muted-foreground hover:text-foreground"
                         onClick={() => toggleService(provider.id)}
                       >
                         ×
@@ -142,7 +139,7 @@ export function AppSidebar({
                 </SidebarMenuItem>
               ) : null}
               <SidebarMenuItem>
-                <SidebarMenuButton render={<Link to="/profile#services" />}>
+                <SidebarMenuButton render={<Link to="/services" />}>
                   {selectedServices.length > 0
                     ? "Manage services"
                     : "Choose services"}
@@ -183,6 +180,14 @@ export function AppSidebar({
 
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              isActive={pathname === "/profile"}
+              render={<Link to="/profile" />}
+            >
+              My profile
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               isActive={pathname === "/about"}

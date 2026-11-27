@@ -1,11 +1,5 @@
-import {
-  Link,
-  useNavigate,
-  useRouteLoaderData,
-  useSearchParams,
-} from "react-router";
+import { Link, redirect, useRouteLoaderData } from "react-router";
 import { AuthStatus } from "~/components/auth-status";
-import { ProfileTitleList } from "~/components/profile-title-list";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
@@ -14,9 +8,17 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { Separator } from "~/components/ui/separator";
 import type { loader as rootLoader } from "~/root";
+import type { Route } from "./+types/profile";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const tab = new URL(request.url).searchParams.get("tab");
+  if (tab === "watched" || tab === "want") {
+    throw redirect("/library/" + tab);
+  }
+  return null;
+}
 
 export function meta() {
   return [{ title: "My profile · OpenBingeBoard" }];
@@ -26,19 +28,26 @@ export default function Profile() {
   const profile = useProfile();
   const data = useRouteLoaderData<typeof rootLoader>("root");
   const providers = data?.providers ?? [];
-  const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
-  const tab = params.get("tab") === "want" ? "want" : "watched";
   const { state } = profile;
+  const selected = state.services
+    .map((id) => providers.find((provider) => provider.id === id))
+    .filter(
+      (provider): provider is (typeof providers)[number] =>
+        provider !== undefined,
+    );
   const servicesQuery =
     state.services.length > 0 ? "/?providers=" + state.services.join(",") : "/";
 
-  function surprise() {
-    const pool = state.want.length > 0 ? state.want : state.watched;
-    if (pool.length === 0) return;
-    const id = pool[Math.floor(Math.random() * pool.length)];
-    navigate("/title/" + encodeURIComponent(id));
-  }
+  const stats = [
+    { label: "Watched", value: state.watched.length, to: "/library/watched" },
+    {
+      label: "Want to watch",
+      value: state.want.length,
+      to: "/library/want",
+    },
+    { label: "Services", value: state.services.length, to: "/services" },
+    { label: "Saved views", value: state.saved.length, to: "#saved" },
+  ];
 
   if (!profile.hydrated) {
     return (
@@ -55,21 +64,11 @@ export default function Profile() {
         <div>
           <h1 className="text-xl font-semibold tracking-tight">My profile</h1>
           <p className="mt-1 text-xs text-muted-foreground">
-            Choose your services, save useful views, and keep track of what you
-            watched.
+            Your library has its own pages. Manage services and saved views
+            here.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <AuthStatus />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={surprise}
-            disabled={state.watched.length === 0 && state.want.length === 0}
-          >
-            Surprise me
-          </Button>
-        </div>
+        <AuthStatus />
       </div>
 
       {!profile.user ? (
@@ -86,54 +85,76 @@ export default function Profile() {
       ) : null}
 
       <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        {[
-          ["Watched", state.watched.length],
-          ["Want to watch", state.want.length],
-          ["Services", state.services.length],
-          ["Saved views", state.saved.length],
-        ].map(([label, value]) => (
-          <Card key={label} size="sm">
-            <CardHeader>
-              <CardDescription>{label}</CardDescription>
-              <CardTitle className="text-2xl">{value}</CardTitle>
-            </CardHeader>
-          </Card>
+        {stats.map((stat) => (
+          <Link
+            key={stat.label}
+            to={stat.to}
+            className="block focus-visible:outline-none"
+          >
+            <Card
+              size="sm"
+              className="h-full transition-colors hover:bg-muted/40"
+            >
+              <CardHeader>
+                <CardDescription>{stat.label}</CardDescription>
+                <CardTitle className="text-2xl">{stat.value}</CardTitle>
+              </CardHeader>
+            </Card>
+          </Link>
         ))}
       </div>
 
-      <section id="services" className="mt-8">
+      <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-sm font-semibold">My services</h2>
+            <h2 className="text-sm font-semibold">Your services</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
-              Used for the quick service toggles and your catalogue shortcuts.
+              {selected.length > 0
+                ? selected.length +
+                  " selected. Quick filters live in the sidebar."
+                : "Choose the services you can use."}
             </p>
           </div>
-          <Link
-            to={servicesQuery}
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            Browse my services
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to={servicesQuery}
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Browse my services
+            </Link>
+            <Link
+              to="/services"
+              className={buttonVariants({ variant: "outline", size: "sm" })}
+            >
+              Manage services
+            </Link>
+          </div>
         </div>
 
-        <div className="mt-3 grid gap-x-6 gap-y-1 border p-3 sm:grid-cols-2 lg:grid-cols-3">
-          {providers.map((provider) => (
-            <label
-              key={provider.id}
-              className="flex items-center justify-between gap-3 py-1.5 text-xs"
+        {selected.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-1">
+            {selected.map((provider) => (
+              <Link
+                key={provider.id}
+                to={"/?providers=" + provider.id}
+                className="inline-flex h-6 items-center border bg-muted px-2 font-mono text-[10px] text-muted-foreground hover:text-foreground"
+              >
+                {provider.name}
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-3 border border-dashed p-4 text-xs text-muted-foreground">
+            No services selected yet. Open{" "}
+            <Link
+              to="/services"
+              className="underline underline-offset-4 hover:text-foreground"
             >
-              <span className="truncate">{provider.name}</span>
-              <input
-                type="checkbox"
-                className="size-3.5 accent-foreground"
-                checked={profile.hasService(provider.id)}
-                onChange={() => profile.toggleService(provider.id)}
-                aria-label={provider.name}
-              />
-            </label>
-          ))}
-        </div>
+              Your services
+            </Link>{" "}
+            to add them.
+          </p>
+        )}
       </section>
 
       <Separator className="my-8" />
@@ -176,42 +197,6 @@ export default function Profile() {
             ))}
           </ul>
         )}
-      </section>
-
-      <Separator className="my-8" />
-
-      <section id="library">
-        <Tabs
-          value={tab}
-          onValueChange={(value) => {
-            const next = new URLSearchParams(params);
-            next.set("tab", value);
-            setParams(next);
-          }}
-        >
-          <TabsList>
-            <TabsTrigger value="watched">
-              Watched ({state.watched.length})
-            </TabsTrigger>
-            <TabsTrigger value="want">
-              Want to watch ({state.want.length})
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="watched" className="pt-3">
-            <ProfileTitleList
-              ids={state.watched}
-              mode="watched"
-              empty="Mark a title as watched from its detail page."
-            />
-          </TabsContent>
-          <TabsContent value="want" className="pt-3">
-            <ProfileTitleList
-              ids={state.want}
-              mode="want"
-              empty="Mark a title as want to watch from its detail page."
-            />
-          </TabsContent>
-        </Tabs>
       </section>
     </main>
   );
