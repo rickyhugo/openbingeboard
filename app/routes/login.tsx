@@ -29,6 +29,7 @@ export default function Login() {
   const root = useRouteLoaderData<typeof rootLoader>("root");
   const user = root?.user ?? null;
   const socialProviders = root?.socialProviders ?? [];
+  const emailEnabled = root?.emailEnabled ?? false;
   const verificationRequired = root?.emailVerificationRequired ?? false;
   const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("");
@@ -228,7 +229,7 @@ export default function Login() {
               </label>
             ) : null}
 
-            {mode === "signin" ? (
+            {mode === "signin" && emailEnabled ? (
               <button
                 type="button"
                 className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"

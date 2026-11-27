@@ -16,6 +16,7 @@ import { ATTRIBUTION } from "~/lib/tmdb";
 import { themeFromRequest } from "~/lib/theme.server";
 import {
   auth,
+  emailEnabled,
   emailVerificationRequired,
   enabledSocialProviders,
 } from "~/server/auth.server";
@@ -44,6 +45,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     theme: themeFromRequest(request),
     user,
     socialProviders: enabledSocialProviders,
+    emailEnabled,
     emailVerificationRequired,
   };
 }

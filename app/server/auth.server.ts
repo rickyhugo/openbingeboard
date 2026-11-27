@@ -44,8 +44,9 @@ const discord =
       }
     : null;
 
-export const emailVerificationRequired =
+export const emailEnabled =
   Boolean(authEnv.RESEND_API_KEY) || authEnv.EMAIL_DEV === "1";
+export const emailVerificationRequired = emailEnabled;
 
 export const enabledSocialProviders: SocialProvider[] = [
   ...(google ? (["google"] as const) : []),
