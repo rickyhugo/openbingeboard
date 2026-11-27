@@ -16,10 +16,9 @@ export default function About() {
         OpenBingeBoard
       </h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
-        A non-commercial catalogue of films and series available to stream in
-        the Nordics. Pick your country in the sidebar, browse without an
-        account, or sign in to keep a watchlist, choose your services, and save
-        views.
+        A non-commercial catalogue of films and series available to stream. Pick
+        your country in the sidebar, browse without an account, or sign in to
+        keep a watchlist, choose your services, and save views.
       </p>
 
       <section className="mt-10 border-t pt-6">

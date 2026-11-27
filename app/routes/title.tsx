@@ -23,7 +23,7 @@ const OFFER_GROUPS = [
 
 export function meta({ loaderData }: Route.MetaArgs) {
   const name = loaderData?.title.name ?? "Title";
-  const description = `Find where you can stream ${name} in the Nordics. Compare rental and purchase options, with IMDb, Rotten Tomatoes, and Metacritic scores.`;
+  const description = `Find where you can stream ${name}. Compare rental and purchase options, with IMDb, Rotten Tomatoes, and Metacritic scores.`;
 
   return [
     { title: `${name} · Where to stream · OpenBingeBoard` },

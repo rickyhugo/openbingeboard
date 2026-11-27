@@ -19,7 +19,7 @@ import type { Route } from "./+types/home";
 
 export function meta() {
   const description =
-    "Find where you can stream movies and series in the Nordics. Compare rental and purchase options, with IMDb, Rotten Tomatoes, and Metacritic scores.";
+    "Find where you can stream movies and series. Compare rental and purchase options, with IMDb, Rotten Tomatoes, and Metacritic scores.";
 
   return [
     { title: "Where to stream movies and series · OpenBingeBoard" },

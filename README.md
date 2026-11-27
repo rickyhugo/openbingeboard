@@ -1,6 +1,6 @@
 # OpenBingeBoard
 
-Find what is available to stream, rent, or buy in the Nordics, with IMDb, Rotten Tomatoes, and Metacritic scores in the same view.
+Find what is available to stream, rent, or buy, with IMDb, Rotten Tomatoes, and Metacritic scores in the same view.
 
 Supported countries are Sweden (`SE`), Norway (`NO`), Denmark (`DK`), Finland (`FI`), and Iceland (`IS`). Availability is stored per region. The selected country is a cookie-backed setting, saved in the profile for signed-in users.
 
