@@ -1,9 +1,9 @@
 import { data, isRouteErrorResponse, Link } from "react-router";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
-import { ProviderChip } from "~/components/provider-chip";
 import { ScorePopover } from "~/components/score-popover";
 import { TitleActions } from "~/components/title-actions";
+import { TitleOffers } from "~/components/title-offers";
 import { countryFromRequest } from "~/lib/country.server";
 import { countryName } from "~/lib/countries";
 import { formatRuntime, imdbUrl, initials, posterUrl } from "~/lib/tmdb";
@@ -12,14 +12,6 @@ import { runQuery } from "~/server/effect.server";
 import { getImdbStats } from "~/server/extras.server";
 import { getTitle } from "~/server/queries.server";
 import type { Route } from "./+types/title";
-
-const OFFER_GROUPS = [
-  { key: "flatrate", label: "Stream" },
-  { key: "free", label: "Free" },
-  { key: "ads", label: "Free with ads" },
-  { key: "rent", label: "Rent" },
-  { key: "buy", label: "Buy" },
-] as const;
 
 export function meta({ loaderData }: Route.MetaArgs) {
   const name = loaderData?.title.name ?? "Title";
@@ -164,49 +156,11 @@ export default function Title({ loaderData }: Route.ComponentProps) {
 
             {title.offers.length === 0 ? (
               <p className="mt-3 border border-dashed p-4 text-xs text-muted-foreground">
-                No Swedish availability recorded right now. It may have left a
-                service since the last refresh.
+                No availability in {countryName(country)} recorded right now. It
+                may have left a service since the last refresh.
               </p>
             ) : (
-              <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {OFFER_GROUPS.map((group) => {
-                  const offers = title.offers.filter(
-                    (offer) => offer.monetization === group.key,
-                  );
-                  if (offers.length === 0) return null;
-
-                  return (
-                    <div key={group.key} className="border">
-                      <div className="border-b bg-muted/50 px-3 py-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-                        {group.label}
-                      </div>
-                      <ul>
-                        {offers.map((offer) => (
-                          <li
-                            key={`${offer.providerId}-${offer.monetization}`}
-                            className="flex min-w-0 items-center justify-between gap-2 border-b px-3 py-2 last:border-b-0"
-                          >
-                            <ProviderChip
-                              name={offer.providerName}
-                              monetization={offer.monetization}
-                            />
-                            {offer.link && (
-                              <a
-                                href={offer.link}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:underline"
-                              >
-                                Open
-                              </a>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
-              </div>
+              <TitleOffers offers={title.offers} />
             )}
           </section>
         </div>
