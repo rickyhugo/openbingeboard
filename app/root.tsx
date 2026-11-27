@@ -18,7 +18,6 @@ import {
   auth,
   emailEnabled,
   emailVerificationRequired,
-  enabledSocialProviders,
 } from "~/server/auth.server";
 import { runQuery } from "~/server/effect.server";
 import { listProviders } from "~/server/queries.server";
@@ -44,7 +43,6 @@ export async function loader({ request }: Route.LoaderArgs) {
     providers,
     theme: themeFromRequest(request),
     user,
-    socialProviders: enabledSocialProviders,
     emailEnabled,
     emailVerificationRequired,
   };

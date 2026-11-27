@@ -47,12 +47,6 @@ Values come from Doppler and reach the process through `doppler run`. Nothing se
 | `BETTER_AUTH_SECRET`    | `dev`, `prd` | auth sessions      |
 | `RESEND_API_KEY`        | `prd`        | verification email |
 | `EMAIL_FROM`            | `dev`, `prd` | email sender       |
-| `GOOGLE_CLIENT_ID`      | `dev`, `prd` | Google sign in     |
-| `GOOGLE_CLIENT_SECRET`  | `dev`, `prd` | Google sign in     |
-| `GITHUB_CLIENT_ID`      | `dev`, `prd` | GitHub sign in     |
-| `GITHUB_CLIENT_SECRET`  | `dev`, `prd` | GitHub sign in     |
-| `DISCORD_CLIENT_ID`     | `dev`, `prd` | Discord sign in    |
-| `DISCORD_CLIENT_SECRET` | `dev`, `prd` | Discord sign in    |
 
 Set the ingest keys once per config:
 
@@ -69,15 +63,6 @@ The Worker needs `BETTER_AUTH_SECRET` at runtime. Keep it in Doppler and push it
 
 Email verification and password reset send through Resend when `RESEND_API_KEY` is set. Without it, `EMAIL_DEV=1` logs the links in development, and production leaves email verification off so sign-up still works. Verify `hugoplanet.se` in Resend before setting the key.
 
-Social sign-in buttons appear only for providers that have both a client id and secret. Register these redirect URIs:
-
-- `https://openbingeboard.hugoplanet.se/api/auth/callback/google`
-- `https://openbingeboard.hugoplanet.se/api/auth/callback/github`
-- `https://openbingeboard.hugoplanet.se/api/auth/callback/discord`
-- `http://localhost:5173/api/auth/callback/<provider>`
-
-GitHub OAuth apps allow one callback URL, so use a separate app for local social testing.
-
 To share access, invite the person to the `openbingeboard` project in the `hugoplanet` workplace. They run `doppler login` and `doppler setup` in the repo, and the same `doppler.yaml` selects the project. Revoking access is one dashboard action.
 
 `pnpm secrets` lists variable names without values. `hk` runs `detect_private_key` and `check_added_large_files` before every commit.
@@ -88,7 +73,7 @@ Browse and filter without an account. Guests keep services, saved views, watched
 
 Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`, with password reset at `/reset-password`.
 
-Email and password sign-up requires verification only when an email sender is configured. Google, GitHub, and Discord appear when their credentials are present.
+Only email and password sign-in is enabled. Sign-up requires verification only when an email sender is configured.
 
 ```sh
 wrangler secret put BETTER_AUTH_SECRET

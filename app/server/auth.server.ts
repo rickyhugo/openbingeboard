@@ -6,63 +6,22 @@ import { sendEmail } from "~/server/email.server";
 type AuthEnv = Env & {
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL?: string;
-  GOOGLE_CLIENT_ID?: string;
-  GOOGLE_CLIENT_SECRET?: string;
-  GITHUB_CLIENT_ID?: string;
-  GITHUB_CLIENT_SECRET?: string;
-  DISCORD_CLIENT_ID?: string;
-  DISCORD_CLIENT_SECRET?: string;
   RESEND_API_KEY?: string;
   EMAIL_DEV?: string;
 };
-
-export type SocialProvider = "google" | "github" | "discord";
 
 const authEnv = env as AuthEnv;
 const baseURL =
   authEnv.BETTER_AUTH_URL ?? "https://openbingeboard.hugoplanet.se";
 
-const google =
-  authEnv.GOOGLE_CLIENT_ID && authEnv.GOOGLE_CLIENT_SECRET
-    ? {
-        clientId: authEnv.GOOGLE_CLIENT_ID,
-        clientSecret: authEnv.GOOGLE_CLIENT_SECRET,
-      }
-    : null;
-const github =
-  authEnv.GITHUB_CLIENT_ID && authEnv.GITHUB_CLIENT_SECRET
-    ? {
-        clientId: authEnv.GITHUB_CLIENT_ID,
-        clientSecret: authEnv.GITHUB_CLIENT_SECRET,
-      }
-    : null;
-const discord =
-  authEnv.DISCORD_CLIENT_ID && authEnv.DISCORD_CLIENT_SECRET
-    ? {
-        clientId: authEnv.DISCORD_CLIENT_ID,
-        clientSecret: authEnv.DISCORD_CLIENT_SECRET,
-      }
-    : null;
-
 export const emailEnabled =
   Boolean(authEnv.RESEND_API_KEY) || authEnv.EMAIL_DEV === "1";
 export const emailVerificationRequired = emailEnabled;
-
-export const enabledSocialProviders: SocialProvider[] = [
-  ...(google ? (["google"] as const) : []),
-  ...(github ? (["github"] as const) : []),
-  ...(discord ? (["discord"] as const) : []),
-];
 
 export const auth = betterAuth({
   database: new D1Dialect({ database: authEnv.DB }),
   secret: authEnv.BETTER_AUTH_SECRET,
   baseURL,
-  socialProviders: {
-    ...(google ? { google } : {}),
-    ...(github ? { github } : {}),
-    ...(discord ? { discord } : {}),
-  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: emailVerificationRequired,

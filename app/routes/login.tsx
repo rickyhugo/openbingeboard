@@ -11,13 +11,6 @@ import {
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
 import type { loader as rootLoader } from "~/root";
-import type { SocialProvider } from "~/server/auth.server";
-
-const PROVIDER_LABELS: Record<SocialProvider, string> = {
-  google: "Google",
-  github: "GitHub",
-  discord: "Discord",
-};
 
 type Mode = "signin" | "signup" | "forgot";
 
@@ -28,7 +21,6 @@ export function meta() {
 export default function Login() {
   const root = useRouteLoaderData<typeof rootLoader>("root");
   const user = root?.user ?? null;
-  const socialProviders = root?.socialProviders ?? [];
   const emailEnabled = root?.emailEnabled ?? false;
   const verificationRequired = root?.emailVerificationRequired ?? false;
   const [mode, setMode] = useState<Mode>("signin");
@@ -38,20 +30,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
-
-  async function social(provider: SocialProvider) {
-    setPending(true);
-    setError("");
-    try {
-      await authClient.signIn.social({
-        provider,
-        callbackURL: "/profile",
-      });
-    } catch {
-      setError("Could not start " + PROVIDER_LABELS[provider] + " sign in.");
-      setPending(false);
-    }
-  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,29 +141,6 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {socialProviders.length > 0 && mode !== "forgot" ? (
-            <div className="mb-4 space-y-2">
-              {socialProviders.map((provider) => (
-                <Button
-                  key={provider}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="w-full"
-                  disabled={pending}
-                  onClick={() => social(provider)}
-                >
-                  Continue with {PROVIDER_LABELS[provider]}
-                </Button>
-              ))}
-              <div className="flex items-center gap-2 pt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
-                <span className="h-px flex-1 bg-border" />
-                or
-                <span className="h-px flex-1 bg-border" />
-              </div>
-            </div>
-          ) : null}
-
           <form onSubmit={submit} className="space-y-3">
             {mode === "signup" ? (
               <label className="block space-y-1 text-xs">
