@@ -25,6 +25,8 @@ hk install --mise
 pnpm install
 echo "BETTER_AUTH_URL=http://localhost:5173" > .dev.vars
 echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" >> .dev.vars
+echo "EMAIL_DEV=1" >> .dev.vars
+echo "EMAIL_FROM=OpenBingeBoard <noreply@hugoplanet.se>" >> .dev.vars
 pnpm db:migrate:local
 pnpm db:seed
 pnpm dev
@@ -36,12 +38,21 @@ pnpm dev
 
 Values come from Doppler and reach the process through `doppler run`. Nothing secret is committed, and no secret is written into the repository.
 
-| Variable                | Configs      | Used by           |
-| ----------------------- | ------------ | ----------------- |
-| `TMDB_API_KEY`          | `dev`, `prd` | ingest            |
-| `OMDB_API_KEY`          | `dev`, `prd` | ingest            |
-| `CLOUDFLARE_API_TOKEN`  | `prd`        | deploy, remote D1 |
-| `CLOUDFLARE_ACCOUNT_ID` | `prd`        | deploy, remote D1 |
+| Variable                | Configs      | Used by            |
+| ----------------------- | ------------ | ------------------ |
+| `TMDB_API_KEY`          | `dev`, `prd` | ingest             |
+| `OMDB_API_KEY`          | `dev`, `prd` | ingest             |
+| `CLOUDFLARE_API_TOKEN`  | `prd`        | deploy, remote D1  |
+| `CLOUDFLARE_ACCOUNT_ID` | `prd`        | deploy, remote D1  |
+| `BETTER_AUTH_SECRET`    | `dev`, `prd` | auth sessions      |
+| `RESEND_API_KEY`        | `prd`        | verification email |
+| `EMAIL_FROM`            | `dev`, `prd` | email sender       |
+| `GOOGLE_CLIENT_ID`      | `dev`, `prd` | Google sign in     |
+| `GOOGLE_CLIENT_SECRET`  | `dev`, `prd` | Google sign in     |
+| `GITHUB_CLIENT_ID`      | `dev`, `prd` | GitHub sign in     |
+| `GITHUB_CLIENT_SECRET`  | `dev`, `prd` | GitHub sign in     |
+| `DISCORD_CLIENT_ID`     | `dev`, `prd` | Discord sign in    |
+| `DISCORD_CLIENT_SECRET` | `dev`, `prd` | Discord sign in    |
 
 Set the ingest keys once per config:
 
@@ -56,6 +67,17 @@ GitHub Actions uses one read-only Doppler service token scoped to the `prd` conf
 
 The Worker needs `BETTER_AUTH_SECRET` at runtime. Keep it in Doppler and push it with `wrangler secret put BETTER_AUTH_SECRET`. Local development reads it from `.dev.vars`. `BETTER_AUTH_URL` is a public var in `wrangler.jsonc`.
 
+Email verification and password reset send through Resend when `RESEND_API_KEY` is set. Without it, `EMAIL_DEV=1` logs the links in development, and production leaves email verification off so sign-up still works. Verify `hugoplanet.se` in Resend before setting the key.
+
+Social sign-in buttons appear only for providers that have both a client id and secret. Register these redirect URIs:
+
+- `https://openbingeboard.hugoplanet.se/api/auth/callback/google`
+- `https://openbingeboard.hugoplanet.se/api/auth/callback/github`
+- `https://openbingeboard.hugoplanet.se/api/auth/callback/discord`
+- `http://localhost:5173/api/auth/callback/<provider>`
+
+GitHub OAuth apps allow one callback URL, so use a separate app for local social testing.
+
 To share access, invite the person to the `openbingeboard` project in the `hugoplanet` workplace. They run `doppler login` and `doppler setup` in the repo, and the same `doppler.yaml` selects the project. Revoking access is one dashboard action.
 
 `pnpm secrets` lists variable names without values. `hk` runs `detect_private_key` and `check_added_large_files` before every commit.
@@ -64,7 +86,9 @@ To share access, invite the person to the `openbingeboard` project in the `hugop
 
 Browse and filter without an account. Guests keep services, saved views, watched, and want-to-watch in localStorage.
 
-Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`.
+Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`, with password reset at `/reset-password`.
+
+Email and password sign-up requires verification only when an email sender is configured. Google, GitHub, and Discord appear when their credentials are present.
 
 ```sh
 wrangler secret put BETTER_AUTH_SECRET
