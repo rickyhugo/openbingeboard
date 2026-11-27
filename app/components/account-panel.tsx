@@ -151,12 +151,7 @@ export function AccountPanel() {
   return (
     <section id="account" className="mt-8">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h2 className="text-sm font-semibold">Account</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Your sign-in details and password.
-          </p>
-        </div>
+        <h2 className="text-sm font-semibold">Account</h2>
         <div className="flex items-center gap-2">
           <Badge variant={user.emailVerified ? "secondary" : "outline"}>
             {user.emailVerified ? "Email verified" : "Email unverified"}

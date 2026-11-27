@@ -52,8 +52,8 @@ export default function Services() {
             Your services
           </h1>
           <p className="mt-1 max-w-xl text-xs text-muted-foreground">
-            Pick the services you can use. They become quick filters in the
-            sidebar and limit the catalogue to what you can actually watch.
+            Select the services you can watch. They filter the catalogue and
+            appear in the sidebar.
           </p>
         </div>
         <Link
@@ -72,21 +72,13 @@ export default function Services() {
               {selected.length} of {providers.length} services selected.
             </p>
           </div>
-          {selected.length > 0 ? (
-            <Link
-              to={servicesQuery}
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-            >
-              Browse all selected
-            </Link>
-          ) : null}
         </div>
 
         {selected.length === 0 ? (
           <p className="mt-3 border border-dashed p-4 text-xs text-muted-foreground">
             {state.services.length > 0
               ? `Your selected services are not available in ${countryName(data?.country ?? "SE")}.`
-              : "No services selected yet. Choose the ones you use below."}
+              : "None selected. Choose services below."}
           </p>
         ) : (
           <ul className="mt-3 divide-y border">
@@ -124,8 +116,7 @@ export default function Services() {
       <section className="mt-10">
         <h2 className="text-sm font-semibold">All services</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          Check every service you can watch. Guest selections stay in this
-          browser; signed-in selections sync with your profile.
+          Select everything you can watch.
         </p>
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">

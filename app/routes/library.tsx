@@ -47,10 +47,7 @@ export default function Library({ loaderData }: Route.ComponentProps) {
             Your library
           </p>
           <h1 className="mt-2 text-xl font-semibold tracking-tight">{label}</h1>
-          <p className="mt-1 max-w-xl text-xs text-muted-foreground">
-            {mode === "watched"
-              ? "Films and series you have finished."
-              : "What you plan to watch next."}{" "}
+          <p className="mt-1 text-xs text-muted-foreground">
             {hydrated ? ids.length + " saved." : "Loading..."}
           </p>
         </div>
@@ -79,8 +76,8 @@ export default function Library({ loaderData }: Route.ComponentProps) {
             region={country}
             empty={
               mode === "watched"
-                ? "Mark a title as watched from its detail page and it will appear here."
-                : "Mark a title as want to watch from its detail page and it will appear here."
+                ? "Mark titles as watched from their detail pages."
+                : "Add titles to your watchlist from their detail pages."
             }
           />
         ) : (

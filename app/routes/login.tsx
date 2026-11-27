@@ -303,8 +303,7 @@ export default function Login() {
         <CardHeader>
           <CardTitle>{title}</CardTitle>
           <CardDescription>
-            Sync your services, watchlist, and saved views across devices. The
-            catalogue works without an account.
+            Sync your services, watchlist, and saved views across devices.
           </CardDescription>
         </CardHeader>
         <CardContent>

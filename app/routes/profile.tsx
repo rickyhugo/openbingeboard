@@ -74,16 +74,12 @@ export default function Profile() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">My profile</h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Your library has its own pages. Manage services and saved views
-            here.
-          </p>
         </div>
       </div>
 
       {!profile.user ? (
         <p className="mt-3 border border-dashed p-3 text-xs text-muted-foreground">
-          Browsing as a guest. Your lists stay in this browser.{" "}
+          Guest profile. Lists stay in this browser.{" "}
           <Link
             to="/login"
             className="underline underline-offset-4 hover:text-foreground"
@@ -119,7 +115,7 @@ export default function Profile() {
       <section className="mt-8">
         <h2 className="text-sm font-semibold">Country</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          Availability, services, and streaming links follow this country.
+          Controls availability, services, and links.
           {countryPending ? " Updating..." : ""}
         </p>
         <div
@@ -159,8 +155,7 @@ export default function Profile() {
             <h2 className="text-sm font-semibold">Your services</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">
               {selected.length > 0
-                ? selected.length +
-                  " selected. Quick filters live in the sidebar."
+                ? selected.length + " selected."
                 : "Choose the services you can use."}
             </p>
           </div>
@@ -196,15 +191,14 @@ export default function Profile() {
           <p className="mt-3 border border-dashed p-4 text-xs text-muted-foreground">
             {state.services.length > 0
               ? `Your selected services are not available in ${countryName(data?.country ?? "SE")}.`
-              : "No services selected yet."}{" "}
-            Open{" "}
+              : "No services selected."}{" "}
             <Link
               to="/services"
               className="underline underline-offset-4 hover:text-foreground"
             >
-              Your services
-            </Link>{" "}
-            to manage them.
+              Manage services
+            </Link>
+            .
           </p>
         )}
       </section>
@@ -213,14 +207,10 @@ export default function Profile() {
 
       <section id="saved">
         <h2 className="text-sm font-semibold">Saved views</h2>
-        <p className="mt-0.5 text-xs text-muted-foreground">
-          Save a filter combination from the catalogue, then open it here or in
-          the sidebar.
-        </p>
         {state.saved.length === 0 ? (
           <p className="mt-3 border border-dashed p-4 text-xs text-muted-foreground">
-            No saved views yet. Set some filters on the catalogue and choose
-            Save view.
+            No saved views yet. Apply filters in the catalogue, then choose Save
+            view.
           </p>
         ) : (
           <ul className="mt-3 divide-y border">
