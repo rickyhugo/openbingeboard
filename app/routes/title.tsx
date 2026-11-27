@@ -124,12 +124,6 @@ export default function Title({ loaderData }: Route.ComponentProps) {
             {title.name}
           </h1>
 
-          {title.originalName && title.originalName !== title.name && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              {title.originalName}
-            </p>
-          )}
-
           {title.genres.length > 0 && (
             <div className="mt-4 flex flex-wrap gap-1">
               {title.genres.map((genre) => (

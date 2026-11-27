@@ -10,7 +10,11 @@ export function safeNext(
   ) {
     return fallback;
   }
-  if (value.startsWith("/login") || value.startsWith("/reset-password")) {
+  if (
+    value.startsWith("/login") ||
+    value.startsWith("/reset-password") ||
+    value.startsWith("/api/")
+  ) {
     return fallback;
   }
   return value;

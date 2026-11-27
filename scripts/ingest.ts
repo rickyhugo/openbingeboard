@@ -174,7 +174,7 @@ function numberArg(name: string, fallback: number): number {
 }
 
 const region = args.get("region") ?? process.env.REGION ?? "SE";
-const language = args.get("language") ?? "sv-SE";
+const language = args.get("language") ?? "en-US";
 const pages = numberArg("pages", 10);
 const limit = numberArg("limit", 5000);
 const omdbLimit = numberArg("omdb-limit", 200);

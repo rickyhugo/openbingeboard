@@ -8,7 +8,7 @@ interface CacheEntry {
 // request. Keep the number of entries bounded; Workers isolates are small.
 const store = new Map<string, CacheEntry>();
 const MAX_ENTRIES = 200;
-const CACHE_ORIGIN = "https://openbingeboard.com/__obb-cache/v1/";
+const CACHE_ORIGIN = "https://openbingeboard.com/__obb-cache/v2/";
 
 function trim() {
   while (store.size > MAX_ENTRIES) {
