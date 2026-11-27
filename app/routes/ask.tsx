@@ -60,7 +60,15 @@ const EXAMPLES = [
 ];
 
 export function meta() {
-  return [{ title: "Ask · OpenBingeBoard" }];
+  const description =
+    "Describe a mood, story, or constraint and search the catalogue by meaning. Ask runs a local model, respects your country and services, and understands rating, decade, and title comparisons.";
+
+  return [
+    { title: "Ask the catalogue · OpenBingeBoard" },
+    { name: "description", content: description },
+    { property: "og:title", content: "Ask the catalogue · OpenBingeBoard" },
+    { property: "og:description", content: description },
+  ];
 }
 
 export default function Ask() {
