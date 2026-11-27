@@ -1,3 +1,5 @@
+import { DEFAULT_COUNTRY, parseCountry, type CountryCode } from "./countries";
+
 export interface SavedFilter {
   id: string;
   name: string;
@@ -5,6 +7,7 @@ export interface SavedFilter {
 }
 
 export interface ProfileState {
+  country: CountryCode;
   services: number[];
   watched: string[];
   want: string[];
@@ -18,6 +21,7 @@ export interface ProfileUser {
 }
 
 export const EMPTY_PROFILE: ProfileState = {
+  country: DEFAULT_COUNTRY,
   services: [],
   watched: [],
   want: [],
@@ -40,6 +44,7 @@ export function parseProfile(value: unknown): ProfileState {
   if (typeof raw !== "object" || raw === null) return EMPTY_PROFILE;
 
   const input = raw as Partial<ProfileState>;
+  const country = parseCountry(input.country);
   const services = Array.isArray(input.services)
     ? unique(
         input.services
@@ -65,7 +70,7 @@ export function parseProfile(value: unknown): ProfileState {
         .slice(0, 20)
     : [];
 
-  return { services, watched, want, saved };
+  return { country, services, watched, want, saved };
 }
 
 export function mergeProfiles(
@@ -89,7 +94,13 @@ export function mergeProfiles(
     )
     .slice(0, 20);
 
-  return { services, watched, want, saved };
+  return {
+    country: local.country !== DEFAULT_COUNTRY ? local.country : server.country,
+    services,
+    watched,
+    want,
+    saved,
+  };
 }
 
 export function isProfileEmpty(profile: ProfileState): boolean {

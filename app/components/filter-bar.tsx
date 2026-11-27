@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
+import { ProviderLogo } from "~/components/provider-logo";
 import { Input } from "~/components/ui/input";
 import {
   NativeSelect,
@@ -175,6 +176,11 @@ export function FilterBar({
                             : [...current, provider.id],
                         )
                       }
+                    />
+                    <ProviderLogo
+                      path={provider.logoPath}
+                      name={provider.name}
+                      className="h-5 w-5"
                     />
                     <span className="truncate">{provider.name}</span>
                   </label>

@@ -1,10 +1,11 @@
-import { env } from "cloudflare:workers";
 import { data, isRouteErrorResponse, Link } from "react-router";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { ProviderChip } from "~/components/provider-chip";
 import { ScorePopover } from "~/components/score-popover";
 import { TitleActions } from "~/components/title-actions";
+import { countryFromRequest } from "~/lib/country.server";
+import { countryName } from "~/lib/countries";
 import { formatRuntime, imdbUrl, initials, posterUrl } from "~/lib/tmdb";
 import { runQuery } from "~/server/effect.server";
 import { getImdbStats } from "~/server/extras.server";
@@ -21,17 +22,19 @@ const OFFER_GROUPS = [
 
 export function meta({ loaderData }: Route.MetaArgs) {
   const name = loaderData?.title.name ?? "Title";
+  const country = loaderData?.country;
   return [
     { title: `${name} · OpenBingeBoard` },
     {
       name: "description",
-      content: `Where to watch ${name} in Sweden, with IMDb and Rotten Tomatoes scores.`,
+      content: `Where to watch ${name} in ${country ? countryName(country) : "the Nordics"}, with IMDb and Rotten Tomatoes scores.`,
     },
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
-  const title = await runQuery(getTitle(env.REGION, params.id));
+export async function loader({ params, request }: Route.LoaderArgs) {
+  const country = countryFromRequest(request);
+  const title = await runQuery(getTitle(country, params.id));
 
   if (!title) {
     throw data("Title not found", { status: 404 });
@@ -40,11 +43,11 @@ export async function loader({ params }: Route.LoaderArgs) {
   const imdb = title.ratings.find((rating) => rating.source === "imdb");
   const stats = imdb ? await runQuery(getImdbStats(imdb.score)) : null;
 
-  return { title, stats };
+  return { title, stats, country };
 }
 
 export default function Title({ loaderData }: Route.ComponentProps) {
-  const { title, stats } = loaderData;
+  const { title, stats, country } = loaderData;
   const poster = posterUrl(title.posterPath, "w500");
   const runtime = formatRuntime(title.runtime);
   const imdb = imdbUrl(title.imdbId);
@@ -149,7 +152,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
 
           <section className="mt-8">
             <h2 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Where to watch in Sweden
+              Where to watch in {countryName(country)}
             </h2>
 
             {title.offers.length === 0 ? (

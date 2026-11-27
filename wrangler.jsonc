@@ -5,7 +5,6 @@
   "compatibility_date": "2026-11-23",
   "main": "./workers/app.ts",
   "vars": {
-    "REGION": "SE",
     "BETTER_AUTH_URL": "https://openbingeboard.com",
     "EMAIL_FROM": "OpenBingeBoard <noreply@openbingeboard.com>",
   },

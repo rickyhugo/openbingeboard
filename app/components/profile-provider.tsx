@@ -8,6 +8,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useRevalidator } from "react-router";
+import { writeCountryCookie, type CountryCode } from "~/lib/countries";
 import {
   EMPTY_PROFILE,
   mergeProfiles,
@@ -20,6 +22,7 @@ interface ProfileContextValue {
   state: ProfileState;
   user: ProfileUser | null;
   hydrated: boolean;
+  setCountry: (country: CountryCode) => void;
   toggleService: (id: number) => void;
   hasService: (id: number) => boolean;
   toggleWatched: (id: string) => void;
@@ -44,19 +47,36 @@ function toggleValue<T>(list: T[], value: T): T[] {
 
 export function ProfileProvider({
   user,
+  country,
   children,
 }: {
   user: ProfileUser | null;
+  country: CountryCode;
   children: ReactNode;
 }) {
   const [state, setState] = useState<ProfileState>(EMPTY_PROFILE);
   const [hydrated, setHydrated] = useState(false);
   const timer = useRef<number | null>(null);
+  const revalidator = useRevalidator();
+  const countrySynced = useRef(country);
 
   useEffect(() => {
     setState(parseProfile(window.localStorage.getItem(STORAGE_KEY)));
     setHydrated(true);
   }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (state.country === country) {
+      countrySynced.current = country;
+      return;
+    }
+    if (countrySynced.current === state.country) return;
+
+    countrySynced.current = state.country;
+    writeCountryCookie(state.country);
+    void revalidator.revalidate();
+  }, [hydrated, state.country, country, revalidator]);
 
   useEffect(() => {
     if (!hydrated || !user) return;
@@ -99,6 +119,16 @@ export function ProfileProvider({
       if (timer.current) window.clearTimeout(timer.current);
     };
   }, [state, hydrated, user?.id]);
+
+  const setCountry = useCallback(
+    (next: CountryCode) => {
+      countrySynced.current = next;
+      setState((current) => ({ ...current, country: next }));
+      writeCountryCookie(next);
+      void revalidator.revalidate();
+    },
+    [revalidator],
+  );
 
   const toggleService = useCallback((id: number) => {
     setState((current) => ({
@@ -165,8 +195,11 @@ export function ProfileProvider({
   }, []);
 
   const reset = useCallback(() => {
-    setState(EMPTY_PROFILE);
-    window.localStorage.removeItem(STORAGE_KEY);
+    setState((current) => {
+      const next = { ...EMPTY_PROFILE, country: current.country };
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      return next;
+    });
     window.localStorage.removeItem(LAST_USER_KEY);
   }, []);
 
@@ -175,6 +208,7 @@ export function ProfileProvider({
       state,
       user,
       hydrated,
+      setCountry,
       toggleService,
       hasService: (id) => state.services.includes(id),
       toggleWatched,
@@ -189,6 +223,7 @@ export function ProfileProvider({
       state,
       user,
       hydrated,
+      setCountry,
       toggleService,
       toggleWatched,
       toggleWant,

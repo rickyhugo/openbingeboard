@@ -7,6 +7,10 @@ export function posterUrl(
   return path ? `${IMAGE_BASE}/${size}${path}` : null;
 }
 
+export function providerLogoUrl(path: string | null): string | null {
+  return path ? `${IMAGE_BASE}/w92${path}` : null;
+}
+
 export function initials(value: string): string {
   return value
     .replace(/^(the|a|an)\s+/i, "")

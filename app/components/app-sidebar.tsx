@@ -1,5 +1,9 @@
 import { Link, useLocation } from "react-router";
 import { AuthStatus } from "~/components/auth-status";
+import { CountrySelect } from "~/components/country-select";
+import { ProviderLogo } from "~/components/provider-logo";
+import { ThemeToggle } from "~/components/theme-toggle";
+import type { Theme } from "~/lib/theme";
 import {
   Sidebar,
   SidebarContent,
@@ -17,24 +21,37 @@ import type { ProviderRow } from "~/server/queries.server";
 
 export function AppSidebar({
   providers,
+  theme,
 }: {
   providers: readonly ProviderRow[];
+  theme: Theme;
 }) {
   const { state, hydrated, toggleService } = useProfile();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const kind = params.get("kind");
   const pathname = location.pathname;
-  const servicesQuery =
-    state.services.length > 0 ? "/?providers=" + state.services.join(",") : "/";
 
   const selectedServices = state.services
     .map((id) => providers.find((provider) => provider.id === id))
-    .filter((provider): provider is ProviderRow => provider !== undefined);
+    .filter((provider): provider is ProviderRow => provider !== undefined)
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const servicesQuery =
+    selectedServices.length > 0
+      ? "/?providers=" +
+        selectedServices.map((provider) => provider.id).join(",")
+      : "/";
 
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Country</SidebarGroupLabel>
+          <div className="px-2 py-1">
+            <CountrySelect />
+          </div>
+        </SidebarGroup>
+
         <SidebarGroup>
           <SidebarGroupLabel>Catalogue</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -105,10 +122,15 @@ export function AppSidebar({
                     <div className="flex h-8 items-center gap-1 px-2 text-xs">
                       <Link
                         to={"/?providers=" + provider.id}
-                        className="min-w-0 flex-1 truncate hover:text-foreground hover:underline"
+                        className="flex min-w-0 flex-1 items-center gap-1.5 hover:text-foreground hover:underline"
                         title={"Browse " + provider.name}
                       >
-                        {provider.name}
+                        <ProviderLogo
+                          path={provider.logoPath}
+                          name={provider.name}
+                          className="h-4 w-4"
+                        />
+                        <span className="truncate">{provider.name}</span>
                       </Link>
                       <button
                         type="button"
@@ -123,7 +145,9 @@ export function AppSidebar({
                 ))
               ) : (
                 <p className="px-2 py-1.5 text-[11px] text-muted-foreground">
-                  No services selected.
+                  {state.services.length > 0
+                    ? "Not available in this country."
+                    : "No services selected."}
                 </p>
               )}
               {selectedServices.length > 6 ? (
@@ -198,6 +222,12 @@ export function AppSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
         <AuthStatus />
+        <div className="flex items-center justify-between gap-2 border-t px-2 pt-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+            Theme
+          </span>
+          <ThemeToggle initial={theme} />
+        </div>
       </SidebarFooter>
     </Sidebar>
   );

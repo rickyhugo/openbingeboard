@@ -161,7 +161,7 @@ const JUSTWATCH_QUERY =
 
 const args = new Map<string, string>();
 for (const raw of process.argv.slice(2)) {
-  if (!raw.startsWith("--")) continue;
+  if (raw === "--" || !raw.startsWith("--")) continue;
   const [name, value = "true"] = raw.replace(/^--/, "").split("=");
   args.set(name, value);
 }

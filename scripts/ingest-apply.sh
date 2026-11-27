@@ -7,18 +7,25 @@ if [[ "${CI:-}" != "true" && "${CONFIRM:-}" != "1" ]]; then
 	exit 1
 fi
 
-rm -f db/generated/ingest.part-*.sql
-tsx scripts/ingest.ts --out db/generated/ingest "$@"
-
+REGIONS="${REGIONS:-SE,DK,FI,NO,IS}"
+IFS=',' read -r -a region_list <<<"$REGIONS"
 shopt -s nullglob
-files=(db/generated/ingest.part-*.sql)
 
-if ((${#files[@]} == 0)); then
-	echo "No SQL chunks generated." >&2
-	exit 1
-fi
+for region in "${region_list[@]}"; do
+	region="${region// /}"
+	echo "==> ingesting ${region}"
 
-for file in "${files[@]}"; do
-	echo "applying ${file}"
-	wrangler d1 execute openbingeboard --remote --file "${file}"
+	rm -f db/generated/ingest.part-*.sql
+	tsx scripts/ingest.ts --out=db/generated/ingest "$@" --region="$region"
+
+	files=(db/generated/ingest.part-*.sql)
+	if ((${#files[@]} == 0)); then
+		echo "No SQL chunks generated for ${region}." >&2
+		exit 1
+	fi
+
+	for file in "${files[@]}"; do
+		echo "applying ${file}"
+		wrangler d1 execute openbingeboard --remote --file "${file}"
+	done
 done

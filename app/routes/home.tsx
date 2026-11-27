@@ -1,8 +1,9 @@
-import { env } from "cloudflare:workers";
 import { Link } from "react-router";
 import { buttonVariants } from "~/components/ui/button";
 import { FilterBar } from "~/components/filter-bar";
 import { TitleCard } from "~/components/title-card";
+import { countryFromRequest } from "~/lib/country.server";
+import { countryName } from "~/lib/countries";
 import {
   hasActiveFilters,
   parseFilters,
@@ -15,26 +16,31 @@ import { listGenres } from "~/server/extras.server";
 import { listProviders, listTitles } from "~/server/queries.server";
 import type { Route } from "./+types/home";
 
-export function meta() {
+export function meta({ loaderData }: Route.MetaArgs) {
+  const country = loaderData?.country;
+  const name = country ? countryName(country) : "the Nordics";
   return [
-    { title: "OpenBingeBoard · What to watch in Sweden" },
+    { title: "OpenBingeBoard · What to watch in " + name },
     {
       name: "description",
       content:
-        "Browse films and series streaming, renting, or on sale in Sweden. Filter by service and rating.",
+        "Browse films and series streaming, renting, or on sale in " +
+        name +
+        ". Filter by service and rating.",
     },
   ];
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
   const filters = parseFilters(request.url);
+  const country = countryFromRequest(request);
   const [result, providers, genres] = await Promise.all([
-    runQuery(listTitles(env.REGION, filters)),
-    runQuery(listProviders),
+    runQuery(listTitles(country, filters)),
+    runQuery(listProviders(country)),
     runQuery(listGenres),
   ]);
 
-  return { filters, providers, genres, result };
+  return { filters, country, providers, genres, result };
 }
 
 function pageHref(filters: Filters, page: number): string {
@@ -44,7 +50,7 @@ function pageHref(filters: Filters, page: number): string {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { filters, providers, genres, result } = loaderData;
+  const { filters, country, providers, genres, result } = loaderData;
   const active = hasActiveFilters(filters);
   const sorted = SORT_LABELS[filters.sort];
 
@@ -53,7 +59,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section className="border-b">
         <div className="mx-auto max-w-6xl px-4 py-6">
           <h1 className="text-xl font-semibold tracking-tight">
-            Films and series available in Sweden
+            Films and series available in {countryName(country)}
           </h1>
           <p className="mt-1 text-xs text-muted-foreground">
             {result.total} titles across {providers.length} services. Stream,
@@ -77,11 +83,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         {result.titles.length === 0 ? (
           <div className="flex flex-col items-start gap-3 border border-dashed p-8">
             <p className="text-sm font-medium">
-              Nothing matches those filters.
+              {active
+                ? "Nothing matches those filters."
+                : "No titles for " + countryName(country) + " yet."}
             </p>
             <p className="max-w-md text-xs text-muted-foreground">
-              Try a wider rating range, another service, or clear the search
-              box. Availability changes every night.
+              Try a wider rating range, another service, clear the search box,
+              or choose another country in the sidebar. Availability changes
+              every night.
             </p>
             <Link
               to="/"

@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Separator } from "~/components/ui/separator";
+import { COUNTRIES, countryName } from "~/lib/countries";
 import type { loader as rootLoader } from "~/root";
 import type { Route } from "./+types/profile";
 
@@ -34,9 +35,12 @@ export default function Profile() {
     .filter(
       (provider): provider is (typeof providers)[number] =>
         provider !== undefined,
-    );
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
   const servicesQuery =
-    state.services.length > 0 ? "/?providers=" + state.services.join(",") : "/";
+    selected.length > 0
+      ? "/?providers=" + selected.map((provider) => provider.id).join(",")
+      : "/";
 
   const stats = [
     { label: "Watched", value: state.watched.length, to: "/library/watched" },
@@ -105,6 +109,40 @@ export default function Profile() {
       </div>
 
       <section className="mt-8">
+        <h2 className="text-sm font-semibold">Country</h2>
+        <p className="mt-0.5 text-xs text-muted-foreground">
+          Availability, services, and streaming links follow this country.
+        </p>
+        <div
+          role="radiogroup"
+          aria-label="Country"
+          className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-5"
+        >
+          {COUNTRIES.map((country) => {
+            const active = state.country === country.code;
+            return (
+              <button
+                key={country.code}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => profile.setCountry(country.code)}
+                className={
+                  "flex flex-col items-start gap-1 border p-2 text-left transition-colors " +
+                  (active ? "border-foreground bg-muted" : "hover:bg-muted/40")
+                }
+              >
+                <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  {country.code}
+                </span>
+                <span className="text-xs font-medium">{country.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold">Your services</h2>
@@ -145,14 +183,17 @@ export default function Profile() {
           </div>
         ) : (
           <p className="mt-3 border border-dashed p-4 text-xs text-muted-foreground">
-            No services selected yet. Open{" "}
+            {state.services.length > 0
+              ? `Your selected services are not available in ${countryName(data?.country ?? "SE")}.`
+              : "No services selected yet."}{" "}
+            Open{" "}
             <Link
               to="/services"
               className="underline underline-offset-4 hover:text-foreground"
             >
               Your services
             </Link>{" "}
-            to add them.
+            to manage them.
           </p>
         )}
       </section>

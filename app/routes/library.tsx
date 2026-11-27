@@ -1,7 +1,8 @@
-import { data, Link, useNavigate } from "react-router";
+import { data, Link, useNavigate, useRouteLoaderData } from "react-router";
 import { LibraryGrid } from "~/components/library-grid";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useProfile } from "~/components/profile-provider";
+import type { loader as rootLoader } from "~/root";
 import type { Route } from "./+types/library";
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -25,6 +26,8 @@ export function meta({ loaderData }: Route.MetaArgs) {
 export default function Library({ loaderData }: Route.ComponentProps) {
   const { mode } = loaderData;
   const navigate = useNavigate();
+  const root = useRouteLoaderData<typeof rootLoader>("root");
+  const country = root?.country ?? "SE";
   const { state, hydrated } = useProfile();
   const ids = mode === "watched" ? state.watched : state.want;
   const orderedIds = [...ids].reverse();
@@ -73,6 +76,7 @@ export default function Library({ loaderData }: Route.ComponentProps) {
         {hydrated ? (
           <LibraryGrid
             ids={orderedIds}
+            region={country}
             empty={
               mode === "watched"
                 ? "Mark a title as watched from its detail page and it will appear here."

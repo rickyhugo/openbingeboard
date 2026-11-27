@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { buttonVariants } from "~/components/ui/button";
 import { TitleCard } from "~/components/title-card";
+import type { CountryCode } from "~/lib/countries";
 import type { OfferRow, TitleRow } from "~/server/queries.server";
 
 interface LibraryResponse {
@@ -9,7 +10,15 @@ interface LibraryResponse {
   offers?: Record<string, OfferRow[]>;
 }
 
-export function LibraryGrid({ ids, empty }: { ids: string[]; empty: string }) {
+export function LibraryGrid({
+  ids,
+  region,
+  empty,
+}: {
+  ids: string[];
+  region: CountryCode;
+  empty: string;
+}) {
   const [titles, setTitles] = useState<TitleRow[]>([]);
   const [offers, setOffers] = useState<Record<string, OfferRow[]>>({});
   const [loading, setLoading] = useState(false);
@@ -38,7 +47,7 @@ export function LibraryGrid({ ids, empty }: { ids: string[]; empty: string }) {
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-  }, [key]);
+  }, [key, region]);
 
   const ordered = useMemo(() => {
     const byId = new Map(titles.map((title) => [title.id, title]));

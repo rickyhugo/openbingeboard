@@ -17,8 +17,9 @@ export default function About() {
       </h1>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
         A non-commercial catalogue of films and series available to stream in
-        Sweden. Browse without an account, or sign in to keep a watchlist,
-        choose your services, and save views.
+        the Nordics. Pick your country in the sidebar, browse without an
+        account, or sign in to keep a watchlist, choose your services, and save
+        views.
       </p>
 
       <section className="mt-10 border-t pt-6">
@@ -27,7 +28,7 @@ export default function About() {
         </h2>
         <div className="mt-3 max-w-2xl space-y-3 text-sm leading-6 text-muted-foreground">
           <p>
-            Title metadata and Swedish availability come from{" "}
+            Title metadata and Nordic availability come from{" "}
             <a
               href={ATTRIBUTION.tmdb}
               target="_blank"

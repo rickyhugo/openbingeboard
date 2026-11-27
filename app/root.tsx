@@ -10,8 +10,8 @@ import {
 } from "react-router";
 import { AppSidebar } from "~/components/app-sidebar";
 import { ProfileProvider } from "~/components/profile-provider";
-import { ThemeToggle } from "~/components/theme-toggle";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
+import { countryFromRequest } from "~/lib/country.server";
 import { themeFromRequest } from "~/lib/theme.server";
 import {
   auth,
@@ -25,8 +25,9 @@ import type { Route } from "./+types/root";
 import "./app.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  const country = countryFromRequest(request);
   const [providers, session] = await Promise.all([
-    runQuery(listProviders),
+    runQuery(listProviders(country)),
     auth.api.getSession({ headers: request.headers }),
   ]);
 
@@ -40,6 +41,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return {
     providers,
+    country,
     theme: themeFromRequest(request),
     user,
     emailEnabled,
@@ -48,7 +50,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { providers, theme, user } = useLoaderData<typeof loader>();
+  const { providers, country, theme, user } = useLoaderData<typeof loader>();
 
   return (
     <html lang="en" className={theme === "dark" ? "dark" : ""}>
@@ -59,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="min-h-dvh bg-background text-foreground antialiased">
-        <ProfileProvider user={user}>
+        <ProfileProvider user={user} country={country}>
           <SidebarProvider>
             <a
               href="#main"
@@ -68,7 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               Skip to content
             </a>
 
-            <AppSidebar providers={providers} />
+            <AppSidebar providers={providers} theme={theme} />
 
             <div className="flex min-w-0 flex-1 flex-col">
               <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
@@ -78,12 +80,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     OpenBingeBoard
                   </span>
                   <span className="font-mono text-[10px] text-muted-foreground">
-                    SE
+                    {country}
                   </span>
                 </Link>
-                <div className="ml-auto flex items-center gap-2">
-                  <ThemeToggle initial={theme} />
-                </div>
               </header>
 
               <div id="main" className="flex-1">

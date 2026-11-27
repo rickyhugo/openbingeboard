@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
     inputs:
       pages:
-        description: Discover pages per provider
+        description: Discover pages per provider, per region
         default: "2"
       limit:
-        description: Maximum titles to refresh
+        description: Maximum titles to refresh, per region
         default: "60"
 
 jobs:

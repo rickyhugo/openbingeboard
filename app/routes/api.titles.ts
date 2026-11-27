@@ -1,4 +1,4 @@
-import { env } from "cloudflare:workers";
+import { countryFromRequest } from "~/lib/country.server";
 import { runQuery } from "~/server/effect.server";
 import { getTitlesByIds, getTitlesWithOffers } from "~/server/extras.server";
 import type { Route } from "./+types/api.titles";
@@ -10,9 +10,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   ].slice(0, 100);
 
   if (url.searchParams.get("offers") === "1") {
+    const country = countryFromRequest(request);
     const result =
       ids.length > 0
-        ? await runQuery(getTitlesWithOffers(env.REGION, ids))
+        ? await runQuery(getTitlesWithOffers(country, ids))
         : { titles: [], offers: {} };
     return Response.json(result);
   }

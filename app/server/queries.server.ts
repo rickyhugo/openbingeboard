@@ -43,6 +43,7 @@ export interface TitleDetail extends TitleRow {
 export interface ProviderRow {
   id: number;
   name: string;
+  logoPath: string | null;
 }
 
 export interface TitlePage {
@@ -191,15 +192,21 @@ export const listTitles = (region: string, filters: Filters) =>
     } satisfies TitlePage;
   });
 
-export const listProviders = Effect.gen(function* () {
-  const sql = yield* SqlClient.SqlClient;
+export const listProviders = (region: string) =>
+  Effect.gen(function* () {
+    const sql = yield* SqlClient.SqlClient;
 
-  return yield* sql<ProviderRow>`
-    SELECT id, name
-    FROM provider
-    ORDER BY display_priority, name
-  `;
-});
+    return yield* sql<ProviderRow>`
+      SELECT p.id, p.name, p.logo_path AS "logoPath"
+      FROM provider p
+      WHERE EXISTS (
+        SELECT 1 FROM offer o
+        WHERE o.provider_id = p.id
+          AND o.region = ${region}
+      )
+      ORDER BY p.name COLLATE NOCASE
+    `;
+  });
 
 export const getTitle = (region: string, id: string) =>
   Effect.gen(function* () {

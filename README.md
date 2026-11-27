@@ -1,8 +1,8 @@
 # OpenBingeBoard
 
-Find what is available to stream, rent, or buy in Sweden, with IMDb, Rotten Tomatoes, and Metacritic scores in the same view.
+Find what is available to stream, rent, or buy in the Nordics, with IMDb, Rotten Tomatoes, and Metacritic scores in the same view.
 
-The first region is `SE`. Availability is stored per region, so adding another country is data, not a schema change.
+Supported countries are Sweden (`SE`), Norway (`NO`), Denmark (`DK`), Finland (`FI`), and Iceland (`IS`). Availability is stored per region. The selected country is a cookie-backed setting, saved in the profile for signed-in users.
 
 Live at [openbingeboard.com](https://openbingeboard.com).
 
@@ -69,9 +69,9 @@ To share access, invite the person to the `openbingeboard` project in the `hugop
 
 ## Accounts
 
-Browse and filter without an account. Guests keep services, saved views, watched, and want-to-watch in localStorage.
+Browse and filter without an account. Guests keep country, services, saved views, watched, and want-to-watch in localStorage and a country cookie.
 
-Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`, with password reset at `/reset-password`.
+Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. The country setting syncs too. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`, with password reset at `/reset-password`.
 
 Only email and password sign-in is enabled. Sign-up requires verification only when an email sender is configured.
 
@@ -126,16 +126,19 @@ The free OMDb tier allows 1,000 requests per day. IMDb scores come from the bulk
 
 ## Ingest
 
-`scripts/ingest.ts` pages the configured Swedish providers, ranks the union by popularity, and expands each title with `append_to_response=external_ids,watch/providers`. IMDb scores come from the daily `datasets.imdbws.com` ratings file, so they cost no API requests. OMDb supplies Rotten Tomatoes and Metacritic for the first `--omdb-limit` titles. JustWatch search fills each offer with the provider's own URL, which opens the service app on mobile when the provider supports universal links. Output is split into idempotent SQL chunks.
+`scripts/ingest.ts` pages the configured providers for one country, ranks the union by popularity, and expands each title with `append_to_response=external_ids,watch/providers`. Pass `--region=DK` to choose the country. Offer rows are keyed by region, so the five Nordic catalogues share one title table. IMDb scores come from the daily `datasets.imdbws.com` ratings file, so they cost no API requests. OMDb supplies Rotten Tomatoes and Metacritic for the first `--omdb-limit` titles. JustWatch search fills each offer with the provider's own URL, which opens the service app on mobile when the provider supports universal links. Output is split into idempotent SQL chunks.
 
 ```sh
-pnpm ingest:dry -- --providers=8 --pages=1 --limit=20
-pnpm ingest -- --pages=10 --limit=1000 --omdb-limit=200
+pnpm ingest:dry -- --region=DK --pages=1 --limit=20
+pnpm ingest -- --region=SE --pages=10 --limit=1000 --omdb-limit=200
+
+# Refresh every Nordic catalogue in sequence (default REGIONS).
+REGIONS=SE,DK,FI,NO,IS pnpm ingest:apply:prd -- --pages=2 --limit=60
 ```
 
 The default list covers Netflix, Prime Video, Disney+, Viaplay, SkyShowtime, HBO Max, TV4 Play, SVT Play, SF Anytime, Rakuten TV, Apple TV, Blockbuster, Pluto TV, MUBI, Crunchyroll, and Tele2 Play. Use `--providers=auto` to select by TMDB display priority, or pass explicit ids.
 
-`.github/workflows/ingest.yml` runs at 04:00 UTC and applies the result. It authenticates with `DOPPLER_TOKEN` and reads the Cloudflare credentials from the `prd` config.
+`.github/workflows/ingest.yml` runs at 04:00 UTC and applies the result for every region in `REGIONS` (default `SE,DK,FI,NO,IS`). It authenticates with `DOPPLER_TOKEN` and reads the Cloudflare credentials from the `prd` config.
 
 ## Deploy
 

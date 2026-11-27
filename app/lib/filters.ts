@@ -1,4 +1,3 @@
-export const REGION = "SE";
 export const PAGE_SIZE = 24;
 export const MAX_PAGE = 500;
 
