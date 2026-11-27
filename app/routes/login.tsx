@@ -11,6 +11,15 @@ import {
 import { Input } from "~/components/ui/input";
 import { authClient } from "~/lib/auth-client";
 import type { loader as rootLoader } from "~/root";
+import type { SocialProvider } from "~/server/auth.server";
+
+const PROVIDER_LABELS: Record<SocialProvider, string> = {
+  google: "Google",
+  github: "GitHub",
+  discord: "Discord",
+};
+
+type Mode = "signin" | "signup" | "forgot";
 
 export function meta() {
   return [{ title: "Sign in · OpenBingeBoard" }];
@@ -19,19 +28,52 @@ export function meta() {
 export default function Login() {
   const root = useRouteLoaderData<typeof rootLoader>("root");
   const user = root?.user ?? null;
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const socialProviders = root?.socialProviders ?? [];
+  const verificationRequired = root?.emailVerificationRequired ?? false;
+  const [mode, setMode] = useState<Mode>("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+
+  async function social(provider: SocialProvider) {
+    setPending(true);
+    setError("");
+    try {
+      await authClient.signIn.social({
+        provider,
+        callbackURL: "/profile",
+      });
+    } catch {
+      setError("Could not start " + PROVIDER_LABELS[provider] + " sign in.");
+      setPending(false);
+    }
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
     setError("");
+    setMessage("");
 
     try {
+      if (mode === "forgot") {
+        const result = await authClient.requestPasswordReset({
+          email,
+          redirectTo: "/reset-password",
+        });
+        if (result.error) {
+          setError(result.error.message ?? "Could not send the reset email.");
+          return;
+        }
+        setMessage(
+          "If an account exists for that email, a reset link is on the way.",
+        );
+        return;
+      }
+
       const result =
         mode === "signin"
           ? await authClient.signIn.email({ email, password })
@@ -42,9 +84,40 @@ export default function Login() {
         return;
       }
 
+      if (mode === "signup" && verificationRequired) {
+        setMessage(
+          "Account created. Check your email to verify the address before signing in.",
+        );
+        return;
+      }
+
       window.location.assign("/profile");
     } catch {
       setError("Authentication failed.");
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function resendVerification() {
+    if (!email) {
+      setError("Enter your email first.");
+      return;
+    }
+    setPending(true);
+    setError("");
+    try {
+      const result = await authClient.sendVerificationEmail({
+        email,
+        callbackURL: "/profile",
+      });
+      if (result.error) {
+        setError(result.error.message ?? "Could not resend the email.");
+        return;
+      }
+      setMessage("Verification email sent.");
+    } catch {
+      setError("Could not resend the email.");
     } finally {
       setPending(false);
     }
@@ -71,19 +144,47 @@ export default function Login() {
     );
   }
 
+  const title =
+    mode === "signin"
+      ? "Sign in"
+      : mode === "signup"
+        ? "Create an account"
+        : "Reset your password";
+
   return (
     <main className="mx-auto max-w-md px-4 py-10">
       <Card>
         <CardHeader>
-          <CardTitle>
-            {mode === "signin" ? "Sign in" : "Create an account"}
-          </CardTitle>
+          <CardTitle>{title}</CardTitle>
           <CardDescription>
             Sync your services, watchlist, and saved views across devices. The
             catalogue works without an account.
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {socialProviders.length > 0 && mode !== "forgot" ? (
+            <div className="mb-4 space-y-2">
+              {socialProviders.map((provider) => (
+                <Button
+                  key={provider}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full"
+                  disabled={pending}
+                  onClick={() => social(provider)}
+                >
+                  Continue with {PROVIDER_LABELS[provider]}
+                </Button>
+              ))}
+              <div className="flex items-center gap-2 pt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
+                <span className="h-px flex-1 bg-border" />
+                or
+                <span className="h-px flex-1 bg-border" />
+              </div>
+            </div>
+          ) : null}
+
           <form onSubmit={submit} className="space-y-3">
             {mode === "signup" ? (
               <label className="block space-y-1 text-xs">
@@ -110,20 +211,36 @@ export default function Login() {
               />
             </label>
 
-            <label className="block space-y-1 text-xs">
-              <span className="text-muted-foreground">Password</span>
-              <Input
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                autoComplete={
-                  mode === "signin" ? "current-password" : "new-password"
-                }
-                minLength={8}
-                required
-                className="h-8"
-              />
-            </label>
+            {mode !== "forgot" ? (
+              <label className="block space-y-1 text-xs">
+                <span className="text-muted-foreground">Password</span>
+                <Input
+                  type="password"
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  autoComplete={
+                    mode === "signin" ? "current-password" : "new-password"
+                  }
+                  minLength={8}
+                  required
+                  className="h-8"
+                />
+              </label>
+            ) : null}
+
+            {mode === "signin" ? (
+              <button
+                type="button"
+                className="text-xs text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                onClick={() => {
+                  setMode("forgot");
+                  setError("");
+                  setMessage("");
+                }}
+              >
+                Forgot password?
+              </button>
+            ) : null}
 
             {error ? (
               <p className="text-xs text-destructive" role="alert">
@@ -131,24 +248,59 @@ export default function Login() {
               </p>
             ) : null}
 
-            <Button type="submit" size="sm" disabled={pending}>
-              {pending
-                ? "Working..."
-                : mode === "signin"
-                  ? "Sign in"
-                  : "Create account"}
-            </Button>
+            {message ? (
+              <p className="text-xs text-muted-foreground" role="status">
+                {message}
+              </p>
+            ) : null}
+
+            <div className="flex flex-wrap items-center gap-2">
+              {verificationRequired &&
+              (mode === "signup" || error.toLowerCase().includes("verif")) ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={resendVerification}
+                  disabled={pending}
+                >
+                  Resend verification email
+                </Button>
+              ) : null}
+
+              <Button type="submit" size="sm" disabled={pending}>
+                {pending
+                  ? "Working..."
+                  : mode === "signin"
+                    ? "Sign in"
+                    : mode === "signup"
+                      ? "Create account"
+                      : "Send reset link"}
+              </Button>
+            </div>
           </form>
 
           <div className="mt-4 flex items-center justify-between gap-2 text-xs text-muted-foreground">
             <button
               type="button"
               className="underline underline-offset-4 hover:text-foreground"
-              onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
+              onClick={() => {
+                setMode(
+                  mode === "signin"
+                    ? "signup"
+                    : mode === "signup"
+                      ? "signin"
+                      : "signin",
+                );
+                setError("");
+                setMessage("");
+              }}
             >
               {mode === "signin"
                 ? "Create an account"
-                : "I already have an account"}
+                : mode === "forgot"
+                  ? "Back to sign in"
+                  : "I already have an account"}
             </button>
             <Link
               to="/"

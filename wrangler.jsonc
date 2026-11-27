@@ -6,6 +6,7 @@
   "vars": {
     "REGION": "SE",
     "BETTER_AUTH_URL": "https://openbingeboard.hugoplanet.se",
+    "EMAIL_FROM": "OpenBingeBoard <noreply@hugoplanet.se>",
   },
   "routes": [
     {

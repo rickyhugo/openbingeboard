@@ -14,7 +14,11 @@ import { ThemeToggle } from "~/components/theme-toggle";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
 import { ATTRIBUTION } from "~/lib/tmdb";
 import { themeFromRequest } from "~/lib/theme.server";
-import { auth } from "~/server/auth.server";
+import {
+  auth,
+  emailVerificationRequired,
+  enabledSocialProviders,
+} from "~/server/auth.server";
 import { runQuery } from "~/server/effect.server";
 import { listProviders } from "~/server/queries.server";
 
@@ -35,7 +39,13 @@ export async function loader({ request }: Route.LoaderArgs) {
       }
     : null;
 
-  return { providers, theme: themeFromRequest(request), user };
+  return {
+    providers,
+    theme: themeFromRequest(request),
+    user,
+    socialProviders: enabledSocialProviders,
+    emailVerificationRequired,
+  };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
