@@ -88,7 +88,10 @@ wrangler secret put BETTER_AUTH_SECRET
 | `pnpm typecheck`         | Regenerate Worker types and route types, then type-check |
 | `pnpm db:migrate:local`  | Apply D1 migrations locally                              |
 | `pnpm db:seed`           | Load the demo catalogue into the local database          |
-| `pnpm embed:apply:prd`   | Embed titles and apply vectors to remote D1              |
+| `pnpm embed:apply:prd`   | Embed changed titles and apply vectors to remote D1      |
+| `pnpm models:sync`       | Upload the pinned model and ONNX runtime to R2           |
+| `pnpm models:check`      | Verify the R2 copies match the local files               |
+| `pnpm eval:semantic`     | Run the semantic ranking spot checks                     |
 | `pnpm db:reset`          | Rebuild the local database from scratch                  |
 | `pnpm ingest`            | Generate `db/generated/ingest.sql` through Doppler       |
 | `pnpm ingest:dry`        | Fetch from TMDB and OMDb but write nothing               |
@@ -102,7 +105,9 @@ wrangler secret put BETTER_AUTH_SECRET
 
 `/ask` embeds the query in a Web Worker with `Xenova/bge-small-en-v1.5` and sends only the 384-dimension vector to the Worker. `title_embedding` stores the matching title vectors as base64 float32 data.
 
-The first search downloads roughly 60 MB of model and ONNX runtime files. Later searches use the browser cache. Re-run `pnpm embed:apply:prd` after updating titles or changing `EMBEDDING_MODEL` in `app/lib/ai/embedding.ts`.
+The model revision is pinned in `app/lib/ai/embedding.ts`. Both the model files and the ONNX runtime come from the `openbingeboard-models` R2 bucket at `models.openbingeboard.com`, so the site does not depend on Hugging Face or a public CDN at runtime.
+
+Semantic search is opt-in. Enabling it downloads about 62 MB once; the browser caches the files. `title_embedding` stores base64 float32 vectors and a hash of the embedding input, so `pnpm embed:apply:prd` only re-embeds titles that changed. Changing the revision or dtype changes `EMBEDDING_MODEL_KEY`, which invalidates every stored vector and forces a full re-embed. Run `pnpm models:sync` before deploying a new revision.
 
 ## Data model
 

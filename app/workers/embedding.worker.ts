@@ -3,50 +3,79 @@ import {
   pipeline,
   type FeatureExtractionPipeline,
 } from "@huggingface/transformers";
-import { EMBEDDING_MODEL, queryEmbeddingText } from "~/lib/ai/embedding";
+import {
+  EMBEDDING_MODEL,
+  MODEL_ORIGIN,
+  ONNX_RUNTIME_VERSION,
+  queryEmbeddingText,
+} from "~/lib/ai/embedding";
 
-// Keep the large ONNX runtime out of the Worker asset bundle. The version is
-// pinned to the onnxruntime-web dependency that transformers.js resolves.
+env.allowLocalModels = false;
+env.useBrowserCache = true;
+env.remoteHost = MODEL_ORIGIN;
+env.remotePathTemplate = "{model}/resolve/" + EMBEDDING_MODEL.revision + "/";
+
+// Keep the large ONNX runtime out of the Worker asset bundle. Both the runtime
+// and the model are served from R2 under versioned, immutable paths.
 env.backends.onnx.wasm!.wasmPaths =
-  "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.31.0-dev.20260914-8d85527a0/dist/";
+  MODEL_ORIGIN + "onnxruntime/" + ONNX_RUNTIME_VERSION + "/";
+env.backends.onnx.wasm!.numThreads = 1;
 
-interface AskWorkerRequest {
-  id: number;
-  text: string;
-}
+type WorkerRequest =
+  { id: number; type: "warmup" } | { id: number; type: "embed"; text: string };
 
-interface AskWorkerScope {
-  onmessage: ((event: MessageEvent<AskWorkerRequest>) => void) | null;
+interface WorkerScope {
+  onmessage: ((event: MessageEvent<WorkerRequest>) => void) | null;
   postMessage(message: unknown): void;
 }
 
-const scope = self as unknown as AskWorkerScope;
+const scope = self as unknown as WorkerScope;
 let extractor: Promise<FeatureExtractionPipeline> | null = null;
 
 function getExtractor() {
   extractor ??= pipeline("feature-extraction", EMBEDDING_MODEL.id, {
     dtype: EMBEDDING_MODEL.dtype,
     device: "wasm",
+    progress_callback: (event) => {
+      if (event.status !== "progress_total") return;
+      scope.postMessage({
+        type: "progress",
+        loaded: event.loaded,
+        total: event.total,
+      });
+    },
+  }).catch((error) => {
+    extractor = null;
+    throw error;
   });
   return extractor;
 }
 
 scope.onmessage = async (event) => {
-  const { id, text } = event.data;
+  const request = event.data;
+  const { id } = request;
 
   try {
     const model = await getExtractor();
-    const output = await model(queryEmbeddingText(text), {
+
+    if (request.type === "warmup") {
+      scope.postMessage({ id, type: "ready" });
+      return;
+    }
+
+    const output = await model(queryEmbeddingText(request.text), {
       pooling: "mean",
       normalize: true,
     });
     scope.postMessage({
       id,
+      type: "vector",
       vector: Array.from(output.data as Float32Array),
     });
   } catch (error) {
     scope.postMessage({
       id,
+      type: "error",
       error: error instanceof Error ? error.message : "Embedding failed.",
     });
   }

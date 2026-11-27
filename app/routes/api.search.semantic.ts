@@ -1,5 +1,5 @@
 import { countryFromRequest } from "~/lib/country.server";
-import { EMBEDDING_MODEL } from "~/lib/ai/embedding";
+import { EMBEDDING_MODEL, EMBEDDING_MODEL_KEY } from "~/lib/ai/embedding";
 import { runQuery } from "~/server/effect.server";
 import { searchSemanticTitles } from "~/server/semantic.server";
 import type { Route } from "./+types/api.search.semantic";
@@ -7,6 +7,7 @@ import type { Route } from "./+types/api.search.semantic";
 interface SearchBody {
   vector?: unknown;
   services?: unknown;
+  kind?: unknown;
   model?: unknown;
   dim?: unknown;
 }
@@ -37,7 +38,7 @@ export async function action({ request }: Route.ActionArgs) {
     );
   }
 
-  if (body.model !== EMBEDDING_MODEL.id || body.dim !== EMBEDDING_MODEL.dim) {
+  if (body.model !== EMBEDDING_MODEL_KEY || body.dim !== EMBEDDING_MODEL.dim) {
     return Response.json(
       { error: "Unsupported embedding model" },
       { status: 400 },
@@ -54,9 +55,12 @@ export async function action({ request }: Route.ActionArgs) {
       ].slice(0, 20)
     : [];
 
+  const kind =
+    body.kind === "movie" || body.kind === "series" ? body.kind : undefined;
+
   const country = countryFromRequest(request);
   const result = await runQuery(
-    searchSemanticTitles(country, services, vector, 18),
+    searchSemanticTitles(country, services, vector, { kind, limit: 18 }),
   );
 
   return Response.json(result);
