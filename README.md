@@ -43,7 +43,7 @@ Values come from Doppler and reach the process through `doppler run`. Nothing se
 | `TMDB_API_KEY`          | `dev`, `prd` | ingest             |
 | `OMDB_API_KEY`          | `dev`, `prd` | ingest             |
 | `CLOUDFLARE_API_TOKEN`  | `prd`        | deploy, remote D1  |
-| `CLOUDFLARE_ACCOUNT_ID` | `prd`        | deploy, remote D1  |
+| `CLOUDFLARE_ACCOUNT_ID` | `prd`        | account lookup     |
 | `BETTER_AUTH_SECRET`    | `dev`, `prd` | auth sessions      |
 | `RESEND_API_KEY`        | `prd`        | verification email |
 | `EMAIL_FROM`            | `dev`, `prd` | email sender       |
@@ -139,15 +139,14 @@ The default list covers Netflix, Prime Video, Disney+, Viaplay, SkyShowtime, HBO
 
 ## Deploy
 
-The production D1 database is `be5efb5b-b4fd-4409-a38f-4def80adc89a`. The Worker is bound to `openbingeboard.hugoplanet.se` as a custom domain, and `workers.dev` is disabled. Both are declared in `wrangler.jsonc`.
+The D1 database `be5efb5b-b4fd-4409-a38f-4def80adc89a` and the custom domain `openbingeboard.hugoplanet.se` are owned by Terraform in `hugoplanet-infrastructure/modules/bingeboard`. The Worker script and its secret stay in Wrangler. `wrangler.jsonc` declares the account, the D1 binding, and `workers_dev = false`; it deliberately does not declare the custom domain, because a Wrangler deploy replaces the Worker's domain set and would fight Terraform.
 
 ```sh
-wrangler login
 pnpm db:migrate:remote
 pnpm deploy
 ```
 
-`wrangler login` is only needed once per machine. CI needs a Cloudflare API token with Workers Scripts Edit, D1 Edit, and Workers Routes Edit in the `prd` Doppler config, plus `CLOUDFLARE_ACCOUNT_ID`.
+The `prd` Doppler config holds the Terraform-created app token as `CLOUDFLARE_API_TOKEN`. That token allows Workers Scripts Edit and D1 Edit for this account, plus Zone Read and DNS Edit for the app hostname. Do not add the custom domain back to `wrangler.jsonc`, and do not recreate the D1 database by hand. Change the domain or database in Terraform instead.
 
 ## Licensing
 

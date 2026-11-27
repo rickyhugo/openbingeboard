@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "openbingeboard",
+  "account_id": "bc7f7d5c218d4e8521d7e56c169450ff",
   "compatibility_date": "2026-11-23",
   "main": "./workers/app.ts",
   "vars": {
@@ -8,12 +9,11 @@
     "BETTER_AUTH_URL": "https://openbingeboard.hugoplanet.se",
     "EMAIL_FROM": "OpenBingeBoard <noreply@hugoplanet.se>",
   },
-  "routes": [
-    {
-      "pattern": "openbingeboard.hugoplanet.se",
-      "custom_domain": true,
-    },
-  ],
+  // The custom domain is owned by Terraform (modules/bingeboard in
+  // hugoplanet-infrastructure). Do not declare it here: Wrangler replaces the
+  // Worker's domain set on deploy and would fight Terraform for ownership.
+  "workers_dev": false,
+  "preview_urls": false,
   "d1_databases": [
     {
       "binding": "DB",
