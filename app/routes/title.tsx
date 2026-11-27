@@ -23,13 +23,15 @@ const OFFER_GROUPS = [
 
 export function meta({ loaderData }: Route.MetaArgs) {
   const name = loaderData?.title.name ?? "Title";
-  const country = loaderData?.country;
+  const description = `Where to watch ${name} in the Nordics, with IMDb, Rotten Tomatoes, and Metacritic scores in one view.`;
+
   return [
     { title: `${name} · OpenBingeBoard` },
-    {
-      name: "description",
-      content: `Where to watch ${name} in ${country ? countryName(country) : "the Nordics"}, with IMDb and Rotten Tomatoes scores.`,
-    },
+    { name: "description", content: description },
+    { property: "og:title", content: `${name} · OpenBingeBoard` },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
   ];
 }
 

@@ -17,18 +17,17 @@ import { listGenres } from "~/server/extras.server";
 import { listProviders, listTitles } from "~/server/queries.server";
 import type { Route } from "./+types/home";
 
-export function meta({ loaderData }: Route.MetaArgs) {
-  const country = loaderData?.country;
-  const name = country ? countryName(country) : "the Nordics";
+export function meta() {
+  const description =
+    "Find where to stream, rent, or buy films and series in the Nordics, with IMDb, Rotten Tomatoes, and Metacritic scores in one view.";
+
   return [
-    { title: "OpenBingeBoard · What to watch in " + name },
-    {
-      name: "description",
-      content:
-        "Browse films and series streaming, renting, or on sale in " +
-        name +
-        ". Filter by service and rating.",
-    },
+    { title: "OpenBingeBoard · What to watch in the Nordics" },
+    { name: "description", content: description },
+    { property: "og:title", content: "OpenBingeBoard" },
+    { property: "og:description", content: description },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
   ];
 }
 
