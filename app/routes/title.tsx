@@ -174,7 +174,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                         {offers.map((offer) => (
                           <li
                             key={`${offer.providerId}-${offer.monetization}`}
-                            className="flex items-center justify-between gap-2 border-b px-3 py-2 last:border-b-0"
+                            className="flex min-w-0 items-center justify-between gap-2 border-b px-3 py-2 last:border-b-0"
                           >
                             <ProviderChip
                               name={offer.providerName}
@@ -185,7 +185,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                                 href={offer.link}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:underline"
+                                className="shrink-0 font-mono text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground hover:underline"
                               >
                                 Open
                               </a>
