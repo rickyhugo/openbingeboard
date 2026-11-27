@@ -1,5 +1,9 @@
 import { useRevalidator, useRouteLoaderData } from "react-router";
 import { useProfile } from "~/components/profile-provider";
+import {
+  NativeSelect,
+  NativeSelectOption,
+} from "~/components/ui/native-select";
 import { COUNTRIES, parseCountry } from "~/lib/countries";
 import type { loader as rootLoader } from "~/root";
 
@@ -12,20 +16,20 @@ export function CountrySelect() {
 
   return (
     <div>
-      <select
+      <NativeSelect
         value={value}
         onChange={(event) => setCountry(parseCountry(event.target.value))}
         aria-label="Country"
         aria-busy={pending}
         disabled={pending}
-        className="h-8 w-full border bg-background px-2 font-mono text-[11px] text-foreground outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-wait disabled:opacity-60"
+        className="w-full font-mono"
       >
         {COUNTRIES.map((country) => (
-          <option key={country.code} value={country.code}>
+          <NativeSelectOption key={country.code} value={country.code}>
             {country.name}
-          </option>
+          </NativeSelectOption>
         ))}
-      </select>
+      </NativeSelect>
       <p
         className="mt-1 h-3 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground"
         aria-live="polite"
