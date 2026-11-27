@@ -1,4 +1,9 @@
-import { Link, useNavigate, useRouteLoaderData } from "react-router";
+import {
+  Link,
+  useNavigate,
+  useRouteLoaderData,
+  useSearchParams,
+} from "react-router";
 import { AuthStatus } from "~/components/auth-status";
 import { ProfileTitleList } from "~/components/profile-title-list";
 import { useProfile } from "~/components/profile-provider";
@@ -22,6 +27,8 @@ export default function Profile() {
   const data = useRouteLoaderData<typeof rootLoader>("root");
   const providers = data?.providers ?? [];
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const tab = params.get("tab") === "want" ? "want" : "watched";
   const { state } = profile;
   const servicesQuery =
     state.services.length > 0 ? "/?providers=" + state.services.join(",") : "/";
@@ -131,7 +138,7 @@ export default function Profile() {
 
       <Separator className="my-8" />
 
-      <section>
+      <section id="saved">
         <h2 className="text-sm font-semibold">Saved views</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Save a filter combination from the catalogue, then open it here or in
@@ -173,8 +180,15 @@ export default function Profile() {
 
       <Separator className="my-8" />
 
-      <section>
-        <Tabs defaultValue="watched">
+      <section id="library">
+        <Tabs
+          value={tab}
+          onValueChange={(value) => {
+            const next = new URLSearchParams(params);
+            next.set("tab", value);
+            setParams(next);
+          }}
+        >
           <TabsList>
             <TabsTrigger value="watched">
               Watched ({state.watched.length})
