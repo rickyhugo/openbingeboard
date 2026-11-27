@@ -59,6 +59,7 @@ export function ProfileProvider({
   const timer = useRef<number | null>(null);
   const revalidator = useRevalidator();
   const countrySynced = useRef(country);
+  const countryVersion = useRef(0);
 
   useEffect(() => {
     setState(parseProfile(window.localStorage.getItem(STORAGE_KEY)));
@@ -81,6 +82,7 @@ export function ProfileProvider({
   useEffect(() => {
     if (!hydrated || !user) return;
     let cancelled = false;
+    const versionAtFetch = countryVersion.current;
 
     fetch("/api/profile")
       .then(async (response) =>
@@ -91,7 +93,12 @@ export function ProfileProvider({
         const local = parseProfile(window.localStorage.getItem(STORAGE_KEY));
         const firstSync =
           window.localStorage.getItem(LAST_USER_KEY) !== user.id;
-        setState(firstSync ? mergeProfiles(server, local) : server);
+        setState((current) => {
+          const next = firstSync ? mergeProfiles(server, local) : server;
+          return countryVersion.current === versionAtFetch
+            ? next
+            : { ...next, country: current.country };
+        });
         window.localStorage.setItem(LAST_USER_KEY, user.id);
       })
       .catch(() => {});
@@ -122,6 +129,7 @@ export function ProfileProvider({
 
   const setCountry = useCallback(
     (next: CountryCode) => {
+      countryVersion.current += 1;
       countrySynced.current = next;
       setState((current) => ({ ...current, country: next }));
       writeCountryCookie(next);

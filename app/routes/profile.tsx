@@ -1,4 +1,9 @@
-import { Link, redirect, useRouteLoaderData } from "react-router";
+import {
+  Link,
+  redirect,
+  useRevalidator,
+  useRouteLoaderData,
+} from "react-router";
 import { AuthStatus } from "~/components/auth-status";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -27,6 +32,8 @@ export function meta() {
 
 export default function Profile() {
   const profile = useProfile();
+  const revalidator = useRevalidator();
+  const countryPending = revalidator.state === "loading";
   const data = useRouteLoaderData<typeof rootLoader>("root");
   const providers = data?.providers ?? [];
   const { state } = profile;
@@ -112,6 +119,7 @@ export default function Profile() {
         <h2 className="text-sm font-semibold">Country</h2>
         <p className="mt-0.5 text-xs text-muted-foreground">
           Availability, services, and streaming links follow this country.
+          {countryPending ? " Updating..." : ""}
         </p>
         <div
           role="radiogroup"
@@ -126,9 +134,11 @@ export default function Profile() {
                 type="button"
                 role="radio"
                 aria-checked={active}
+                aria-busy={countryPending}
+                disabled={countryPending}
                 onClick={() => profile.setCountry(country.code)}
                 className={
-                  "flex flex-col items-start gap-1 border p-2 text-left transition-colors " +
+                  "flex flex-col items-start gap-1 border p-2 text-left transition-colors disabled:cursor-wait disabled:opacity-60 " +
                   (active ? "border-foreground bg-muted" : "hover:bg-muted/40")
                 }
               >
