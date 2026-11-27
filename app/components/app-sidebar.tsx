@@ -4,6 +4,7 @@ import {
   Bookmark02Icon,
   CheckmarkCircle02Icon,
   Film01Icon,
+  GithubIcon,
   Grid02Icon,
   InformationCircleIcon,
   PlayCircleIcon,
@@ -13,6 +14,7 @@ import {
   UserCircleIcon,
 } from "@hugeicons/core-free-icons";
 import { AuthActions } from "~/components/auth-actions";
+import { buttonVariants } from "~/components/ui/button";
 import { Brand } from "~/components/brand";
 import { CountrySelect } from "~/components/country-select";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -272,8 +274,20 @@ export function AppSidebar({
         </SidebarMenu>
         <AuthActions compact />
         <div className="flex items-center justify-between gap-2 px-2 pt-1">
-          <span className="eyebrow">Theme</span>
-          <ThemeToggle initial={theme} />
+          <a
+            href="https://github.com/rickyhugo/openbingeboard"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="View source on GitHub"
+            title="View source on GitHub"
+            className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+          >
+            <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
+          </a>
+          <div className="flex items-center gap-1.5">
+            <span className="eyebrow">Theme</span>
+            <ThemeToggle initial={theme} />
+          </div>
         </div>
       </SidebarFooter>
     </Sidebar>

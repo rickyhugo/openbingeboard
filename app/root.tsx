@@ -10,7 +10,7 @@ import {
   useLocation,
 } from "react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { GithubIcon, SparklesIcon } from "@hugeicons/core-free-icons";
+import { SparklesIcon } from "@hugeicons/core-free-icons";
 import { AppSidebar } from "~/components/app-sidebar";
 import { AuthActions } from "~/components/auth-actions";
 import { Brand } from "~/components/brand";
@@ -126,19 +126,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
                         <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
                         Ask
                       </Link>
-                      <a
-                        href="https://github.com/rickyhugo/openbingeboard"
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label="View source on GitHub"
-                        title="View source on GitHub"
-                        className={buttonVariants({
-                          variant: "ghost",
-                          size: "icon-sm",
-                        })}
-                      >
-                        <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
-                      </a>
                     </div>
                     <AuthActions />
                   </div>
