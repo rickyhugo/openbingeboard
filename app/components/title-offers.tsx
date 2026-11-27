@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { cn } from "cn";
 import { ProviderChip } from "~/components/provider-chip";
 import { useProfile } from "~/components/profile-provider";
@@ -14,48 +13,16 @@ const OFFER_GROUPS = [
 
 export function TitleOffers({ offers }: { offers: readonly OfferRow[] }) {
   const { state, hydrated } = useProfile();
-  const [showAll, setShowAll] = useState(false);
-
   const selected = new Set(state.services);
   const hasSelected = hydrated && selected.size > 0;
-  const selectedOffers = offers.filter((offer) =>
-    selected.has(offer.providerId),
-  );
-  const selectedCount = selectedOffers.length;
-  const otherCount = offers.length - selectedCount;
-  const showingAll = !hasSelected || showAll || selectedCount === 0;
-  const visible = showingAll ? offers : selectedOffers;
 
-  const ordered = [...visible].sort(
+  const ordered = [...offers].sort(
     (a, b) =>
       Number(selected.has(b.providerId)) - Number(selected.has(a.providerId)),
   );
 
   return (
     <div>
-      {hasSelected ? (
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border border-dashed px-3 py-2 font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
-          <span>{showingAll ? "All services" : "Your services"}</span>
-          {otherCount > 0 && selectedCount > 0 ? (
-            <button
-              type="button"
-              onClick={() => setShowAll((value) => !value)}
-              className="underline underline-offset-4 hover:text-foreground"
-            >
-              {showAll
-                ? "Only my services"
-                : `Show all offers (+${otherCount})`}
-            </button>
-          ) : null}
-        </div>
-      ) : null}
-
-      {hasSelected && selectedCount === 0 ? (
-        <p className="mt-2 border border-dashed p-3 text-[11px] text-muted-foreground">
-          None of your selected services carry this title. Showing all services.
-        </p>
-      ) : null}
-
       <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {OFFER_GROUPS.map((group) => {
           const groupOffers = ordered.filter(
@@ -71,7 +38,7 @@ export function TitleOffers({ offers }: { offers: readonly OfferRow[] }) {
               <ul>
                 {groupOffers.map((offer) => {
                   const inServices = selected.has(offer.providerId);
-                  const dim = showingAll && hasSelected && !inServices;
+                  const dim = hasSelected && !inServices;
 
                   return (
                     <li
