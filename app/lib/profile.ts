@@ -18,6 +18,7 @@ export interface ProfileUser {
   id: string;
   name: string;
   email: string;
+  emailVerified: boolean;
 }
 
 export const EMPTY_PROFILE: ProfileState = {

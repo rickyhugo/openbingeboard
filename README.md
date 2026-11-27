@@ -61,7 +61,7 @@ GitHub Actions uses one read-only Doppler service token scoped to the `prd` conf
 
 The Worker needs `BETTER_AUTH_SECRET` at runtime. Keep it in Doppler and push it with `wrangler secret put BETTER_AUTH_SECRET`. Local development reads it from `.dev.vars`. `BETTER_AUTH_URL` is a public var in `wrangler.jsonc`.
 
-Email verification and password reset send through Resend when `RESEND_API_KEY` is set. Without it, `EMAIL_DEV=1` logs the links in development, and production leaves email verification off so sign-up still works. Verify `openbingeboard.com` in Resend before setting the key.
+Email verification and password reset send through Resend when `RESEND_API_KEY` is set. Without it, `EMAIL_DEV=1` logs the links in development, and production leaves email verification off so sign-up still works. The sending domain and scoped key are managed by `hugoplanet-infrastructure/resend`; see that README for the two-phase Terraform apply.
 
 To share access, invite the person to the `openbingeboard` project in the `hugoplanet` workplace. They run `doppler login` and `doppler setup` in the repo, and the same `doppler.yaml` selects the project. Revoking access is one dashboard action.
 
@@ -73,7 +73,7 @@ Browse and filter without an account. Guests keep country, services, saved views
 
 Signing in stores the same profile as a JSON document in `user_profile` and merges guest data on first sign-in. The country setting syncs too. Better Auth owns `user`, `session`, `account`, and `verification`. The forms live at `/login`, with password reset at `/reset-password`.
 
-Only email and password sign-in is enabled. Sign-up requires verification only when an email sender is configured.
+The profile page includes account details, display-name editing, password changes, email verification status, resend verification, and sign out. Only email and password sign-in is enabled. Sign-up requires verification only when an email sender is configured.
 
 ```sh
 wrangler secret put BETTER_AUTH_SECRET

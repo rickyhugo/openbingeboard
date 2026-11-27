@@ -4,7 +4,7 @@ import {
   useRevalidator,
   useRouteLoaderData,
 } from "react-router";
-import { AuthStatus } from "~/components/auth-status";
+import { AccountPanel } from "~/components/account-panel";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
 import {
@@ -79,7 +79,6 @@ export default function Profile() {
             here.
           </p>
         </div>
-        <AuthStatus />
       </div>
 
       {!profile.user ? (
@@ -94,6 +93,8 @@ export default function Profile() {
           .
         </p>
       ) : null}
+
+      {profile.user ? <AccountPanel /> : null}
 
       <div className="mt-5 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
