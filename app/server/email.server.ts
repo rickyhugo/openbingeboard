@@ -45,4 +45,9 @@ export async function sendEmail(message: EmailMessage): Promise<void> {
   if (!response.ok) {
     throw new Error("Email send failed: " + response.status);
   }
+
+  const result = (await response.json().catch(() => null)) as {
+    id?: string;
+  } | null;
+  console.log("[email:sent]", message.subject, result?.id ?? "");
 }
