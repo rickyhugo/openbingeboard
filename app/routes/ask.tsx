@@ -1,4 +1,10 @@
-import { useEffect, useState, type FormEvent, type KeyboardEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 import { Link } from "react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -21,22 +27,32 @@ import {
   warmupEmbeddingModel,
   type EmbeddingProgress,
 } from "~/lib/ai/embedding-client";
+import { parseQueryConstraints, type QueryConstraints } from "~/lib/ai/query";
 import type { OfferRow, TitleRow } from "~/server/queries.server";
 
 interface SearchResult {
   titles: TitleRow[];
   offers: Record<string, OfferRow[]>;
+  reference: {
+    id: string;
+    name: string;
+    year: number | null;
+    kind: "movie" | "series";
+  } | null;
 }
 
 type Kind = "all" | "movie" | "series";
 
 const STORAGE_KEY = "obb:semantic-search";
+const MAX_QUERY = 400;
+const TEXTAREA_MAX_HEIGHT = 240;
 const KINDS = [
   { value: "all", label: "All" },
   { value: "movie", label: "Films" },
   { value: "series", label: "Series" },
 ] as const;
 const EXAMPLES = [
+  "Similar to Breaking Bad, but with a female lead, +7 IMDb",
   "A quiet science fiction film",
   "Something like Arrival but lighter",
   "A short crime series from the 90s",
@@ -62,6 +78,9 @@ export default function Ask() {
   const [status, setStatus] = useState("");
   const [error, setError] = useState("");
   const [result, setResult] = useState<SearchResult | null>(null);
+  const [applied, setApplied] = useState<QueryConstraints | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const resultsRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY) === "1";
@@ -79,6 +98,22 @@ export default function Ask() {
   useEffect(() => {
     return subscribeToEmbeddingProgress(setProgress);
   }, []);
+
+  useEffect(() => {
+    const element = textareaRef.current;
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height =
+      Math.min(element.scrollHeight, TEXTAREA_MAX_HEIGHT) + "px";
+  }, [query]);
+
+  useEffect(() => {
+    if (!result) return;
+    resultsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [result]);
 
   async function enable() {
     setError("");
@@ -100,19 +135,22 @@ export default function Ask() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const text = query.trim();
-    if (text.length < 3) {
+    const constraints = parseQueryConstraints(query);
+    if (constraints.text.length < 3) {
       setError("Describe what you want in a few words.");
       return;
     }
 
+    const effectiveKind = kind !== "all" ? kind : constraints.kind;
+
     setPending(true);
     setError("");
     setResult(null);
+    setApplied(constraints);
     setStatus("Preparing the local model...");
 
     try {
-      const vector = await embedQuery(text);
+      const vector = await embedQuery(constraints.text);
       setStatus("Searching the catalogue...");
 
       const response = await fetch("/api/search/semantic", {
@@ -122,7 +160,10 @@ export default function Ask() {
           vector,
           model: EMBEDDING_MODEL_KEY,
           dim: EMBEDDING_MODEL.dim,
-          kind: kind === "all" ? undefined : kind,
+          kind: effectiveKind,
+          minRating: constraints.minRating,
+          decade: constraints.decade,
+          reference: constraints.reference,
           services: allServices ? [] : state.services,
         }),
       });
@@ -157,6 +198,14 @@ export default function Ask() {
 
   const total = progress.total || EMBEDDING_DOWNLOAD_BYTES;
   const percent = Math.min(100, Math.round((progress.loaded / total) * 100));
+  const constraints = parseQueryConstraints(query);
+  const effectiveKind = kind !== "all" ? kind : constraints.kind;
+  const detected = [
+    constraints.minRating > 0 ? "IMDb " + constraints.minRating + "+" : null,
+    effectiveKind ? (effectiveKind === "series" ? "Series" : "Films") : null,
+    constraints.decade ? constraints.decade + "s" : null,
+    constraints.reference ? "Similar to " + constraints.reference : null,
+  ].filter((label): label is string => label !== null);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-10 md:py-12">
@@ -185,14 +234,16 @@ export default function Ask() {
           <form onSubmit={submit} className="mt-7">
             <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow focus-within:shadow-md">
               <textarea
+                ref={textareaRef}
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="e.g. a tense Scandinavian crime series, or something like Arrival but lighter"
                 aria-label="Describe what you want to watch"
-                maxLength={300}
+                maxLength={MAX_QUERY}
                 rows={3}
-                className="min-h-[112px] w-full resize-none bg-transparent p-4 text-sm leading-6 outline-none placeholder:text-muted-foreground"
+                enterKeyHint="search"
+                className="max-h-[240px] min-h-[112px] w-full resize-none overflow-y-auto bg-transparent p-4 text-sm leading-6 outline-none placeholder:text-muted-foreground"
               />
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 p-3">
                 <div className="flex flex-wrap items-center gap-3">
@@ -230,16 +281,37 @@ export default function Ask() {
                   ) : null}
                 </div>
 
-                <Button type="submit" disabled={pending || loading}>
-                  {pending ? "Searching..." : "Search"}
-                  <HugeiconsIcon
-                    icon={ArrowRight01Icon}
-                    strokeWidth={2}
-                    className="size-3.5"
-                  />
-                </Button>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-muted-foreground">
+                    {query.length}/{MAX_QUERY}
+                  </span>
+                  <Button type="submit" disabled={pending || loading}>
+                    {pending ? "Searching..." : "Search"}
+                    <HugeiconsIcon
+                      icon={ArrowRight01Icon}
+                      strokeWidth={2}
+                      className="size-3.5"
+                    />
+                  </Button>
+                </div>
               </div>
             </div>
+
+            {query.trim().length > 0 && detected.length > 0 ? (
+              <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                <span className="text-[10px] text-muted-foreground">
+                  Understood
+                </span>
+                {detected.map((label) => (
+                  <span
+                    key={label}
+                    className="max-w-[18rem] truncate rounded-full border border-primary/20 bg-primary/[0.05] px-2 py-0.5 text-[10px] font-medium text-primary"
+                  >
+                    {label}
+                  </span>
+                ))}
+              </div>
+            ) : null}
 
             <div className="mt-3 flex flex-wrap gap-1.5">
               {EXAMPLES.map((example) => (
@@ -255,8 +327,9 @@ export default function Ask() {
             </div>
 
             <p className="mt-3 text-[11px] leading-5 text-muted-foreground">
-              The model runs on this device. Your description stays here; only
-              the vector is sent. Press {"⌘"}/Ctrl + Enter to search.
+              The model runs on this device. Only the query vector and your
+              filters leave your browser, plus the title name when you compare
+              against one. Press {"⌘"}/Ctrl + Enter to search.
             </p>
           </form>
         ) : (
@@ -277,7 +350,7 @@ export default function Ask() {
                   The BGE model and ONNX runtime download once, about{" "}
                   {Math.round(EMBEDDING_DOWNLOAD_BYTES / 1_000_000)} MB. Your
                   browser caches them. Your description stays on this device;
-                  only the 384-number query vector is sent.
+                  only the query vector and the filters you add are sent.
                 </p>
                 <Button
                   type="button"
@@ -331,7 +404,7 @@ export default function Ask() {
       ) : null}
 
       {result ? (
-        <section className="mt-10">
+        <section ref={resultsRef} className="mt-10 scroll-mt-24">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="eyebrow">Closest matches</p>
@@ -345,6 +418,19 @@ export default function Ask() {
               {result.titles.length} titles
             </p>
           </div>
+
+          {result.reference ? (
+            <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
+              Because you named{" "}
+              <Link
+                to={"/title/" + encodeURIComponent(result.reference.id)}
+                className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
+              >
+                {result.reference.name}
+              </Link>
+              . The rest of your description still shapes the list.
+            </p>
+          ) : null}
 
           {result.titles.length > 0 ? (
             <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4 xl:grid-cols-5">
@@ -366,7 +452,9 @@ export default function Ask() {
                 />
               </span>
               <p className="max-w-md text-sm leading-6 text-muted-foreground">
-                No close matches. Try a broader description or{" "}
+                {applied?.minRating
+                  ? `No matches at IMDb ${applied.minRating}+. Try a lower rating or a broader description.`
+                  : "No close matches. Try a broader description or"}{" "}
                 <Link
                   to="/"
                   className="font-medium text-foreground underline underline-offset-4"

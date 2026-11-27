@@ -4,7 +4,8 @@
     "vite.config.ts",
     "react-router.config.ts",
     "scripts/**/*.ts",
-    "app/lib/ai/embedding.ts"
+    "app/lib/ai/embedding.ts",
+    "app/lib/ai/query.ts"
   ],
   "compilerOptions": {
     "composite": true,

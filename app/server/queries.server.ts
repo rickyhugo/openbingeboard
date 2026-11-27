@@ -60,6 +60,47 @@ const ftsQuery = (input: string) =>
     .map((token) => `"${token.replace(/"/g, "")}"*`)
     .join(" ");
 
+export interface ReferenceTitle {
+  id: string;
+  name: string;
+  year: number | null;
+  kind: "movie" | "series";
+}
+
+// Resolve the title a prompt compares against. An exact name wins; otherwise
+// fall back to the full-text index.
+export const findTitleByPhrase = (phrase: string) =>
+  Effect.gen(function* () {
+    const sql = yield* SqlClient.SqlClient;
+    const trimmed = phrase.trim();
+    if (!trimmed) return null;
+
+    const exact = yield* sql<ReferenceTitle>`
+      SELECT id, name, year, kind
+      FROM title
+      WHERE lower(name) = lower(${trimmed})
+         OR lower(original_name) = lower(${trimmed})
+      ORDER BY popularity DESC
+      LIMIT 1
+    `;
+    if (exact.length > 0) return exact[0];
+
+    const searchable = trimmed.replace(/[^\p{L}\p{N}\s]/gu, " ").trim();
+    const fts = ftsQuery(searchable);
+    if (!fts) return null;
+
+    const matches = yield* sql<ReferenceTitle>`
+      SELECT t.id, t.name, t.year, t.kind
+      FROM title_fts
+      JOIN title t ON t.id = title_fts.title_id
+      WHERE title_fts MATCH ${fts}
+      ORDER BY bm25(title_fts)
+      LIMIT 1
+    `;
+
+    return matches[0] ?? null;
+  });
+
 export const listTitles = (region: string, filters: Filters) =>
   Effect.gen(function* () {
     const sql = yield* SqlClient.SqlClient;

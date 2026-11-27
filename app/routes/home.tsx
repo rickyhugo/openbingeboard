@@ -82,46 +82,64 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <main>
-      <section className="page-glow relative overflow-hidden border-b border-border/70">
-        <div className="mx-auto max-w-7xl px-4 pt-10 pb-10 md:pt-14 md:pb-12">
-          <div className="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
-            <div className="max-w-2xl">
-              <p className="eyebrow">Now streaming in {countryName(country)}</p>
-              <h1 className="mt-3 font-display text-5xl leading-[0.92] tracking-[-0.02em] sm:text-6xl md:text-7xl">
-                Find your next{" "}
-                <span className="text-primary italic">favourite</span>.
+      {active ? (
+        <section className="border-b border-border/70">
+          <div className="mx-auto max-w-7xl px-4 py-6">
+            <p className="eyebrow">Filtered catalogue</p>
+            <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+              <h1 className="font-display text-4xl tracking-tight">
+                Results in {countryName(country)}
               </h1>
-              <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground md:text-[15px]">
-                Every film and series available in {countryName(country)}, with
-                IMDb, Rotten Tomatoes, and Metacritic in one place. Browse the
-                catalogue or describe a mood and let Ask find it.
+              <p className="text-[11px] text-muted-foreground">
+                {result.total} {result.total === 1 ? "title" : "titles"}
               </p>
-              <div className="mt-6 flex flex-wrap items-center gap-2">
-                <Link to="/ask" className={buttonVariants({ size: "lg" })}>
-                  <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
-                  Ask the catalogue
-                </Link>
-                <Link
-                  to="/?sort=year"
-                  className={buttonVariants({ variant: "outline", size: "lg" })}
-                >
-                  Newest first
-                  <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
-                </Link>
-              </div>
             </div>
-
-            <dl className="grid grid-cols-3 gap-6 border-t border-border/70 pt-5 sm:gap-10 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
-              <Stat
-                label={active ? "Matches" : "Titles"}
-                value={result.total}
-              />
-              <Stat label="Services" value={providers.length} />
-              <Stat label="Countries" value={COUNTRIES.length} />
-            </dl>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : (
+        <section className="page-glow relative overflow-hidden border-b border-border/70">
+          <div className="mx-auto max-w-7xl px-4 pt-10 pb-10 md:pt-14 md:pb-12">
+            <div className="grid items-end gap-8 lg:grid-cols-[1fr_auto]">
+              <div className="max-w-2xl">
+                <p className="eyebrow">
+                  Now streaming in {countryName(country)}
+                </p>
+                <h1 className="mt-3 font-display text-5xl leading-[0.92] tracking-[-0.02em] sm:text-6xl md:text-7xl">
+                  Find your next{" "}
+                  <span className="text-primary italic">favourite</span>.
+                </h1>
+                <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground md:text-[15px]">
+                  Every film and series available in {countryName(country)},
+                  with IMDb, Rotten Tomatoes, and Metacritic in one place.
+                  Browse the catalogue or describe a mood and let Ask find it.
+                </p>
+                <div className="mt-6 flex flex-wrap items-center gap-2">
+                  <Link to="/ask" className={buttonVariants({ size: "lg" })}>
+                    <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+                    Ask the catalogue
+                  </Link>
+                  <Link
+                    to="/?sort=year"
+                    className={buttonVariants({
+                      variant: "outline",
+                      size: "lg",
+                    })}
+                  >
+                    Newest first
+                    <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+                  </Link>
+                </div>
+              </div>
+
+              <dl className="grid grid-cols-3 gap-6 border-t border-border/70 pt-5 sm:gap-10 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10">
+                <Stat label="Titles" value={result.total} />
+                <Stat label="Services" value={providers.length} />
+                <Stat label="Countries" value={COUNTRIES.length} />
+              </dl>
+            </div>
+          </div>
+        </section>
+      )}
 
       <FilterBar filters={filters} providers={providers} genres={genres} />
 

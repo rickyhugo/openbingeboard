@@ -4,8 +4,15 @@ import { EMBEDDING_MODEL, EMBEDDING_MODEL_KEY } from "~/lib/ai/embedding";
 import { cached } from "~/server/cache.server";
 import { runQuery } from "~/server/effect.server";
 import { getTitlesWithOffers } from "~/server/extras.server";
+import {
+  findTitleByPhrase,
+  type ReferenceTitle,
+} from "~/server/queries.server";
 
 const VECTOR_CACHE_TTL = 10 * 60 * 1000;
+// The reference is a gate, not a blend: keep the closest titles, then let the
+// full prompt order them.
+const REFERENCE_POOL = 20;
 
 interface VectorRow {
   id: string;
@@ -19,6 +26,14 @@ interface VectorSet {
 
 interface IdRow {
   id: string;
+}
+
+interface SemanticOptions {
+  kind?: "movie" | "series";
+  limit?: number;
+  minRating?: number;
+  decade?: number;
+  reference?: string | null;
 }
 
 const listVectors = () =>
@@ -50,17 +65,22 @@ function decodeVector(value: string): Float32Array {
 function normalize(vector: readonly number[]): Float32Array | null {
   if (vector.length !== EMBEDDING_MODEL.dim) return null;
   const normalized = new Float32Array(vector);
+  return normalizeInPlace(normalized) ? normalized : null;
+}
+
+function normalizeInPlace(vector: Float32Array): boolean {
   let norm = 0;
-  for (const value of normalized) {
-    if (!Number.isFinite(value)) return null;
+  for (const value of vector) {
+    if (!Number.isFinite(value)) return false;
     norm += value * value;
   }
-  if (norm === 0) return null;
+  if (norm === 0) return false;
+
   const scale = 1 / Math.sqrt(norm);
-  for (let index = 0; index < normalized.length; index += 1) {
-    normalized[index] *= scale;
+  for (let index = 0; index < vector.length; index += 1) {
+    vector[index] *= scale;
   }
-  return normalized;
+  return true;
 }
 
 // The cached set holds ~2 MB of base64 vectors. Decode it once per isolate
@@ -99,15 +119,25 @@ function dotAt(
   return score;
 }
 
+function dotBetween(data: Float32Array, left: number, right: number): number {
+  let score = 0;
+  for (let index = 0; index < EMBEDDING_MODEL.dim; index += 1) {
+    score += data[left + index] * data[right + index];
+  }
+  return score;
+}
+
+const empty = { titles: [], offers: {}, reference: null };
+
 export const searchSemanticTitles = (
   region: string,
   services: readonly number[],
   queryVector: readonly number[],
-  options: { kind?: "movie" | "series"; limit?: number } = {},
+  options: SemanticOptions = {},
 ) =>
   Effect.gen(function* () {
     const query = normalize(queryVector);
-    if (!query) return { titles: [], offers: {} };
+    if (!query) return empty;
 
     const set = yield* Effect.promise(() =>
       cached<VectorSet>(
@@ -116,18 +146,47 @@ export const searchSemanticTitles = (
         () => runQuery(listVectors()),
       ),
     );
-    if (set.ids.length === 0) return { titles: [], offers: {} };
+    if (set.ids.length === 0) return empty;
 
     const data = decodeSet(set);
-    if (!data) return { titles: [], offers: {} };
+    if (!data) return empty;
+
+    // "Similar to Breaking Bad" first narrows the candidate pool to titles
+    // close to that reference, then the full prompt orders the pool.
+    let reference: ReferenceTitle | null = null;
+    let referenceOffset: number | null = null;
+    if (options.reference) {
+      const resolved = yield* findTitleByPhrase(options.reference);
+      const position = resolved ? set.ids.indexOf(resolved.id) : -1;
+      if (resolved && position >= 0) {
+        reference = resolved;
+        referenceOffset = position * EMBEDDING_MODEL.dim;
+      }
+    }
 
     const sql = yield* SqlClient.SqlClient;
+    const minRating = options.minRating ?? 0;
     const eligible = yield* sql<IdRow>`
       SELECT DISTINCT o.title_id AS id
       FROM offer o
       JOIN title t ON t.id = o.title_id
       WHERE o.region = ${region}
         ${options.kind ? sql`AND t.kind = ${options.kind}` : sql``}
+        ${
+          options.decade !== undefined
+            ? sql`AND t.year >= ${options.decade} AND t.year < ${options.decade + 10}`
+            : sql``
+        }
+        ${
+          minRating > 0
+            ? sql`AND EXISTS (
+                SELECT 1 FROM rating r
+                WHERE r.title_id = t.id
+                  AND r.source = 'imdb'
+                  AND r.score >= ${minRating}
+              )`
+            : sql``
+        }
         ${
           services.length > 0
             ? sql`AND o.provider_id IN ${sql.in(services)}`
@@ -136,20 +195,34 @@ export const searchSemanticTitles = (
     `;
 
     const positions = new Map(set.ids.map((id, index) => [id, index]));
-    const matches: { id: string; score: number }[] = [];
+    const matches: { id: string; score: number; anchorScore: number }[] = [];
 
     for (const row of eligible) {
+      if (reference && row.id === reference.id) continue;
       const position = positions.get(row.id);
       if (position === undefined) continue;
+      const offset = position * EMBEDDING_MODEL.dim;
       matches.push({
         id: row.id,
-        score: dotAt(query, data, position * EMBEDDING_MODEL.dim),
+        score: dotAt(query, data, offset),
+        anchorScore:
+          referenceOffset === null
+            ? 0
+            : dotBetween(data, referenceOffset, offset),
       });
     }
 
-    if (matches.length === 0) return { titles: [], offers: {} };
+    if (matches.length === 0) {
+      return { titles: [], offers: {}, reference };
+    }
 
-    const ranked = matches
+    const pool =
+      referenceOffset === null
+        ? matches
+        : matches
+            .sort((a, b) => b.anchorScore - a.anchorScore)
+            .slice(0, REFERENCE_POOL);
+    const ranked = pool
       .sort((a, b) => b.score - a.score)
       .slice(0, options.limit ?? 18);
     const ids = ranked.map((match) => match.id);
@@ -160,5 +233,5 @@ export const searchSemanticTitles = (
         (order.get(a.id) ?? ids.length) - (order.get(b.id) ?? ids.length),
     );
 
-    return { titles, offers: result.offers };
+    return { titles, offers: result.offers, reference };
   });

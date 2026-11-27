@@ -103,9 +103,11 @@ wrangler secret put BETTER_AUTH_SECRET
 
 ## Semantic search
 
-`/ask` embeds the query in a Web Worker with `Xenova/bge-small-en-v1.5` and sends only the 384-dimension vector to the Worker. `title_embedding` stores the matching title vectors as base64 float32 data.
+`/ask` embeds the query in a Web Worker with `Xenova/bge-small-en-v1.5` and sends the vector, parsed filters, and a reference title name when one is present to the search API. The description itself is not sent. `title_embedding` stores the matching title vectors as base64 float32 data.
 
 The model revision is pinned in `app/lib/ai/embedding.ts`. Both the model files and the ONNX runtime come from the `openbingeboard-models` R2 bucket at `models.openbingeboard.com`, so the site does not depend on Hugging Face or a public CDN at runtime.
+
+Ask parses structured constraints from the prompt. "IMDb 7+", "at least 8 on IMDb", "from the 90s", and "series" become server filters. A prompt that names a title, such as "similar to Breaking Bad", uses that title's stored vector to anchor the candidate pool, and the named title is left out of the results. The rating and decade filters are hard constraints; the title anchor and the rest of the description only influence ranking.
 
 Semantic search is opt-in. Enabling it downloads about 62 MB once; the browser caches the files. `title_embedding` stores base64 float32 vectors and a hash of the embedding input, so `pnpm embed:apply:prd` only re-embeds titles that changed. Changing the revision or dtype changes `EMBEDDING_MODEL_KEY`, which invalidates every stored vector and forces a full re-embed. Run `pnpm models:sync` before deploying a new revision.
 

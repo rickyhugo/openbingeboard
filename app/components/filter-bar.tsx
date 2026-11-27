@@ -158,6 +158,7 @@ export function FilterBar({
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search titles"
               aria-label="Search titles"
+              enterKeyHint="search"
               className="rounded-full pr-10 pl-9"
             />
             <button
