@@ -656,7 +656,7 @@ function writeTitle(writer: SqlWriter, title: Title, timestamp: number) {
           sqlString(offer.link),
           sqlNumber(timestamp),
         ].join(", ") +
-        ") ON CONFLICT(title_id, provider_id, region, monetization) DO UPDATE SET link=excluded.link, updated_at=excluded.updated_at;",
+        ") ON CONFLICT(title_id, provider_id, region, monetization) DO UPDATE SET link=COALESCE(excluded.link, offer.link), updated_at=excluded.updated_at;",
     );
   }
 
