@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router";
 import { AuthStatus } from "~/components/auth-status";
 import { CountrySelect } from "~/components/country-select";
-import { ProviderLogo } from "~/components/provider-logo";
 import { ThemeToggle } from "~/components/theme-toggle";
 import type { Theme } from "~/lib/theme";
 import {
@@ -26,7 +25,7 @@ export function AppSidebar({
   providers: readonly ProviderRow[];
   theme: Theme;
 }) {
-  const { state, hydrated, toggleService } = useProfile();
+  const { state } = useProfile();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const kind = params.get("kind");
@@ -116,45 +115,6 @@ export function AppSidebar({
           <SidebarGroupLabel>Your services</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {hydrated && selectedServices.length > 0 ? (
-                selectedServices.slice(0, 6).map((provider) => (
-                  <SidebarMenuItem key={provider.id}>
-                    <div className="flex h-8 items-center gap-1 px-2 text-xs">
-                      <Link
-                        to={"/?providers=" + provider.id}
-                        className="flex min-w-0 flex-1 items-center gap-1.5 hover:text-foreground hover:underline"
-                        title={"Browse " + provider.name}
-                      >
-                        <ProviderLogo
-                          path={provider.logoPath}
-                          name={provider.name}
-                          className="h-4 w-4"
-                        />
-                        <span className="truncate">{provider.name}</span>
-                      </Link>
-                      <button
-                        type="button"
-                        aria-label={"Remove " + provider.name}
-                        className="shrink-0 text-muted-foreground hover:text-foreground"
-                        onClick={() => toggleService(provider.id)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </SidebarMenuItem>
-                ))
-              ) : (
-                <p className="px-2 py-1.5 text-[11px] text-muted-foreground">
-                  {state.services.length > 0
-                    ? "Not available in this country."
-                    : "No services selected."}
-                </p>
-              )}
-              {selectedServices.length > 6 ? (
-                <p className="px-2 py-1 text-[10px] text-muted-foreground">
-                  +{selectedServices.length - 6} more
-                </p>
-              ) : null}
               {selectedServices.length > 0 ? (
                 <SidebarMenuItem>
                   <SidebarMenuButton render={<Link to={servicesQuery} />}>
