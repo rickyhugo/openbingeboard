@@ -81,6 +81,14 @@ export function AppSidebar({
                   Series
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  isActive={pathname === "/ask"}
+                  render={<Link to="/ask" />}
+                >
+                  Ask
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

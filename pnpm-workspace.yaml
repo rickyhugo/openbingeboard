@@ -1,5 +1,7 @@
 allowBuilds:
   esbuild: true
+  onnxruntime-node: true
+  protobufjs: true
   workerd: true
 minimumReleaseAgeExclude:
   - "@effect/platform-cloudflare@4.1.6"

@@ -88,6 +88,7 @@ wrangler secret put BETTER_AUTH_SECRET
 | `pnpm typecheck`         | Regenerate Worker types and route types, then type-check |
 | `pnpm db:migrate:local`  | Apply D1 migrations locally                              |
 | `pnpm db:seed`           | Load the demo catalogue into the local database          |
+| `pnpm embed:apply:prd`   | Embed titles and apply vectors to remote D1              |
 | `pnpm db:reset`          | Rebuild the local database from scratch                  |
 | `pnpm ingest`            | Generate `db/generated/ingest.sql` through Doppler       |
 | `pnpm ingest:dry`        | Fetch from TMDB and OMDb but write nothing               |
@@ -96,6 +97,12 @@ wrangler secret put BETTER_AUTH_SECRET
 | `hk check --all`         | Run the same checks as the pre-commit hook               |
 
 `pnpm ingest:apply` and `pnpm ingest:apply:prd` refuse to write to the remote database unless `CI=true` or `CONFIRM=1` is set.
+
+## Semantic search
+
+`/ask` embeds the query in a Web Worker with `Xenova/bge-small-en-v1.5` and sends only the 384-dimension vector to the Worker. `title_embedding` stores the matching title vectors as base64 float32 data.
+
+The first search downloads roughly 60 MB of model and ONNX runtime files. Later searches use the browser cache. Re-run `pnpm embed:apply:prd` after updating titles or changing `EMBEDDING_MODEL` in `app/lib/ai/embedding.ts`.
 
 ## Data model
 

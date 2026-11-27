@@ -27,3 +27,7 @@ jobs:
       - run: pnpm ingest:apply:prd -- --pages=${{ inputs.pages || '2' }} --limit=${{ inputs.limit || '60' }}
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+
+      - run: pnpm embed:apply:prd
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}

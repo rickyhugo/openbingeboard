@@ -8,6 +8,14 @@ export default defineConfig({
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
     reactRouter(),
+    {
+      name: "drop-bundled-onnx-wasm",
+      generateBundle(_options, bundle) {
+        for (const fileName of Object.keys(bundle)) {
+          if (fileName.endsWith(".wasm")) delete bundle[fileName];
+        }
+      },
+    },
   ],
   resolve: {
     tsconfigPaths: true,
