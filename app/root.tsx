@@ -31,12 +31,24 @@ import "./app.css";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const country = countryFromRequest(request);
-  const [providers, session] = await Promise.all([
+  const [providersResult, sessionResult] = await Promise.allSettled([
     cached(`providers:${country}`, 5 * 60_000, () =>
       runQuery(listProviders(country)),
     ),
     auth.api.getSession({ headers: request.headers }),
   ]);
+
+  if (providersResult.status === "rejected") {
+    console.error("[root] provider query failed", providersResult.reason);
+  }
+  if (sessionResult.status === "rejected") {
+    console.error("[root] session query failed", sessionResult.reason);
+  }
+
+  const providers =
+    providersResult.status === "fulfilled" ? providersResult.value : [];
+  const session =
+    sessionResult.status === "fulfilled" ? sessionResult.value : null;
 
   const user = session?.user
     ? {
@@ -58,7 +70,11 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const { providers, country, theme, user } = useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
+  const providers = data?.providers ?? [];
+  const country = data?.country ?? "SE";
+  const theme = data?.theme ?? "light";
+  const user = data?.user ?? null;
 
   return (
     <html lang="en" className={theme === "dark" ? "dark" : ""}>
