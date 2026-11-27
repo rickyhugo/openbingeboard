@@ -61,9 +61,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <h1 className="text-xl font-semibold tracking-tight">
             Films and series available in {countryName(country)}
           </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {result.total} titles across {providers.length} services. Stream,
-            rent, or buy.
+          <p className="mt-1 max-w-2xl text-xs text-muted-foreground">
+            Find where to stream, rent, or buy, with IMDb, Rotten Tomatoes, and
+            Metacritic scores in one view.
           </p>
         </div>
       </section>
