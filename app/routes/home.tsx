@@ -11,6 +11,7 @@ import {
   toSearchParams,
   type Filters,
 } from "~/lib/filters";
+import { cached } from "~/server/cache.server";
 import { runQuery } from "~/server/effect.server";
 import { listGenres } from "~/server/extras.server";
 import { listProviders, listTitles } from "~/server/queries.server";
@@ -35,9 +36,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   const filters = parseFilters(request.url);
   const country = countryFromRequest(request);
   const [result, providers, genres] = await Promise.all([
-    runQuery(listTitles(country, filters)),
-    runQuery(listProviders(country)),
-    runQuery(listGenres),
+    cached(`catalogue:${country}:${JSON.stringify(filters)}`, 60_000, () =>
+      runQuery(listTitles(country, filters)),
+    ),
+    cached(`providers:${country}`, 5 * 60_000, () =>
+      runQuery(listProviders(country)),
+    ),
+    cached("genres", 60 * 60_000, () => runQuery(listGenres)),
   ]);
 
   return { filters, country, providers, genres, result };

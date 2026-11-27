@@ -18,6 +18,7 @@ import {
   emailEnabled,
   emailVerificationRequired,
 } from "~/server/auth.server";
+import { cached } from "~/server/cache.server";
 import { runQuery } from "~/server/effect.server";
 import { listProviders } from "~/server/queries.server";
 
@@ -27,7 +28,9 @@ import "./app.css";
 export async function loader({ request }: Route.LoaderArgs) {
   const country = countryFromRequest(request);
   const [providers, session] = await Promise.all([
-    runQuery(listProviders(country)),
+    cached(`providers:${country}`, 5 * 60_000, () =>
+      runQuery(listProviders(country)),
+    ),
     auth.api.getSession({ headers: request.headers }),
   ]);
 

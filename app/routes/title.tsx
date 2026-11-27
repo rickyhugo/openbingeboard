@@ -7,6 +7,7 @@ import { TitleActions } from "~/components/title-actions";
 import { countryFromRequest } from "~/lib/country.server";
 import { countryName } from "~/lib/countries";
 import { formatRuntime, imdbUrl, initials, posterUrl } from "~/lib/tmdb";
+import { cached } from "~/server/cache.server";
 import { runQuery } from "~/server/effect.server";
 import { getImdbStats } from "~/server/extras.server";
 import { getTitle } from "~/server/queries.server";
@@ -34,14 +35,20 @@ export function meta({ loaderData }: Route.MetaArgs) {
 
 export async function loader({ params, request }: Route.LoaderArgs) {
   const country = countryFromRequest(request);
-  const title = await runQuery(getTitle(country, params.id));
+  const title = await cached(`title:${country}:${params.id}`, 60_000, () =>
+    runQuery(getTitle(country, params.id)),
+  );
 
   if (!title) {
     throw data("Title not found", { status: 404 });
   }
 
   const imdb = title.ratings.find((rating) => rating.source === "imdb");
-  const stats = imdb ? await runQuery(getImdbStats(imdb.score)) : null;
+  const stats = imdb
+    ? await cached(`imdb-stats:${imdb.score}`, 10 * 60_000, () =>
+        runQuery(getImdbStats(imdb.score)),
+      )
+    : null;
 
   return { title, stats, country };
 }
