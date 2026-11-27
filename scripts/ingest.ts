@@ -842,7 +842,9 @@ async function main() {
             const deepLink =
               deepLinks.get(offer.provider.id + ":" + offer.monetization) ??
               null;
-            offer.link = deepLink;
+            // Keep TMDB's JustWatch page as a fallback when JustWatch search
+            // has no provider-specific match.
+            offer.link = deepLink ?? offer.link;
             if (deepLink) {
               linked += 1;
               deepLinkCount += 1;
