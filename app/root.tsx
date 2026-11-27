@@ -8,9 +8,12 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "react-router";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { GithubIcon } from "@hugeicons/core-free-icons";
 import { AppSidebar } from "~/components/app-sidebar";
 import { AuthActions } from "~/components/auth-actions";
 import { ProfileProvider } from "~/components/profile-provider";
+import { buttonVariants } from "~/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
 import { countryFromRequest } from "~/lib/country.server";
 import { themeFromRequest } from "~/lib/theme.server";
@@ -88,7 +91,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     {country}
                   </span>
                 </Link>
-                <div className="ml-auto flex shrink-0 items-center gap-2">
+                <div className="ml-auto flex shrink-0 items-center gap-1.5">
+                  <a
+                    href="https://github.com/rickyhugo/openbingeboard"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="View source on GitHub"
+                    title="View source on GitHub"
+                    className={
+                      "hidden sm:inline-flex " +
+                      buttonVariants({ variant: "ghost", size: "icon-sm" })
+                    }
+                  >
+                    <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
+                  </a>
                   <AuthActions />
                 </div>
               </header>
