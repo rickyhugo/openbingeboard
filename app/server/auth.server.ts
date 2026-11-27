@@ -11,8 +11,7 @@ type AuthEnv = Env & {
 };
 
 const authEnv = env as AuthEnv;
-const baseURL =
-  authEnv.BETTER_AUTH_URL ?? "https://openbingeboard.hugoplanet.se";
+const baseURL = authEnv.BETTER_AUTH_URL ?? "https://openbingeboard.com";
 
 export const emailEnabled =
   Boolean(authEnv.RESEND_API_KEY) || authEnv.EMAIL_DEV === "1";

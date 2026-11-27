@@ -13,7 +13,8 @@ type EmailEnv = Env & {
 };
 
 const emailEnv = env as EmailEnv;
-const from = emailEnv.EMAIL_FROM ?? "OpenBingeBoard <noreply@hugoplanet.se>";
+const from =
+  emailEnv.EMAIL_FROM ?? "OpenBingeBoard <noreply@openbingeboard.com>";
 
 export async function sendEmail(message: EmailMessage): Promise<void> {
   if (!emailEnv.RESEND_API_KEY) {

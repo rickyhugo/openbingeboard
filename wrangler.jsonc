@@ -6,8 +6,8 @@
   "main": "./workers/app.ts",
   "vars": {
     "REGION": "SE",
-    "BETTER_AUTH_URL": "https://openbingeboard.hugoplanet.se",
-    "EMAIL_FROM": "OpenBingeBoard <noreply@hugoplanet.se>",
+    "BETTER_AUTH_URL": "https://openbingeboard.com",
+    "EMAIL_FROM": "OpenBingeBoard <noreply@openbingeboard.com>",
   },
   // The custom domain is owned by Terraform (modules/bingeboard in
   // hugoplanet-infrastructure). Do not declare it here: Wrangler replaces the

@@ -4,7 +4,7 @@ Find what is available to stream, rent, or buy in Sweden, with IMDb, Rotten Toma
 
 The first region is `SE`. Availability is stored per region, so adding another country is data, not a schema change.
 
-Live at [openbingeboard.hugoplanet.se](https://openbingeboard.hugoplanet.se).
+Live at [openbingeboard.com](https://openbingeboard.com).
 
 ## Stack
 
@@ -26,7 +26,7 @@ pnpm install
 echo "BETTER_AUTH_URL=http://localhost:5173" > .dev.vars
 echo "BETTER_AUTH_SECRET=$(openssl rand -base64 32)" >> .dev.vars
 echo "EMAIL_DEV=1" >> .dev.vars
-echo "EMAIL_FROM=OpenBingeBoard <noreply@hugoplanet.se>" >> .dev.vars
+echo "EMAIL_FROM=OpenBingeBoard <noreply@openbingeboard.com>" >> .dev.vars
 pnpm db:migrate:local
 pnpm db:seed
 pnpm dev
@@ -61,7 +61,7 @@ GitHub Actions uses one read-only Doppler service token scoped to the `prd` conf
 
 The Worker needs `BETTER_AUTH_SECRET` at runtime. Keep it in Doppler and push it with `wrangler secret put BETTER_AUTH_SECRET`. Local development reads it from `.dev.vars`. `BETTER_AUTH_URL` is a public var in `wrangler.jsonc`.
 
-Email verification and password reset send through Resend when `RESEND_API_KEY` is set. Without it, `EMAIL_DEV=1` logs the links in development, and production leaves email verification off so sign-up still works. Verify `hugoplanet.se` in Resend before setting the key.
+Email verification and password reset send through Resend when `RESEND_API_KEY` is set. Without it, `EMAIL_DEV=1` logs the links in development, and production leaves email verification off so sign-up still works. Verify `openbingeboard.com` in Resend before setting the key.
 
 To share access, invite the person to the `openbingeboard` project in the `hugoplanet` workplace. They run `doppler login` and `doppler setup` in the repo, and the same `doppler.yaml` selects the project. Revoking access is one dashboard action.
 
@@ -107,7 +107,7 @@ TMDB:
 
 1. Create an account at [themoviedb.org/signup](https://www.themoviedb.org/signup) and verify the email.
 2. Open [Settings → API](https://www.themoviedb.org/settings/api) and request a developer key.
-3. Use the site URL `https://openbingeboard.hugoplanet.se` and describe it as a non-commercial streaming availability catalogue.
+3. Use the site URL `https://openbingeboard.com` and describe it as a non-commercial streaming availability catalogue.
 4. Copy either the v3 API key or the v4 read access token. Both work as `TMDB_API_KEY`.
 
 OMDb:
@@ -139,7 +139,7 @@ The default list covers Netflix, Prime Video, Disney+, Viaplay, SkyShowtime, HBO
 
 ## Deploy
 
-The D1 database `be5efb5b-b4fd-4409-a38f-4def80adc89a` and the custom domain `openbingeboard.hugoplanet.se` are owned by Terraform in `hugoplanet-infrastructure/modules/bingeboard`. The Worker script and its secret stay in Wrangler. `wrangler.jsonc` declares the account, the D1 binding, and `workers_dev = false`; it deliberately does not declare the custom domain, because a Wrangler deploy replaces the Worker's domain set and would fight Terraform.
+The D1 database `be5efb5b-b4fd-4409-a38f-4def80adc89a` and the custom domain `openbingeboard.com` are owned by Terraform in `hugoplanet-infrastructure/modules/bingeboard`. The Worker script and its secret stay in Wrangler. `wrangler.jsonc` declares the account, the D1 binding, and `workers_dev = false`; it deliberately does not declare the custom domain, because a Wrangler deploy replaces the Worker's domain set and would fight Terraform.
 
 ```sh
 pnpm db:migrate:remote
