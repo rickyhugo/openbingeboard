@@ -19,13 +19,17 @@ import type { Route } from "./+types/home";
 
 export function meta() {
   const description =
-    "Find where to stream, rent, or buy films and series in the Nordics, with IMDb, Rotten Tomatoes, and Metacritic scores in one view.";
+    "Find where you can stream movies and series in the Nordics. Compare rental and purchase options, with IMDb, Rotten Tomatoes, and Metacritic scores.";
 
   return [
-    { title: "OpenBingeBoard · What to watch in the Nordics" },
+    { title: "Where to stream movies and series · OpenBingeBoard" },
     { name: "description", content: description },
-    { property: "og:title", content: "OpenBingeBoard" },
+    {
+      property: "og:title",
+      content: "Find where you can stream movies and series · OpenBingeBoard",
+    },
     { property: "og:description", content: description },
+    { property: "og:site_name", content: "OpenBingeBoard" },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ];

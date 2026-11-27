@@ -23,13 +23,17 @@ const OFFER_GROUPS = [
 
 export function meta({ loaderData }: Route.MetaArgs) {
   const name = loaderData?.title.name ?? "Title";
-  const description = `Where to watch ${name} in the Nordics, with IMDb, Rotten Tomatoes, and Metacritic scores in one view.`;
+  const description = `Find where you can stream ${name} in the Nordics. Compare rental and purchase options, with IMDb, Rotten Tomatoes, and Metacritic scores.`;
 
   return [
-    { title: `${name} · OpenBingeBoard` },
+    { title: `${name} · Where to stream · OpenBingeBoard` },
     { name: "description", content: description },
-    { property: "og:title", content: `${name} · OpenBingeBoard` },
+    {
+      property: "og:title",
+      content: `${name} · Where to stream · OpenBingeBoard`,
+    },
     { property: "og:description", content: description },
+    { property: "og:site_name", content: "OpenBingeBoard" },
     { property: "og:type", content: "website" },
     { name: "twitter:card", content: "summary" },
   ];
