@@ -12,7 +12,6 @@ import { AppSidebar } from "~/components/app-sidebar";
 import { ProfileProvider } from "~/components/profile-provider";
 import { ThemeToggle } from "~/components/theme-toggle";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
-import { ATTRIBUTION } from "~/lib/tmdb";
 import { themeFromRequest } from "~/lib/theme.server";
 import {
   auth,
@@ -90,41 +89,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div id="main" className="flex-1">
                 {children}
               </div>
-
-              <footer className="mt-16 border-t">
-                <div className="mx-auto max-w-6xl px-4 py-8 text-[11px] text-muted-foreground">
-                  <p className="max-w-2xl">
-                    Metadata and availability from{" "}
-                    <a
-                      href={ATTRIBUTION.tmdb}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline underline-offset-4 hover:text-foreground"
-                    >
-                      TMDB
-                    </a>
-                    . Streaming data powered by{" "}
-                    <a
-                      href={ATTRIBUTION.justWatch}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline underline-offset-4 hover:text-foreground"
-                    >
-                      JustWatch
-                    </a>
-                    . Ratings via{" "}
-                    <a
-                      href={ATTRIBUTION.omdb}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline underline-offset-4 hover:text-foreground"
-                    >
-                      OMDb
-                    </a>
-                    .
-                  </p>
-                </div>
-              </footer>
             </div>
           </SidebarProvider>
         </ProfileProvider>

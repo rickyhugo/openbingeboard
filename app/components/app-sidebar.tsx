@@ -182,6 +182,16 @@ export function AppSidebar({
       </SidebarContent>
 
       <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              isActive={pathname === "/about"}
+              render={<Link to="/about" />}
+            >
+              About
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <AuthStatus />
       </SidebarFooter>
     </Sidebar>

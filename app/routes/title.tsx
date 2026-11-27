@@ -198,11 +198,6 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                 })}
               </div>
             )}
-
-            <p className="mt-3 font-mono text-[10px] text-muted-foreground">
-              Availability from JustWatch via TMDB. Links open the streaming
-              service where available.
-            </p>
           </section>
         </div>
       </div>
