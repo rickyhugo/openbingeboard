@@ -89,6 +89,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const user = data?.user ?? null;
   const { pathname } = useLocation();
   const bare = pathname === "/login" || pathname === "/reset-password";
+  // The catalogue runs as an app shell: fixed height, the results area
+  // scrolls internally so the toolbar and pagination stay visible.
+  const isCatalogue = pathname === "/";
 
   // Applied before first paint. "system" follows the OS preference; the
   // class is re-applied live by the theme toggle.
@@ -129,10 +132,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               <AppSidebar providers={providers} theme={theme} />
 
-              <div className="flex min-w-0 flex-1 flex-col bg-card md:peer-data-[variant=inset]:my-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-sidebar-border md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2">
+              <div
+                className={`flex min-w-0 flex-col bg-card md:peer-data-[variant=inset]:my-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-sidebar-border md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 ${
+                  isCatalogue
+                    ? "h-[calc(100dvh-1rem)] overflow-hidden"
+                    : "min-h-dvh flex-1"
+                }`}
+              >
                 <Header />
 
-                <div id="main" className="min-h-[calc(100dvh-4rem)] flex-1">
+                <div
+                  id="main"
+                  className={
+                    isCatalogue
+                      ? "flex min-h-0 flex-1 flex-col overflow-hidden"
+                      : "min-h-[calc(100dvh-4rem)] flex-1"
+                  }
+                >
                   {children}
                 </div>
               </div>

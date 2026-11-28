@@ -4,6 +4,7 @@ import {
   ArrowRight,
   BookmarkSimple,
   CaretDown,
+  Checks,
   Funnel,
   MagnifyingGlass,
   PlayCircle,
@@ -54,7 +55,7 @@ export function FilterBar({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { hydrated, saveFilter } = useProfile();
+  const { state, hydrated, saveFilter } = useProfile();
   const [query, setQuery] = useState(filters.q);
   const [viewName, setViewName] = useState("");
   const [saveOpen, setSaveOpen] = useState(false);
@@ -88,6 +89,16 @@ export function FilterBar({
     (filters.decade !== null ? 1 : 0) +
     (filters.monetization !== "all" ? 1 : 0) +
     (filters.minRating > 0 ? 1 : 0);
+
+  // "My services" preset: the services the user checked on their profile.
+  const myServices = state.services.filter((id) =>
+    providers.some((provider) => provider.id === id),
+  );
+  const myServicesActive =
+    hydrated &&
+    myServices.length > 0 &&
+    filters.providers.length === myServices.length &&
+    myServices.every((id) => filters.providers.includes(id));
 
   const chips: { key: string; label: string; clear: Partial<Filters> }[] = [];
   if (filters.q) {
@@ -187,10 +198,34 @@ export function FilterBar({
             ))}
           </div>
 
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={!hydrated || myServices.length === 0}
+            title={
+              myServices.length === 0
+                ? "Choose services first"
+                : "Show only the services you checked"
+            }
+            aria-pressed={myServicesActive}
+            onClick={() =>
+              apply({
+                providers: myServicesActive ? [] : myServices,
+              })
+            }
+          >
+            <Checks weight="bold" />
+            My services
+          </Button>
+
           <Popover open={servicesOpen} onOpenChange={setServicesOpen}>
             <PopoverTrigger
               type="button"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
+              className={cn(
+                buttonVariants({ variant: "outline", size: "sm" }),
+                myServicesActive && "border-foreground/40 bg-muted",
+              )}
             >
               <PlayCircle weight="bold" />
               <span className="max-w-[9rem] truncate">
