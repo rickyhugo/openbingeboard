@@ -27,13 +27,12 @@ const steps = [
 export default function About() {
   return (
     <main>
-      <section className="page-glow border-b border-border/70">
-        <div className="mx-auto max-w-5xl px-4 pt-12 pb-12 md:pt-20 md:pb-16">
-          <p className="eyebrow">About</p>
-          <h1 className="mt-3 max-w-3xl font-display text-5xl leading-[0.95] tracking-[-0.02em] md:text-7xl">
+      <section className="border-b border-border/70">
+        <div className="mx-auto max-w-5xl px-4 py-10">
+          <h1 className="max-w-3xl text-2xl font-semibold tracking-tight">
             A calmer way to decide what to watch.
           </h1>
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-muted-foreground md:text-base">
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
             OpenBingeBoard is a non-commercial catalogue of films and series
             available across the Nordic countries. Pick your country, choose
             your services, and see every option in one place, without opening
@@ -45,11 +44,8 @@ export default function About() {
       <div className="mx-auto max-w-5xl px-4 py-10 md:py-12">
         <div className="grid gap-3 sm:grid-cols-3">
           {steps.map((step, index) => (
-            <div
-              key={step.title}
-              className="rounded-xl border border-border bg-card p-5"
-            >
-              <span className="font-display text-3xl leading-none text-primary/60">
+            <div key={step.title} className=" border border-border bg-card p-5">
+              <span className="font-mono text-xs text-muted-foreground">
                 {String(index + 1).padStart(2, "0")}
               </span>
               <h2 className="mt-4 text-sm font-semibold">{step.title}</h2>
@@ -61,8 +57,8 @@ export default function About() {
         </div>
 
         <div className="mt-10 grid gap-4 lg:grid-cols-2">
-          <section className="rounded-xl border border-border bg-card p-6">
-            <h2 className="font-display text-2xl tracking-tight">
+          <section className=" border border-border bg-card p-6">
+            <h2 className="text-base font-semibold tracking-tight">
               Data and attribution
             </h2>
             <div className="mt-3 space-y-3 text-sm leading-7 text-muted-foreground">
@@ -104,8 +100,10 @@ export default function About() {
             </div>
           </section>
 
-          <section className="rounded-xl border border-border bg-card p-6">
-            <h2 className="font-display text-2xl tracking-tight">Licensing</h2>
+          <section className=" border border-border bg-card p-6">
+            <h2 className="text-base font-semibold tracking-tight">
+              Licensing
+            </h2>
             <p className="mt-3 text-sm leading-7 text-muted-foreground">
               OpenBingeBoard is a personal, non-commercial project. This product
               uses the TMDB API but is not endorsed or certified by TMDB or

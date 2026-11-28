@@ -6,11 +6,7 @@ import {
   useSearchParams,
 } from "react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  CheckmarkCircle02Icon,
-  Mail01Icon,
-  SparklesIcon,
-} from "@hugeicons/core-free-icons";
+import { CheckmarkCircle02Icon, Mail01Icon } from "@hugeicons/core-free-icons";
 import { AuthShell } from "~/components/auth-shell";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -209,15 +205,15 @@ export default function Login() {
   if (user) {
     return (
       <AuthShell>
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
-          <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+        <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
+          <span className="grid size-11 place-items-center bg-muted text-foreground">
             <HugeiconsIcon
               icon={CheckmarkCircle02Icon}
               strokeWidth={2}
               className="size-5"
             />
           </span>
-          <h1 className="mt-4 font-display text-3xl tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight">
             You are signed in
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">{user.email}</p>
@@ -235,15 +231,15 @@ export default function Login() {
   if (verificationEmail) {
     return (
       <AuthShell>
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
-          <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+        <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
+          <span className="grid size-11 place-items-center bg-muted text-foreground">
             <HugeiconsIcon
               icon={Mail01Icon}
               strokeWidth={2}
               className="size-5"
             />
           </span>
-          <h1 className="mt-4 font-display text-3xl tracking-tight">
+          <h1 className="text-xl font-semibold tracking-tight">
             Check your email
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -317,22 +313,8 @@ export default function Login() {
 
   return (
     <AuthShell>
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
-        <div className="flex items-center gap-2 text-primary">
-          <HugeiconsIcon
-            icon={SparklesIcon}
-            strokeWidth={2}
-            className="size-4"
-          />
-          <span className="eyebrow text-primary">
-            {mode === "signin"
-              ? "Your account"
-              : mode === "signup"
-                ? "Join the board"
-                : "Account recovery"}
-          </span>
-        </div>
-        <h1 className="mt-3 font-display text-3xl tracking-tight">{title}</h1>
+      <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
+        <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
 
         <form onSubmit={submit} className="mt-6 space-y-3">
@@ -416,7 +398,7 @@ export default function Login() {
 
           {error ? (
             <p
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-[11px] leading-5 text-destructive"
+              className=" bg-destructive/10 px-3 py-2 text-[11px] leading-5 text-destructive"
               role="alert"
             >
               {error}
@@ -425,7 +407,7 @@ export default function Login() {
 
           {message ? (
             <p
-              className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-5 text-muted-foreground"
+              className=" bg-muted px-3 py-2 text-[11px] leading-5 text-muted-foreground"
               role="status"
             >
               {message}

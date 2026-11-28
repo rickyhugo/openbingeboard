@@ -35,9 +35,6 @@ import {
 import { useProfile } from "~/components/profile-provider";
 import type { ProviderRow } from "~/server/queries.server";
 
-const navLink =
-  "data-active:bg-primary/10 data-active:font-semibold data-active:text-primary";
-
 export function AppSidebar({
   providers,
   theme,
@@ -65,9 +62,6 @@ export function AppSidebar({
     <Sidebar collapsible="offcanvas">
       <SidebarHeader className="px-4 pt-5 pb-2">
         <Brand />
-        <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
-          What to watch, sorted.
-        </p>
       </SidebarHeader>
 
       <SidebarContent className="px-2">
@@ -75,7 +69,7 @@ export function AppSidebar({
           <SidebarGroupLabel className="eyebrow h-6 px-2">
             Region
           </SidebarGroupLabel>
-          <div className="rounded-lg border border-sidebar-border bg-card/50 p-2">
+          <div className=" border border-sidebar-border bg-card/50 p-2">
             <CountrySelect />
           </div>
         </SidebarGroup>
@@ -88,7 +82,6 @@ export function AppSidebar({
             <SidebarMenu className="gap-0.5">
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={navLink}
                   isActive={
                     pathname === "/" && kind !== "movie" && kind !== "series"
                   }
@@ -100,7 +93,6 @@ export function AppSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={navLink}
                   isActive={pathname === "/" && kind === "movie"}
                   render={<Link to="/?kind=movie" />}
                 >
@@ -110,7 +102,6 @@ export function AppSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={navLink}
                   isActive={pathname === "/" && kind === "series"}
                   render={<Link to="/?kind=series" />}
                 >
@@ -120,7 +111,6 @@ export function AppSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={navLink}
                   isActive={pathname === "/ask"}
                   render={<Link to="/ask" />}
                 >
@@ -140,7 +130,6 @@ export function AppSidebar({
             <SidebarMenu className="gap-0.5">
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={navLink}
                   isActive={pathname === "/library/watched"}
                   render={<Link to="/library/watched" />}
                 >
@@ -151,7 +140,6 @@ export function AppSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className={navLink}
                   isActive={pathname === "/library/want"}
                   render={<Link to="/library/want" />}
                 >
@@ -175,13 +163,13 @@ export function AppSidebar({
                   <Link
                     key={provider.id}
                     to={"/?providers=" + provider.id}
-                    className="rounded-full border border-sidebar-border bg-card/60 px-2 py-1 text-[10px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                    className=" border border-sidebar-border bg-card/60 px-2 py-1 text-[10px] text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                   >
                     {provider.name}
                   </Link>
                 ))}
                 {selectedServices.length > 4 ? (
-                  <span className="rounded-full border border-sidebar-border px-2 py-1 text-[10px] text-muted-foreground">
+                  <span className=" border border-sidebar-border px-2 py-1 text-[10px] text-muted-foreground">
                     +{selectedServices.length - 4}
                   </span>
                 ) : null}
@@ -190,20 +178,14 @@ export function AppSidebar({
             <SidebarMenu className="gap-0.5">
               {selectedServices.length > 0 ? (
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    className={navLink}
-                    render={<Link to={servicesQuery} />}
-                  >
+                  <SidebarMenuButton render={<Link to={servicesQuery} />}>
                     <HugeiconsIcon icon={PlayCircleIcon} strokeWidth={2} />
                     Browse my services
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ) : null}
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  className={navLink}
-                  render={<Link to="/services" />}
-                >
+                <SidebarMenuButton render={<Link to="/services" />}>
                   <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} />
                   {selectedServices.length > 0
                     ? "Manage services"
@@ -224,7 +206,6 @@ export function AppSidebar({
                 {state.saved.slice(0, 4).map((filter) => (
                   <SidebarMenuItem key={filter.id}>
                     <SidebarMenuButton
-                      className={navLink}
                       render={<Link to={"/" + filter.query} />}
                     >
                       <span className="truncate">{filter.name}</span>
@@ -232,10 +213,7 @@ export function AppSidebar({
                   </SidebarMenuItem>
                 ))}
                 <SidebarMenuItem>
-                  <SidebarMenuButton
-                    className={navLink}
-                    render={<Link to="/profile#saved" />}
-                  >
+                  <SidebarMenuButton render={<Link to="/profile#saved" />}>
                     Manage views
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -253,7 +231,6 @@ export function AppSidebar({
         <SidebarMenu className="gap-0.5">
           <SidebarMenuItem>
             <SidebarMenuButton
-              className={navLink}
               isActive={pathname === "/profile"}
               render={<Link to="/profile" />}
             >
@@ -263,7 +240,6 @@ export function AppSidebar({
           </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
-              className={navLink}
               isActive={pathname === "/about"}
               render={<Link to="/about" />}
             >

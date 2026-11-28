@@ -68,18 +68,8 @@ export default function Title({ loaderData }: Route.ComponentProps) {
 
   return (
     <main>
-      <section className="relative overflow-hidden border-b border-border/70">
-        {poster ? (
-          <img
-            src={poster}
-            alt=""
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 h-full w-full scale-110 object-cover opacity-20 blur-3xl dark:opacity-25"
-          />
-        ) : null}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/80 to-background" />
-
-        <div className="relative mx-auto max-w-7xl px-4 pt-6 pb-10 md:pb-14">
+      <section className="border-b border-border/70">
+        <div className="mx-auto max-w-7xl px-4 pt-6 pb-10 md:pb-12">
           <Link
             to="/"
             className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -94,7 +84,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
 
           <div className="mt-7 grid gap-8 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] lg:gap-12">
             <div className="mx-auto w-full max-w-[220px] md:mx-0 md:max-w-none">
-              <div className="poster-shadow aspect-[2/3] overflow-hidden rounded-2xl bg-muted ring-1 ring-border">
+              <div className="aspect-[2/3] overflow-hidden border bg-muted">
                 {poster ? (
                   <img
                     src={poster}
@@ -102,7 +92,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center bg-gradient-to-br from-muted to-secondary font-display text-5xl text-muted-foreground">
+                  <div className="flex h-full items-center justify-center bg-muted text-2xl text-muted-foreground">
                     {initials(title.name)}
                   </div>
                 )}
@@ -136,18 +126,18 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                 ))}
               </div>
 
-              <h1 className="mt-3 max-w-4xl font-display text-5xl leading-[0.94] tracking-[-0.02em] md:text-6xl lg:text-7xl">
+              <h1 className="mt-3 text-3xl font-semibold tracking-tight md:text-4xl">
                 {title.name}
               </h1>
 
               {title.originalName && title.originalName !== title.name ? (
-                <p className="mt-2 text-sm text-muted-foreground italic">
+                <p className="mt-1 text-sm text-muted-foreground">
                   {title.originalName}
                 </p>
               ) : null}
 
               {title.genres.length > 0 && (
-                <div className="mt-4 flex flex-wrap gap-1.5">
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   {title.genres.map((genre) => (
                     <Badge key={genre} variant="secondary">
                       {genre}
@@ -157,7 +147,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
               )}
 
               {title.overview && (
-                <p className="mt-5 max-w-3xl text-sm leading-7 text-muted-foreground md:text-[15px]">
+                <p className="mt-4 max-w-3xl text-sm leading-6 text-muted-foreground md:text-[15px]">
                   {title.overview}
                 </p>
               )}
@@ -169,7 +159,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                   href={imdb}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-5 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                  className="mt-4 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
                   Open on IMDb
                   <HugeiconsIcon
@@ -184,22 +174,11 @@ export default function Title({ loaderData }: Route.ComponentProps) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-10 md:py-12">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="eyebrow">Availability</p>
-            <h2 className="mt-1 font-display text-3xl tracking-tight md:text-4xl">
-              Where to watch in {countryName(country)}
-            </h2>
-          </div>
-          <p className="text-[11px] text-muted-foreground">
-            {title.offers.length}{" "}
-            {title.offers.length === 1 ? "option" : "options"}
-          </p>
-        </div>
+      <section className="mx-auto max-w-7xl px-4 py-8 md:py-10">
+        <p className="eyebrow">Where to watch in {countryName(country)}</p>
 
         {title.offers.length === 0 ? (
-          <div className="mt-5 rounded-xl border border-dashed border-border bg-card/40 p-6 text-sm text-muted-foreground">
+          <div className="mt-4 border border-dashed border-border bg-card/40 p-6 text-sm text-muted-foreground">
             No availability in {countryName(country)} recorded right now. It may
             have left a service since the last refresh.
           </div>
@@ -217,7 +196,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-16">
       <p className="eyebrow">{notFound ? "404" : "Error"}</p>
-      <h1 className="mt-2 font-display text-4xl tracking-tight">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight">
         {notFound
           ? "That title is not in the catalogue."
           : "Something went wrong."}

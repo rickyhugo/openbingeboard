@@ -38,7 +38,7 @@ export function HeaderSearch() {
         placeholder="Search films and series"
         aria-label="Search films and series"
         enterKeyHint="search"
-        className="h-9 w-full rounded-full border border-border bg-card/60 pr-3 pl-9 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20"
+        className="h-9 w-full border border-border bg-card/60 pr-3 pl-9 text-sm outline-none transition-colors placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/20"
       />
     </form>
   );

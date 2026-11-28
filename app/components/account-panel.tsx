@@ -163,9 +163,9 @@ export function AccountPanel() {
       </div>
 
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className=" border border-border bg-card p-5">
           <div className="flex items-center gap-3">
-            <span className="grid size-10 place-items-center rounded-full bg-primary/10 font-display text-xl text-primary">
+            <span className="grid size-10 place-items-center bg-muted text-base font-semibold text-foreground">
               {initial}
             </span>
             <div className="min-w-0">
@@ -225,7 +225,7 @@ export function AccountPanel() {
           ) : null}
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-5">
+        <div className=" border border-border bg-card p-5">
           <h3 className="text-sm font-semibold">Password</h3>
           <p className="mt-1 text-[11px] leading-5 text-muted-foreground">
             Changing your password signs out other sessions.

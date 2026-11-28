@@ -45,14 +45,12 @@ export default function Services() {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10">
         <p className="eyebrow">Settings</p>
-        <h1 className="mt-2 font-display text-5xl tracking-tight">
-          Your services
-        </h1>
+        <h1 className="text-xl font-semibold tracking-tight">Your services</h1>
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
-              className="h-[76px] animate-pulse rounded-xl border border-border bg-muted/60"
+              className="h-[76px] animate-pulse border border-border bg-muted/60"
             />
           ))}
         </div>
@@ -64,8 +62,7 @@ export default function Services() {
     <main className="mx-auto max-w-6xl px-4 py-10 md:py-12">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="eyebrow">Settings</p>
-          <h1 className="mt-2 font-display text-5xl tracking-tight md:text-6xl">
+          <h1 className="text-xl font-semibold tracking-tight">
             Your services
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
@@ -97,8 +94,8 @@ export default function Services() {
         </div>
 
         {selected.length === 0 ? (
-          <div className="mt-3 flex items-center gap-3 rounded-xl border border-dashed border-border bg-card/40 p-5">
-            <span className="grid size-10 place-items-center rounded-full bg-muted text-muted-foreground">
+          <div className="mt-3 flex items-center gap-3 border border-dashed border-border bg-card/40 p-5">
+            <span className="grid size-10 place-items-center bg-muted text-muted-foreground">
               <HugeiconsIcon
                 icon={PlayCircleIcon}
                 strokeWidth={1.8}
@@ -116,12 +113,12 @@ export default function Services() {
             {selected.map((provider) => (
               <div
                 key={provider.id}
-                className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 shadow-[0_1px_2px_oklch(0_0_0/3%)]"
+                className="flex items-center gap-3 border border-border bg-card p-3 shadow-[0_1px_2px_oklch(0_0_0/3%)]"
               >
                 <ProviderLogo
                   path={provider.logoPath}
                   name={provider.name}
-                  className="size-10 rounded-lg"
+                  className="size-10"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">
@@ -129,7 +126,7 @@ export default function Services() {
                   </p>
                   <Link
                     to={"/?providers=" + provider.id}
-                    className="inline-flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-primary"
+                    className="inline-flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
                   >
                     Browse titles
                     <HugeiconsIcon
@@ -178,12 +175,12 @@ export default function Services() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search services"
             aria-label="Search services"
-            className="rounded-full pl-9"
+            className=" pl-9"
           />
         </div>
 
         {filtered.length === 0 ? (
-          <p className="mt-4 rounded-xl border border-dashed border-border bg-card/40 p-5 text-sm text-muted-foreground">
+          <p className="mt-4 border border-dashed border-border bg-card/40 p-5 text-sm text-muted-foreground">
             No services match &ldquo;{query.trim()}&rdquo;.
           </p>
         ) : (
@@ -197,25 +194,25 @@ export default function Services() {
                   aria-pressed={active}
                   onClick={() => toggleService(provider.id)}
                   className={cn(
-                    "group flex items-center gap-3 rounded-xl border p-3 text-left transition-all",
+                    "group flex items-center gap-3 border p-3 text-left transition-all",
                     active
-                      ? "border-primary/40 bg-primary/[0.06] ring-1 ring-primary/20"
+                      ? "border-foreground/40 bg-muted"
                       : "border-border bg-card hover:border-foreground/20 hover:bg-muted/40",
                   )}
                 >
                   <ProviderLogo
                     path={provider.logoPath}
                     name={provider.name}
-                    className="size-10 rounded-lg"
+                    className="size-10"
                   />
                   <span className="min-w-0 flex-1 truncate text-sm font-medium">
                     {provider.name}
                   </span>
                   <span
                     className={cn(
-                      "grid size-5 shrink-0 place-items-center rounded-full border transition-colors",
+                      "grid size-5 shrink-0 place-items-center border transition-colors",
                       active
-                        ? "border-primary bg-primary text-primary-foreground"
+                        ? "border-foreground bg-foreground text-background"
                         : "border-border text-transparent",
                     )}
                   >

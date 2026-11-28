@@ -75,9 +75,7 @@ export default function Profile() {
     return (
       <main className="mx-auto max-w-6xl px-4 py-12">
         <p className="eyebrow">Your account</p>
-        <h1 className="mt-2 font-display text-5xl tracking-tight">
-          My profile
-        </h1>
+        <h1 className="text-xl font-semibold tracking-tight">My profile</h1>
         <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
       </main>
     );
@@ -85,12 +83,11 @@ export default function Profile() {
 
   return (
     <main>
-      <section className="page-glow border-b border-border/70">
+      <section className="border-b border-border/70">
         <div className="mx-auto max-w-6xl px-4 pt-10 pb-8 md:pt-12">
-          <p className="eyebrow">Your account</p>
           <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="font-display text-5xl tracking-tight md:text-6xl">
+              <h1 className="text-xl font-semibold tracking-tight">
                 My profile
               </h1>
               <p className="mt-2 max-w-xl text-sm text-muted-foreground">
@@ -121,9 +118,9 @@ export default function Profile() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((stat) => (
             <Link key={stat.label} to={stat.to} className="group">
-              <div className="rounded-xl border border-border bg-card p-4 transition-colors group-hover:border-primary/30 group-hover:bg-primary/[0.03]">
+              <div className=" border border-border bg-card p-4 transition-colors group-hover:bg-muted/60">
                 <p className="eyebrow">{stat.label}</p>
-                <p className="mt-1 font-display text-4xl leading-none tracking-tight">
+                <p className="mt-1 text-2xl font-semibold tracking-tight">
                   {stat.value}
                 </p>
               </div>
@@ -134,7 +131,7 @@ export default function Profile() {
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0 space-y-12">
             {!profile.user ? (
-              <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-dashed border-border bg-card/40 p-5">
+              <div className="flex flex-wrap items-center justify-between gap-4 border border-dashed border-border bg-card/40 p-5">
                 <div>
                   <p className="text-sm font-semibold">
                     You are browsing as a guest.
@@ -178,9 +175,9 @@ export default function Profile() {
                       disabled={countryPending}
                       onClick={() => profile.setCountry(country.code)}
                       className={cn(
-                        "relative flex flex-col items-start gap-1 rounded-xl border px-3 py-2.5 text-left transition-colors disabled:cursor-wait disabled:opacity-60",
+                        "relative flex flex-col items-start gap-1 border px-3 py-2.5 text-left transition-colors disabled:cursor-wait disabled:opacity-60",
                         active
-                          ? "border-primary/40 bg-primary/[0.06] ring-1 ring-primary/20"
+                          ? "border-foreground/50 bg-muted"
                           : "border-border bg-card hover:border-foreground/20 hover:bg-muted/40",
                       )}
                     >
@@ -194,7 +191,7 @@ export default function Profile() {
                         <HugeiconsIcon
                           icon={CheckmarkCircle02Icon}
                           strokeWidth={2}
-                          className="absolute top-2.5 right-2.5 size-4 text-primary"
+                          className="absolute top-2.5 right-2.5 size-4 text-foreground"
                         />
                       ) : null}
                     </button>
@@ -238,15 +235,15 @@ export default function Profile() {
                     <Link
                       key={provider.id}
                       to={"/?providers=" + provider.id}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                      className="inline-flex items-center gap-1.5 border border-border bg-card px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
                     >
-                      <span className="size-1.5 rounded-full bg-primary" />
+                      <span className="size-1.5 bg-foreground" />
                       {provider.name}
                     </Link>
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 rounded-xl border border-dashed border-border bg-card/40 p-4 text-xs text-muted-foreground">
+                <p className="mt-3 border border-dashed border-border bg-card/40 p-4 text-xs text-muted-foreground">
                   {state.services.length > 0
                     ? `Your selected services are not available in ${countryName(data?.country ?? "SE")}.`
                     : "No services selected."}{" "}
@@ -264,12 +261,12 @@ export default function Profile() {
             <section id="saved">
               <h2 className="text-sm font-semibold">Saved views</h2>
               {state.saved.length === 0 ? (
-                <p className="mt-3 rounded-xl border border-dashed border-border bg-card/40 p-4 text-xs text-muted-foreground">
+                <p className="mt-3 border border-dashed border-border bg-card/40 p-4 text-xs text-muted-foreground">
                   No saved views yet. Apply filters in the catalogue, then
                   choose Save.
                 </p>
               ) : (
-                <ul className="mt-3 overflow-hidden rounded-xl border border-border bg-card">
+                <ul className="mt-3 overflow-hidden border border-border bg-card">
                   {state.saved.map((filter) => (
                     <li
                       key={filter.id}
@@ -277,7 +274,7 @@ export default function Profile() {
                     >
                       <Link
                         to={"/" + filter.query}
-                        className="min-w-0 flex-1 text-xs font-medium hover:text-primary"
+                        className="min-w-0 flex-1 text-xs font-medium hover:text-foreground"
                       >
                         {filter.name}
                       </Link>
@@ -299,14 +296,14 @@ export default function Profile() {
           </div>
 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-xl border border-border bg-card p-4">
+            <div className=" border border-border bg-card p-4">
               <h2 className="text-sm font-semibold">Quick links</h2>
               <div className="mt-3 space-y-0.5">
                 {quickLinks.map((item) => (
                   <Link
                     key={item.to}
                     to={item.to}
-                    className="flex items-center gap-2 rounded-md px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
                     <HugeiconsIcon
                       icon={item.icon}
@@ -324,7 +321,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-4">
+            <div className=" border border-border bg-card p-4">
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <h2 className="text-sm font-semibold">Appearance</h2>
@@ -336,7 +333,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-card p-4">
+            <div className=" border border-border bg-card p-4">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <HugeiconsIcon
                   icon={Globe02Icon}

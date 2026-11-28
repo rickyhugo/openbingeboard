@@ -15,7 +15,7 @@ export function ProviderLogo({
   return (
     <span
       className={cn(
-        "flex shrink-0 items-center justify-center overflow-hidden rounded-md border border-border/60 bg-white",
+        "flex shrink-0 items-center justify-center overflow-hidden border bg-white",
         className ?? "h-6 w-6",
       )}
     >

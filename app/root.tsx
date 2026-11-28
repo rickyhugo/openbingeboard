@@ -169,9 +169,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   return (
     <main className="mx-auto flex min-h-[60dvh] max-w-3xl flex-col items-start justify-center px-4 py-16">
       <p className="eyebrow">{message}</p>
-      <h1 className="mt-2 font-display text-4xl tracking-tight md:text-5xl">
-        {details}
-      </h1>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight">{details}</h1>
       <Link
         to="/"
         className={"mt-5 " + buttonVariants({ variant: "outline", size: "sm" })}

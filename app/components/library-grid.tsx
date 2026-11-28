@@ -60,8 +60,8 @@ export function LibraryGrid({
 
   if (ids.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-4 rounded-xl border border-dashed border-border bg-card/40 p-8 md:p-12">
-        <span className="grid size-11 place-items-center rounded-full bg-muted text-muted-foreground">
+      <div className="flex flex-col items-start gap-4 border border-dashed border-border bg-card/40 p-8 md:p-12">
+        <span className="grid size-11 place-items-center bg-muted text-muted-foreground">
           <HugeiconsIcon
             icon={Bookmark02Icon}
             strokeWidth={1.8}
@@ -89,9 +89,9 @@ export function LibraryGrid({
       <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, index) => (
           <div key={index} className="space-y-2">
-            <div className="aspect-[2/3] animate-pulse rounded-xl bg-muted" />
-            <div className="h-3 w-3/4 animate-pulse rounded-full bg-muted" />
-            <div className="h-2.5 w-1/2 animate-pulse rounded-full bg-muted" />
+            <div className="aspect-[2/3] animate-pulse bg-muted" />
+            <div className="h-3 w-3/4 animate-pulse bg-muted" />
+            <div className="h-2.5 w-1/2 animate-pulse bg-muted" />
           </div>
         ))}
       </div>
@@ -100,7 +100,7 @@ export function LibraryGrid({
 
   if (ordered.length === 0) {
     return (
-      <p className="rounded-xl border border-dashed border-border bg-card/40 p-8 text-sm text-muted-foreground">
+      <p className=" border border-dashed border-border bg-card/40 p-8 text-sm text-muted-foreground">
         These titles are not in the current catalogue.
       </p>
     );

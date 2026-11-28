@@ -48,15 +48,11 @@ export default function Library({ loaderData }: Route.ComponentProps) {
 
   return (
     <main>
-      <section className="page-glow border-b border-border/70">
+      <section className="border-b border-border/70">
         <div className="mx-auto max-w-7xl px-4 pt-10 pb-8 md:pt-12">
-          <p className="eyebrow">Your library</p>
-
           <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="font-display text-5xl tracking-tight md:text-6xl">
-                {label}
-              </h1>
+              <h1 className="text-xl font-semibold tracking-tight">{label}</h1>
               <p className="mt-2 text-sm text-muted-foreground">
                 {hydrated
                   ? ids.length +
@@ -83,11 +79,11 @@ export default function Library({ loaderData }: Route.ComponentProps) {
             </div>
           </div>
 
-          <div className="mt-6 inline-flex items-center rounded-full border border-border bg-card/60 p-0.5">
+          <div className="mt-6 inline-flex items-center border border-border bg-card/60 p-0.5">
             <Link
               to="/library/watched"
               className={cn(
-                "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-medium transition-colors",
+                "inline-flex h-8 items-center gap-1.5 px-3 text-[11px] font-medium transition-colors",
                 mode === "watched"
                   ? "bg-foreground text-background shadow-sm"
                   : "text-muted-foreground hover:text-foreground",
@@ -104,7 +100,7 @@ export default function Library({ loaderData }: Route.ComponentProps) {
             <Link
               to="/library/want"
               className={cn(
-                "inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-[11px] font-medium transition-colors",
+                "inline-flex h-8 items-center gap-1.5 px-3 text-[11px] font-medium transition-colors",
                 mode === "want"
                   ? "bg-foreground text-background shadow-sm"
                   : "text-muted-foreground hover:text-foreground",
@@ -137,9 +133,9 @@ export default function Library({ loaderData }: Route.ComponentProps) {
           <div className="grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="space-y-2">
-                <div className="aspect-[2/3] animate-pulse rounded-xl bg-muted" />
-                <div className="h-3 w-3/4 animate-pulse rounded-full bg-muted" />
-                <div className="h-2.5 w-1/2 animate-pulse rounded-full bg-muted" />
+                <div className="aspect-[2/3] animate-pulse bg-muted" />
+                <div className="h-3 w-3/4 animate-pulse bg-muted" />
+                <div className="h-2.5 w-1/2 animate-pulse bg-muted" />
               </div>
             ))}
           </div>

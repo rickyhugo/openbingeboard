@@ -60,15 +60,15 @@ export default function ResetPassword() {
 
   return (
     <AuthShell>
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-7">
-        <span className="grid size-11 place-items-center rounded-full bg-primary/10 text-primary">
+      <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
+        <span className="grid size-11 place-items-center bg-muted text-foreground">
           <HugeiconsIcon
             icon={LockPasswordIcon}
             strokeWidth={2}
             className="size-5"
           />
         </span>
-        <h1 className="mt-4 font-display text-3xl tracking-tight">
+        <h1 className="text-xl font-semibold tracking-tight">
           Choose a new password
         </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
@@ -106,7 +106,7 @@ export default function ResetPassword() {
 
           {error ? (
             <p
-              className="rounded-lg bg-destructive/10 px-3 py-2 text-[11px] leading-5 text-destructive"
+              className=" bg-destructive/10 px-3 py-2 text-[11px] leading-5 text-destructive"
               role="alert"
             >
               {error}
@@ -114,7 +114,7 @@ export default function ResetPassword() {
           ) : null}
           {message ? (
             <p
-              className="rounded-lg bg-muted px-3 py-2 text-[11px] leading-5 text-muted-foreground"
+              className=" bg-muted px-3 py-2 text-[11px] leading-5 text-muted-foreground"
               role="status"
             >
               {message}

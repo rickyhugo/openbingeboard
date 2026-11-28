@@ -43,7 +43,7 @@ export function ScorePopover({
   return (
     <Popover>
       <PopoverTrigger
-        className="rounded-full align-middle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
+        className="rounded-none align-middle focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50"
         aria-label={"Show " + LABELS[rating.source] + " score details"}
       >
         <RatingBadge
@@ -85,9 +85,9 @@ export function ScorePopover({
                     {formatScore(item.score, item.scale, item.source)}
                   </span>
                 </div>
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-1.5 w-full bg-muted">
                   <div
-                    className="h-full rounded-full bg-foreground"
+                    className="h-full bg-foreground"
                     style={{ width: Math.max(2, Math.min(100, percent)) + "%" }}
                   />
                 </div>

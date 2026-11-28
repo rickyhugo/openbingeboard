@@ -159,12 +159,12 @@ export function FilterBar({
               placeholder="Search titles"
               aria-label="Search titles"
               enterKeyHint="search"
-              className="rounded-full pr-10 pl-9"
+              className=" pr-10 pl-9"
             />
             <button
               type="submit"
               aria-label="Search"
-              className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center rounded-full bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
+              className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
             >
               <HugeiconsIcon
                 icon={ArrowRight01Icon}
@@ -174,7 +174,7 @@ export function FilterBar({
             </button>
           </form>
 
-          <div className="flex h-9 items-center rounded-full border border-border bg-card/60 p-0.5">
+          <div className="flex h-9 items-center border border-border bg-card/60 p-0.5">
             {KINDS.map((option) => (
               <button
                 key={option.value}
@@ -182,7 +182,7 @@ export function FilterBar({
                 onClick={() => apply({ kind: option.value })}
                 aria-pressed={filters.kind === option.value}
                 className={cn(
-                  "h-8 rounded-full px-3 text-[11px] font-medium transition-colors",
+                  "h-8 px-3 text-[11px] font-medium transition-colors",
                   filters.kind === option.value
                     ? "bg-foreground text-background shadow-sm"
                     : "text-muted-foreground hover:text-foreground",
@@ -232,13 +232,13 @@ export function FilterBar({
                     <label
                       key={provider.id}
                       className={cn(
-                        "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-xs transition-colors hover:bg-muted",
-                        checked && "bg-primary/[0.06]",
+                        "flex cursor-pointer items-center gap-2 px-2 py-1.5 text-xs transition-colors hover:bg-muted",
+                        checked && "bg-muted/60",
                       )}
                     >
                       <input
                         type="checkbox"
-                        className="size-3.5 accent-primary"
+                        className="size-3.5 accent-foreground"
                         checked={checked}
                         onChange={() =>
                           setServiceDraft((current) =>
@@ -281,7 +281,7 @@ export function FilterBar({
               <HugeiconsIcon icon={FilterHorizontalIcon} strokeWidth={2} />
               Filters
               {advancedCount > 0 ? (
-                <span className="grid size-4 place-items-center rounded-full bg-primary text-[9px] font-semibold text-primary-foreground">
+                <span className="grid size-4 place-items-center bg-foreground text-[9px] font-semibold text-background">
                   {advancedCount}
                 </span>
               ) : null}
@@ -489,7 +489,7 @@ export function FilterBar({
                 key={chip.key}
                 type="button"
                 onClick={() => apply(chip.clear)}
-                className="inline-flex h-6 items-center gap-1 rounded-full border border-border bg-card px-2.5 text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                className="inline-flex h-6 items-center gap-1 border border-border bg-card px-2.5 text-[11px] text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
               >
                 {chip.label}
                 <HugeiconsIcon
