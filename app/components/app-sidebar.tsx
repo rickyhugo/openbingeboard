@@ -5,6 +5,7 @@ import {
   FilmSlate,
   Gear,
   GithubLogo,
+  Info,
   PlayCircle,
   SignOut,
   SquaresFour,
@@ -254,26 +255,27 @@ export function AppSidebar({
           </div>
         )}
 
+        <SidebarMenu className="gap-0.5">
+          <SidebarMenuItem>
+            <SidebarMenuButton render={<Link to="/about" />}>
+              <Info weight="bold" />
+              About
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+
         <div className="flex items-center justify-between border-t border-sidebar-border px-1 pb-0.5 pt-1">
-          <Link
-            to="/about"
-            className="px-1 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+          <a
+            href="https://github.com/rickyhugo/openbingeboard"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="View source on GitHub"
+            title="View source on GitHub"
+            className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
           >
-            About
-          </Link>
-          <div className="flex items-center">
-            <a
-              href="https://github.com/rickyhugo/openbingeboard"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="View source on GitHub"
-              title="View source on GitHub"
-              className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
-            >
-              <GithubLogo weight="bold" />
-            </a>
-            <ThemeToggle initial={theme} />
-          </div>
+            <GithubLogo weight="bold" />
+          </a>
+          <ThemeToggle initial={theme} />
         </div>
       </SidebarFooter>
     </Sidebar>
