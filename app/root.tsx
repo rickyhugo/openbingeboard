@@ -12,6 +12,7 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { SparklesIcon } from "@hugeicons/core-free-icons";
 import { AppSidebar } from "~/components/app-sidebar";
+import { useSidebar } from "~/components/ui/sidebar";
 import { AuthActions } from "~/components/auth-actions";
 import { Brand } from "~/components/brand";
 import { HeaderSearch } from "~/components/header-search";
@@ -72,6 +73,33 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
+function Header() {
+  const { state } = useSidebar();
+
+  return (
+    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-background/80 px-4 backdrop-blur-xl">
+      <SidebarTrigger />
+      <Brand
+        className={state === "collapsed" ? "" : "md:hidden"}
+        wordmarkClassName="text-lg sm:text-xl"
+      />
+      <HeaderSearch />
+      <div className="ml-auto flex shrink-0 items-center gap-1.5">
+        <div className="hidden items-center gap-1.5 lg:flex">
+          <Link
+            to="/ask"
+            className={buttonVariants({ variant: "ghost", size: "sm" })}
+          >
+            <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+            Ask
+          </Link>
+        </div>
+        <AuthActions />
+      </div>
+    </header>
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
   const data = useLoaderData<typeof loader>();
   const providers = data?.providers ?? [];
@@ -107,29 +135,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <AppSidebar providers={providers} theme={theme} />
 
               <div className="flex min-w-0 flex-1 flex-col">
-                <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-background/80 px-4 backdrop-blur-xl">
-                  <SidebarTrigger />
-                  <Brand
-                    className="md:hidden"
-                    wordmarkClassName="text-lg sm:text-xl"
-                  />
-                  <HeaderSearch />
-                  <div className="ml-auto flex shrink-0 items-center gap-1.5">
-                    <div className="hidden items-center gap-1.5 lg:flex">
-                      <Link
-                        to="/ask"
-                        className={buttonVariants({
-                          variant: "ghost",
-                          size: "sm",
-                        })}
-                      >
-                        <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
-                        Ask
-                      </Link>
-                    </div>
-                    <AuthActions />
-                  </div>
-                </header>
+                <Header />
 
                 <div id="main" className="min-h-[calc(100dvh-4rem)] flex-1">
                   {children}
