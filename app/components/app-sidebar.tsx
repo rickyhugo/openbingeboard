@@ -6,15 +6,14 @@ import {
   Film01Icon,
   GithubIcon,
   Grid02Icon,
-  InformationCircleIcon,
+  Logout03Icon,
   PlayCircleIcon,
   Settings02Icon,
   SparklesIcon,
   Tv01Icon,
-  UserCircleIcon,
 } from "@hugeicons/core-free-icons";
-import { AuthActions } from "~/components/auth-actions";
-import { buttonVariants } from "~/components/ui/button";
+import { Button, buttonVariants } from "~/components/ui/button";
+import { authClient } from "~/lib/auth-client";
 import { Brand } from "~/components/brand";
 import { CountrySelect } from "~/components/country-select";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -42,7 +41,7 @@ export function AppSidebar({
   providers: readonly ProviderRow[];
   theme: Theme;
 }) {
-  const { state } = useProfile();
+  const { state, user, reset } = useProfile();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const kind = params.get("kind");
@@ -57,6 +56,21 @@ export function AppSidebar({
       ? "/?providers=" +
         selectedServices.map((provider) => provider.id).join(",")
       : "/";
+
+  const authNext = encodeURIComponent(
+    pathname === "/" || pathname === "/login"
+      ? "/profile"
+      : location.pathname + location.search,
+  );
+  const initial = user
+    ? (user.name || user.email || "?").slice(0, 1).toUpperCase()
+    : "";
+
+  async function signOut() {
+    await authClient.signOut().catch(() => {});
+    reset();
+    window.location.assign("/");
+  }
 
   return (
     <Sidebar collapsible="offcanvas">
@@ -217,41 +231,73 @@ export function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-3">
-        <SidebarMenu className="gap-0.5">
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              isActive={pathname === "/profile"}
-              render={<Link to="/profile" />}
+      <SidebarFooter className="border-t border-sidebar-border p-2">
+        {user ? (
+          <div className="flex items-center gap-1">
+            <Link
+              to="/profile"
+              className="flex min-w-0 flex-1 items-center gap-2 rounded-none p-1.5 text-left transition-colors hover:bg-sidebar-accent"
             >
-              <HugeiconsIcon icon={UserCircleIcon} strokeWidth={2} />
-              My profile
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              isActive={pathname === "/about"}
-              render={<Link to="/about" />}
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-xs font-semibold text-foreground">
+                {initial}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-medium">
+                  {user.name || "My profile"}
+                </span>
+                <span className="block truncate text-[10px] text-muted-foreground">
+                  {user.email}
+                </span>
+              </span>
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Sign out"
+              title="Sign out"
+              onClick={signOut}
             >
-              <HugeiconsIcon icon={InformationCircleIcon} strokeWidth={2} />
-              About
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-        <AuthActions compact />
-        <div className="flex items-center justify-between gap-2 px-2 pt-1">
-          <a
-            href="https://github.com/rickyhugo/openbingeboard"
-            target="_blank"
-            rel="noreferrer"
-            aria-label="View source on GitHub"
-            title="View source on GitHub"
-            className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+              <HugeiconsIcon icon={Logout03Icon} strokeWidth={2} />
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between gap-2 p-1.5">
+            <span className="text-xs text-muted-foreground">Guest</span>
+            <div className="flex items-center gap-1.5">
+              <Link
+                to={"/login?mode=signin&next=" + authNext}
+                className={buttonVariants({ variant: "outline", size: "xs" })}
+              >
+                Log in
+              </Link>
+              <Link
+                to={"/login?mode=signup&next=" + authNext}
+                className={buttonVariants({ size: "xs" })}
+              >
+                Sign up
+              </Link>
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between border-t border-sidebar-border px-1 pb-0.5 pt-1">
+          <Link
+            to="/about"
+            className="px-1 py-0.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
-            <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
-          </a>
-          <div className="flex items-center gap-1.5">
-            <span className="eyebrow">Theme</span>
+            About
+          </Link>
+          <div className="flex items-center">
+            <a
+              href="https://github.com/rickyhugo/openbingeboard"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="View source on GitHub"
+              title="View source on GitHub"
+              className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+            >
+              <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
+            </a>
             <ThemeToggle initial={theme} />
           </div>
         </div>
