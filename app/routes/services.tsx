@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Link, useRouteLoaderData } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowRight01Icon,
-  CheckmarkCircle02Icon,
-  PlayCircleIcon,
-  Search01Icon,
-  SparklesIcon,
-} from "@hugeicons/core-free-icons";
+  ArrowRight,
+  CheckCircle,
+  MagnifyingGlass,
+  PlayCircle,
+  Sparkle,
+} from "@phosphor-icons/react/dist/ssr";
 import { cn } from "cn";
 import { ProviderLogo } from "~/components/provider-logo";
 import { Breadcrumbs } from "~/components/breadcrumbs";
@@ -79,11 +78,11 @@ export default function Services() {
             to="/ask"
             className={buttonVariants({ variant: "outline", size: "sm" })}
           >
-            <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+            <Sparkle weight="bold" />
             Ask
           </Link>
           <Link to={servicesQuery} className={buttonVariants({ size: "sm" })}>
-            <HugeiconsIcon icon={PlayCircleIcon} strokeWidth={2} />
+            <PlayCircle weight="bold" />
             Browse {selected.length > 0 ? "my services" : "catalogue"}
           </Link>
         </div>
@@ -103,9 +102,8 @@ export default function Services() {
         </div>
 
         <div className="relative mt-4 max-w-sm">
-          <HugeiconsIcon
-            icon={Search01Icon}
-            strokeWidth={2}
+          <MagnifyingGlass
+            weight="bold"
             className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
           />
           <Input
@@ -155,11 +153,7 @@ export default function Services() {
                         : "border-border text-transparent",
                     )}
                   >
-                    <HugeiconsIcon
-                      icon={CheckmarkCircle02Icon}
-                      strokeWidth={2}
-                      className="size-3.5"
-                    />
+                    <CheckCircle weight="bold" className="size-3.5" />
                   </span>
                 </button>
               );

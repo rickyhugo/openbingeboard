@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useSearchParams } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { LockPasswordIcon } from "@hugeicons/core-free-icons";
+import { LockKey } from "@phosphor-icons/react/dist/ssr";
 import { AuthShell } from "~/components/auth-shell";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -62,11 +61,7 @@ export default function ResetPassword() {
     <AuthShell>
       <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
         <span className="grid size-11 place-items-center bg-muted text-foreground">
-          <HugeiconsIcon
-            icon={LockPasswordIcon}
-            strokeWidth={2}
-            className="size-5"
-          />
+          <LockKey weight="bold" className="size-5" />
         </span>
         <h1 className="text-xl font-semibold tracking-tight">
           Choose a new password

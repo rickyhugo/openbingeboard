@@ -1,6 +1,5 @@
 import { data, isRouteErrorResponse, Link } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
@@ -149,11 +148,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                   className="mt-4 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
                 >
                   Open on IMDb
-                  <HugeiconsIcon
-                    icon={ArrowUpRight01Icon}
-                    strokeWidth={2}
-                    className="size-3"
-                  />
+                  <ArrowUpRight weight="bold" className="size-3" />
                 </a>
               )}
             </div>

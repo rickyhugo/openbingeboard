@@ -1,15 +1,14 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowDown01Icon,
-  ArrowRight01Icon,
-  Bookmark02Icon,
-  Cancel01Icon,
-  FilterHorizontalIcon,
-  PlayCircleIcon,
-  Search01Icon,
-} from "@hugeicons/core-free-icons";
+  ArrowRight,
+  BookmarkSimple,
+  CaretDown,
+  Funnel,
+  MagnifyingGlass,
+  PlayCircle,
+  X,
+} from "@phosphor-icons/react/dist/ssr";
 import { cn } from "cn";
 import { useProfile } from "~/components/profile-provider";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -147,9 +146,8 @@ export function FilterBar({
             onSubmit={submitSearch}
             className="relative w-full md:w-auto md:max-w-sm md:flex-1"
           >
-            <HugeiconsIcon
-              icon={Search01Icon}
-              strokeWidth={2}
+            <MagnifyingGlass
+              weight="bold"
               className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
@@ -166,11 +164,7 @@ export function FilterBar({
               aria-label="Search"
               className="absolute top-1/2 right-1 grid size-7 -translate-y-1/2 place-items-center bg-primary text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                strokeWidth={2}
-                className="size-3.5"
-              />
+              <ArrowRight weight="bold" className="size-3.5" />
             </button>
           </form>
 
@@ -198,18 +192,14 @@ export function FilterBar({
               type="button"
               className={buttonVariants({ variant: "outline", size: "sm" })}
             >
-              <HugeiconsIcon icon={PlayCircleIcon} strokeWidth={2} />
+              <PlayCircle weight="bold" />
               <span className="max-w-[9rem] truncate">
                 {filters.providers.length === 0
                   ? "All services"
                   : filters.providers.length +
                     (filters.providers.length === 1 ? " service" : " services")}
               </span>
-              <HugeiconsIcon
-                icon={ArrowDown01Icon}
-                strokeWidth={2}
-                className="size-3 opacity-50"
-              />
+              <CaretDown weight="bold" className="size-3 opacity-50" />
             </PopoverTrigger>
             <PopoverContent
               align="start"
@@ -278,7 +268,7 @@ export function FilterBar({
               type="button"
               className={buttonVariants({ variant: "outline", size: "sm" })}
             >
-              <HugeiconsIcon icon={FilterHorizontalIcon} strokeWidth={2} />
+              <Funnel weight="bold" />
               Filters
               {advancedCount > 0 ? (
                 <span className="grid size-4 place-items-center bg-foreground text-[9px] font-semibold text-background">
@@ -441,7 +431,7 @@ export function FilterBar({
               disabled={!hydrated}
               className={buttonVariants({ variant: "ghost", size: "sm" })}
             >
-              <HugeiconsIcon icon={Bookmark02Icon} strokeWidth={2} />
+              <BookmarkSimple weight="bold" />
               Save
             </PopoverTrigger>
             <PopoverContent align="end" className="w-64">
@@ -492,11 +482,7 @@ export function FilterBar({
                 className="inline-flex h-6 items-center gap-1 border border-border bg-card px-2.5 text-[11px] text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
               >
                 {chip.label}
-                <HugeiconsIcon
-                  icon={Cancel01Icon}
-                  strokeWidth={2}
-                  className="size-3 opacity-50"
-                />
+                <X weight="bold" className="size-3 opacity-50" />
               </button>
             ))}
             <Link

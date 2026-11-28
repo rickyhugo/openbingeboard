@@ -1,10 +1,9 @@
 import { Link } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-  Search01Icon,
-} from "@hugeicons/core-free-icons";
+  ArrowLeft,
+  ArrowRight,
+  MagnifyingGlass,
+} from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "~/components/ui/button";
 import { FilterBar } from "~/components/filter-bar";
 import { TitleCard } from "~/components/title-card";
@@ -112,11 +111,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         {result.titles.length === 0 ? (
           <div className="mt-6 flex flex-col items-start gap-4 border border-dashed border-border bg-card/40 p-8 md:p-12">
             <span className="grid size-11 place-items-center bg-muted text-muted-foreground">
-              <HugeiconsIcon
-                icon={Search01Icon}
-                strokeWidth={1.8}
-                className="size-5"
-              />
+              <MagnifyingGlass weight="regular" className="size-5" />
             </span>
             <div>
               <p className="text-base font-semibold">
@@ -157,7 +152,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 filters.page <= 1 ? "pointer-events-none opacity-40" : ""
               }`}
             >
-              <HugeiconsIcon icon={ArrowLeft01Icon} strokeWidth={2} />
+              <ArrowLeft weight="bold" />
               Previous
             </Link>
             <span className="text-[11px] text-muted-foreground">
@@ -176,7 +171,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               }`}
             >
               Next
-              <HugeiconsIcon icon={ArrowRight01Icon} strokeWidth={2} />
+              <ArrowRight weight="bold" />
             </Link>
           </nav>
         )}

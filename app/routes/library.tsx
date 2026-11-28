@@ -1,10 +1,9 @@
 import { data, Link, useNavigate, useRouteLoaderData } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Bookmark02Icon,
-  CheckmarkCircle02Icon,
-  SparklesIcon,
-} from "@hugeicons/core-free-icons";
+  BookmarkSimple,
+  CheckCircle,
+  Sparkle,
+} from "@phosphor-icons/react/dist/ssr";
 import { Breadcrumbs } from "~/components/breadcrumbs";
 import { LibraryGrid } from "~/components/library-grid";
 import { Button, buttonVariants } from "~/components/ui/button";
@@ -75,7 +74,7 @@ export default function Library({ loaderData }: Route.ComponentProps) {
                 onClick={surprise}
                 disabled={!hydrated || ids.length === 0}
               >
-                <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+                <Sparkle weight="bold" />
                 Surprise me
               </Button>
               <Link
@@ -97,11 +96,7 @@ export default function Library({ loaderData }: Route.ComponentProps) {
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                strokeWidth={2}
-                className="size-3.5"
-              />
+              <CheckCircle weight="bold" className="size-3.5" />
               Watched
               <span className="opacity-60">{state.watched.length}</span>
             </Link>
@@ -114,11 +109,7 @@ export default function Library({ loaderData }: Route.ComponentProps) {
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <HugeiconsIcon
-                icon={Bookmark02Icon}
-                strokeWidth={2}
-                className="size-3.5"
-              />
+              <BookmarkSimple weight="bold" className="size-3.5" />
               Want to watch
               <span className="opacity-60">{state.want.length}</span>
             </Link>

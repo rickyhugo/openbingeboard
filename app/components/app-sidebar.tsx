@@ -1,17 +1,16 @@
 import { Link, useLocation } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Bookmark02Icon,
-  CheckmarkCircle02Icon,
-  Film01Icon,
-  GithubIcon,
-  Grid02Icon,
-  Logout03Icon,
-  PlayCircleIcon,
-  Settings02Icon,
-  SparklesIcon,
-  Tv01Icon,
-} from "@hugeicons/core-free-icons";
+  BookmarkSimple,
+  CheckCircle,
+  FilmSlate,
+  Gear,
+  GithubLogo,
+  PlayCircle,
+  SignOut,
+  Sparkle,
+  SquaresFour,
+  Television,
+} from "@phosphor-icons/react/dist/ssr";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { authClient } from "~/lib/auth-client";
 import { Brand } from "~/components/brand";
@@ -99,7 +98,7 @@ export function AppSidebar({
                   }
                   render={<Link to="/" />}
                 >
-                  <HugeiconsIcon icon={Grid02Icon} strokeWidth={2} />
+                  <SquaresFour weight="bold" />
                   All titles
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -108,7 +107,7 @@ export function AppSidebar({
                   isActive={pathname === "/" && kind === "movie"}
                   render={<Link to="/?kind=movie" />}
                 >
-                  <HugeiconsIcon icon={Film01Icon} strokeWidth={2} />
+                  <FilmSlate weight="bold" />
                   Films
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -117,7 +116,7 @@ export function AppSidebar({
                   isActive={pathname === "/" && kind === "series"}
                   render={<Link to="/?kind=series" />}
                 >
-                  <HugeiconsIcon icon={Tv01Icon} strokeWidth={2} />
+                  <Television weight="bold" />
                   Series
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -126,7 +125,7 @@ export function AppSidebar({
                   isActive={pathname === "/ask"}
                   render={<Link to="/ask" />}
                 >
-                  <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+                  <Sparkle weight="bold" />
                   Ask
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -143,7 +142,7 @@ export function AppSidebar({
                   isActive={pathname === "/library/watched"}
                   render={<Link to="/library/watched" />}
                 >
-                  <HugeiconsIcon icon={CheckmarkCircle02Icon} strokeWidth={2} />
+                  <CheckCircle weight="bold" />
                   Watched
                   <SidebarMenuBadge>{state.watched.length}</SidebarMenuBadge>
                 </SidebarMenuButton>
@@ -153,7 +152,7 @@ export function AppSidebar({
                   isActive={pathname === "/library/want"}
                   render={<Link to="/library/want" />}
                 >
-                  <HugeiconsIcon icon={Bookmark02Icon} strokeWidth={2} />
+                  <BookmarkSimple weight="bold" />
                   Want to watch
                   <SidebarMenuBadge>{state.want.length}</SidebarMenuBadge>
                 </SidebarMenuButton>
@@ -164,30 +163,12 @@ export function AppSidebar({
 
         <SidebarGroup className="p-2">
           <SidebarGroupLabel>Your services</SidebarGroupLabel>
-          <SidebarGroupContent className="space-y-2">
-            {selectedServices.length > 0 ? (
-              <div className="flex flex-wrap gap-1 px-2">
-                {selectedServices.slice(0, 4).map((provider) => (
-                  <Link
-                    key={provider.id}
-                    to={"/?providers=" + provider.id}
-                    className=" border border-sidebar-border bg-card/60 px-2 py-1 text-[10px] text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
-                  >
-                    {provider.name}
-                  </Link>
-                ))}
-                {selectedServices.length > 4 ? (
-                  <span className=" border border-sidebar-border px-2 py-1 text-[10px] text-muted-foreground">
-                    +{selectedServices.length - 4}
-                  </span>
-                ) : null}
-              </div>
-            ) : null}
+          <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               {selectedServices.length > 0 ? (
                 <SidebarMenuItem>
                   <SidebarMenuButton render={<Link to={servicesQuery} />}>
-                    <HugeiconsIcon icon={PlayCircleIcon} strokeWidth={2} />
+                    <PlayCircle weight="bold" />
                     Browse my services
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -197,7 +178,7 @@ export function AppSidebar({
                   isActive={pathname === "/services"}
                   render={<Link to="/services" />}
                 >
-                  <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} />
+                  <Gear weight="bold" />
                   {selectedServices.length > 0
                     ? "Manage services"
                     : "Choose services"}
@@ -262,7 +243,7 @@ export function AppSidebar({
               title="Sign out"
               onClick={signOut}
             >
-              <HugeiconsIcon icon={Logout03Icon} strokeWidth={2} />
+              <SignOut weight="bold" />
             </Button>
           </div>
         ) : (
@@ -301,7 +282,7 @@ export function AppSidebar({
               title="View source on GitHub"
               className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
             >
-              <HugeiconsIcon icon={GithubIcon} strokeWidth={2} />
+              <GithubLogo weight="bold" />
             </a>
             <ThemeToggle initial={theme} />
           </div>

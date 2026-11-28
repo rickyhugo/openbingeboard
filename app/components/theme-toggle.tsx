@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Moon02Icon, Sun03Icon } from "@hugeicons/core-free-icons";
+import { Moon, Sun } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "~/components/ui/button";
 import type { Theme } from "~/lib/theme";
 
@@ -25,10 +24,7 @@ export function ThemeToggle({ initial }: { initial: Theme }) {
       }
       title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <HugeiconsIcon
-        icon={theme === "dark" ? Sun03Icon : Moon02Icon}
-        strokeWidth={2}
-      />
+      {theme === "dark" ? <Sun weight="bold" /> : <Moon weight="bold" />}
     </Button>
   );
 }

@@ -178,15 +178,12 @@ importers:
       '@fontsource/instrument-serif':
         specifier: ^5.3.0
         version: 5.3.0
-      '@hugeicons/core-free-icons':
-        specifier: ^4.4.0
-        version: 4.4.0
-      '@hugeicons/react':
-        specifier: ^1.1.10
-        version: 1.1.10(react@19.3.1)
       '@huggingface/transformers':
         specifier: ^4.3.2
         version: 4.3.2(@types/node@22.20.7)
+      '@phosphor-icons/react':
+        specifier: ^2.1.10
+        version: 2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
       better-auth:
         specifier: ^1.7.28
         version: 1.7.28(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -763,14 +760,6 @@ packages:
   '@fontsource/instrument-serif@5.3.0':
     resolution: {integrity: sha512-mDiaIg0u67sYV59fie92Wz4sM8UiVlbL7fLxnFPCKkX15DMASEnQTREbaP5S5/3DCcsoAOcQ0sV9E4AeY4QqYQ==}
 
-  '@hugeicons/core-free-icons@4.4.0':
-    resolution: {integrity: sha512-7Mz8bmGoY6tZ6l3C2TXwNMLVSr0I8HPwjjFIERAuJFj3rWwLxdF2ZLkDqdrVuEE1dx5b/VXyIsP4WoSU6Q40KQ==}
-
-  '@hugeicons/react@1.1.10':
-    resolution: {integrity: sha512-9tAsd92yMVVGP+E+d8cM+wc0VnXuYZHNbWQi7TOe8k2neawmhiaFmVFbzyruejhOMa197/LbgvSED32ayUo3ZA==}
-    peerDependencies:
-      react: '>=16.0.0'
-
   '@huggingface/jinja@0.5.13':
     resolution: {integrity: sha512-jM17MqFily1iyT/1LD3r5w8/CZiyapVB0+7vOw48PfVtzyKsXStmHE4jVTyDAD05Tqv3un1xrS9ILUU1ugQAYQ==}
     engines: {node: '>=18'}
@@ -1002,6 +991,13 @@ packages:
 
   '@oxc-project/types@0.156.0':
     resolution: {integrity: sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw==}
+
+  '@phosphor-icons/react@2.1.10':
+    resolution: {integrity: sha512-vt8Tvq8GLjheAZZYa+YG/pW7HDbov8El/MANW8pOAz4eGxrwhnbfrQZq0Cp4q8zBEu8NIhHdnr+r8thnfRSNYA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>= 16.8'
+      react-dom: '>= 16.8'
 
   '@poppinss/colors@4.1.6':
     resolution: {integrity: sha512-H9xkIdFswbS8n1d6vmRd8+c10t2Qe+rZITbbDHHkQixH5+2x1FDGmi/0K+WgWiqQFKPSlIYB7jlH6Kpfn6Fleg==}
@@ -3179,12 +3175,6 @@ snapshots:
 
   '@fontsource/instrument-serif@5.3.0': {}
 
-  '@hugeicons/core-free-icons@4.4.0': {}
-
-  '@hugeicons/react@1.1.10(react@19.3.1)':
-    dependencies:
-      react: 19.3.1
-
   '@huggingface/jinja@0.5.13': {}
 
   '@huggingface/tokenizers@0.2.0': {}
@@ -3364,6 +3354,11 @@ snapshots:
       fastq: 1.20.3
 
   '@oxc-project/types@0.156.0': {}
+
+  '@phosphor-icons/react@2.1.10(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':
+    dependencies:
+      react: 19.3.1
+      react-dom: 19.3.1(react@19.3.1)
 
   '@poppinss/colors@4.1.6':
     dependencies:

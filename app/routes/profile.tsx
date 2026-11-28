@@ -4,15 +4,14 @@ import {
   useRevalidator,
   useRouteLoaderData,
 } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowRight01Icon,
-  Bookmark02Icon,
-  CheckmarkCircle02Icon,
-  Globe02Icon,
-  PlayCircleIcon,
-  SparklesIcon,
-} from "@hugeicons/core-free-icons";
+  ArrowRight,
+  BookmarkSimple,
+  CheckCircle,
+  Globe,
+  PlayCircle,
+  Sparkle,
+} from "@phosphor-icons/react/dist/ssr";
 import { AccountPanel } from "~/components/account-panel";
 import { useProfile } from "~/components/profile-provider";
 import { ThemeToggle } from "~/components/theme-toggle";
@@ -35,10 +34,10 @@ export function meta() {
 }
 
 const quickLinks = [
-  { label: "Watched", to: "/library/watched", icon: CheckmarkCircle02Icon },
-  { label: "Want to watch", to: "/library/want", icon: Bookmark02Icon },
-  { label: "Your services", to: "/services", icon: PlayCircleIcon },
-  { label: "Ask the catalogue", to: "/ask", icon: SparklesIcon },
+  { label: "Watched", to: "/library/watched", icon: CheckCircle },
+  { label: "Want to watch", to: "/library/want", icon: BookmarkSimple },
+  { label: "Your services", to: "/services", icon: PlayCircle },
+  { label: "Ask the catalogue", to: "/ask", icon: Sparkle },
 ];
 
 export default function Profile() {
@@ -100,7 +99,7 @@ export default function Profile() {
                 to="/ask"
                 className={buttonVariants({ variant: "outline", size: "sm" })}
               >
-                <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+                <Sparkle weight="bold" />
                 Ask
               </Link>
               {!profile.user ? (
@@ -187,9 +186,8 @@ export default function Profile() {
                         {country.name}
                       </span>
                       {active ? (
-                        <HugeiconsIcon
-                          icon={CheckmarkCircle02Icon}
-                          strokeWidth={2}
+                        <CheckCircle
+                          weight="bold"
                           className="absolute top-2.5 right-2.5 size-4 text-foreground"
                         />
                       ) : null}
@@ -304,15 +302,10 @@ export default function Profile() {
                     to={item.to}
                     className="flex items-center gap-2 px-2 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                   >
-                    <HugeiconsIcon
-                      icon={item.icon}
-                      strokeWidth={2}
-                      className="size-3.5"
-                    />
+                    <item.icon weight="bold" className="size-3.5" />
                     {item.label}
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      strokeWidth={2}
+                    <ArrowRight
+                      weight="bold"
                       className="ml-auto size-3 opacity-40"
                     />
                   </Link>
@@ -334,11 +327,7 @@ export default function Profile() {
 
             <div className=" border border-border bg-card p-4">
               <div className="flex items-center gap-2 text-muted-foreground">
-                <HugeiconsIcon
-                  icon={Globe02Icon}
-                  strokeWidth={2}
-                  className="size-4"
-                />
+                <Globe weight="bold" className="size-4" />
                 <h2 className="text-sm font-semibold text-foreground">
                   Your data
                 </h2>

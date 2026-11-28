@@ -1,7 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation, useNavigate } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Search01Icon } from "@hugeicons/core-free-icons";
+import { MagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
 
 export function HeaderSearch() {
   const navigate = useNavigate();
@@ -26,9 +25,8 @@ export function HeaderSearch() {
       role="search"
       className="relative hidden w-full max-w-sm md:block"
     >
-      <HugeiconsIcon
-        icon={Search01Icon}
-        strokeWidth={2}
+      <MagnifyingGlass
+        weight="bold"
         className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
       />
       <input

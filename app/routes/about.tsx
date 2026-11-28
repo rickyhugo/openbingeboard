@@ -1,5 +1,4 @@
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import { ATTRIBUTION } from "~/lib/tmdb";
 
 export function meta() {
@@ -117,11 +116,7 @@ export default function About() {
               className="mt-4 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               View the source on GitHub
-              <HugeiconsIcon
-                icon={ArrowUpRight01Icon}
-                strokeWidth={2}
-                className="size-3"
-              />
+              <ArrowUpRight weight="bold" className="size-3" />
             </a>
           </section>
         </div>

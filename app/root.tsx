@@ -9,8 +9,7 @@ import {
   useLoaderData,
   useLocation,
 } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { SparklesIcon } from "@hugeicons/core-free-icons";
+import { Sparkle } from "@phosphor-icons/react/dist/ssr";
 import { AppSidebar } from "~/components/app-sidebar";
 import { useSidebar } from "~/components/ui/sidebar";
 import { AuthActions } from "~/components/auth-actions";
@@ -90,7 +89,7 @@ function Header() {
             to="/ask"
             className={buttonVariants({ variant: "ghost", size: "sm" })}
           >
-            <HugeiconsIcon icon={SparklesIcon} strokeWidth={2} />
+            <Sparkle weight="bold" />
             Ask
           </Link>
         </div>

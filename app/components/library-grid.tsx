@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Bookmark02Icon } from "@hugeicons/core-free-icons";
+import { BookmarkSimple } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "~/components/ui/button";
 import { TitleCard } from "~/components/title-card";
 import type { CountryCode } from "~/lib/countries";
@@ -62,11 +61,7 @@ export function LibraryGrid({
     return (
       <div className="flex flex-col items-start gap-4 border border-dashed border-border bg-card/40 p-8 md:p-12">
         <span className="grid size-11 place-items-center bg-muted text-muted-foreground">
-          <HugeiconsIcon
-            icon={Bookmark02Icon}
-            strokeWidth={1.8}
-            className="size-5"
-          />
+          <BookmarkSimple weight="regular" className="size-5" />
         </span>
         <div>
           <p className="text-base font-semibold">Nothing here yet.</p>

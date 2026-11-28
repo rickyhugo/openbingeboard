@@ -5,8 +5,7 @@ import {
   useRouteLoaderData,
   useSearchParams,
 } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkCircle02Icon, Mail01Icon } from "@hugeicons/core-free-icons";
+import { CheckCircle, EnvelopeSimple } from "@phosphor-icons/react/dist/ssr";
 import { AuthShell } from "~/components/auth-shell";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -207,11 +206,7 @@ export default function Login() {
       <AuthShell>
         <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
           <span className="grid size-11 place-items-center bg-muted text-foreground">
-            <HugeiconsIcon
-              icon={CheckmarkCircle02Icon}
-              strokeWidth={2}
-              className="size-5"
-            />
+            <CheckCircle weight="bold" className="size-5" />
           </span>
           <h1 className="text-xl font-semibold tracking-tight">
             You are signed in
@@ -233,11 +228,7 @@ export default function Login() {
       <AuthShell>
         <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
           <span className="grid size-11 place-items-center bg-muted text-foreground">
-            <HugeiconsIcon
-              icon={Mail01Icon}
-              strokeWidth={2}
-              className="size-5"
-            />
+            <EnvelopeSimple weight="bold" className="size-5" />
           </span>
           <h1 className="text-xl font-semibold tracking-tight">
             Check your email

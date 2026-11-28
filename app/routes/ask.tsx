@@ -6,8 +6,7 @@ import {
   type KeyboardEvent,
 } from "react";
 import { Link } from "react-router";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, Search01Icon } from "@hugeicons/core-free-icons";
+import { ArrowRight, MagnifyingGlass } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "cn";
 import { TitleCard } from "~/components/title-card";
 import { useProfile } from "~/components/profile-provider";
@@ -280,11 +279,7 @@ export default function Ask() {
                   </span>
                   <Button type="submit" size="sm" disabled={pending || loading}>
                     {pending ? "Searching..." : "Search"}
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      strokeWidth={2}
-                      className="size-3.5"
-                    />
+                    <ArrowRight weight="bold" className="size-3.5" />
                   </Button>
                 </div>
               </div>
