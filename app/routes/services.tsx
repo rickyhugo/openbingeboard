@@ -44,7 +44,6 @@ export default function Services() {
   if (!hydrated) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-10">
-        <p className="eyebrow">Settings</p>
         <h1 className="text-xl font-semibold tracking-tight">Your services</h1>
         <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, index) => (

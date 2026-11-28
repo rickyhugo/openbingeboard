@@ -153,5 +153,5 @@ html {
 }
 
 @utility eyebrow {
-  @apply font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground;
+  @apply text-xs font-medium text-muted-foreground;
 }

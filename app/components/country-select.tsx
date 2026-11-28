@@ -31,7 +31,7 @@ export function CountrySelect() {
         ))}
       </NativeSelect>
       <p
-        className="mt-1 h-3 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground"
+        className="mt-1 h-3 text-[10px] text-muted-foreground"
         aria-live="polite"
       >
         {pending ? "Updating..." : ""}

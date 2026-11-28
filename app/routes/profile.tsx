@@ -74,7 +74,6 @@ export default function Profile() {
   if (!profile.hydrated) {
     return (
       <main className="mx-auto max-w-6xl px-4 py-12">
-        <p className="eyebrow">Your account</p>
         <h1 className="text-xl font-semibold tracking-tight">My profile</h1>
         <p className="mt-2 text-sm text-muted-foreground">Loading...</p>
       </main>

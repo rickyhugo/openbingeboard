@@ -32,7 +32,7 @@ export function TitleOffers({ offers }: { offers: readonly OfferRow[] }) {
 
           return (
             <div key={group.key} className="border">
-              <div className="border-b bg-muted/50 px-3 py-2 font-mono text-[10px] tracking-[0.15em] text-muted-foreground uppercase">
+              <div className="border-b bg-muted/50 px-3 py-2 text-xs font-medium text-muted-foreground">
                 {group.label}
               </div>
               <ul>
@@ -66,7 +66,7 @@ export function TitleOffers({ offers }: { offers: readonly OfferRow[] }) {
                           target="_blank"
                           rel="noreferrer"
                           className={cn(
-                            "shrink-0 font-mono text-[10px] tracking-wider uppercase text-muted-foreground hover:text-foreground hover:underline",
+                            "shrink-0 text-xs font-medium text-muted-foreground hover:text-foreground hover:underline",
                             dim && "opacity-60",
                           )}
                         >

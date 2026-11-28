@@ -66,18 +66,14 @@ export function AppSidebar({
 
       <SidebarContent className="px-2">
         <SidebarGroup className="p-2">
-          <SidebarGroupLabel className="eyebrow h-6 px-2">
-            Region
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Region</SidebarGroupLabel>
           <div className=" border border-sidebar-border bg-card/50 p-2">
             <CountrySelect />
           </div>
         </SidebarGroup>
 
         <SidebarGroup className="p-2">
-          <SidebarGroupLabel className="eyebrow h-6 px-2">
-            Catalogue
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Catalogue</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               <SidebarMenuItem>
@@ -123,9 +119,7 @@ export function AppSidebar({
         </SidebarGroup>
 
         <SidebarGroup className="p-2">
-          <SidebarGroupLabel className="eyebrow h-6 px-2">
-            Your library
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Your library</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-0.5">
               <SidebarMenuItem>
@@ -153,9 +147,7 @@ export function AppSidebar({
         </SidebarGroup>
 
         <SidebarGroup className="p-2">
-          <SidebarGroupLabel className="eyebrow h-6 px-2">
-            Your services
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Your services</SidebarGroupLabel>
           <SidebarGroupContent className="space-y-2">
             {selectedServices.length > 0 ? (
               <div className="flex flex-wrap gap-1 px-2">
@@ -197,9 +189,7 @@ export function AppSidebar({
         </SidebarGroup>
 
         <SidebarGroup className="p-2">
-          <SidebarGroupLabel className="eyebrow h-6 px-2">
-            Saved views
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>Saved views</SidebarGroupLabel>
           <SidebarGroupContent>
             {state.saved.length > 0 ? (
               <SidebarMenu className="gap-0.5">

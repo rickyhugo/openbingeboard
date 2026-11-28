@@ -24,7 +24,7 @@ export function ProviderChip({
   return (
     <span
       className={cn(
-        "inline-flex h-5 min-w-0 max-w-full items-center gap-1 overflow-hidden border px-1.5 font-mono text-[10px] whitespace-nowrap",
+        "inline-flex h-5 min-w-0 max-w-full items-center gap-1 overflow-hidden border px-2 text-xs font-medium whitespace-nowrap",
         tone === "overlay"
           ? "border-white/20 bg-black/80 text-white"
           : "border-border bg-muted text-muted-foreground",
@@ -37,7 +37,7 @@ export function ProviderChip({
       {!compact && (
         <>
           <span className="shrink-0 opacity-50">/</span>
-          <span className="shrink-0 uppercase tracking-wide opacity-80">
+          <span className="shrink-0 opacity-70">
             {MONETIZATION_LABEL[monetization] ?? monetization}
           </span>
         </>

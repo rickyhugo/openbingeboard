@@ -112,10 +112,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
 
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5 text-[11px] text-muted-foreground">
-                <Badge
-                  variant="outline"
-                  className="tracking-[0.12em] uppercase"
-                >
+                <Badge variant="outline">
                   {title.kind === "series" ? "Series" : "Film"}
                 </Badge>
                 {meta.map((value, index) => (

@@ -51,7 +51,7 @@ export function TitleCard({
           </div>
           <Badge
             variant="outline"
-            className="border-white/30 bg-black/40 font-mono text-[9px] text-white uppercase tracking-widest"
+            className="border-white/30 bg-black/40 text-xs font-medium text-white"
           >
             {title.kind === "series" ? "Series" : "Film"}
           </Badge>
@@ -69,7 +69,7 @@ export function TitleCard({
               />
             ))}
             {uniqueProviders.length > 1 && (
-              <span className="inline-flex h-5 items-center border border-white/20 bg-black/80 px-1.5 font-mono text-[10px] text-white">
+              <span className="inline-flex h-5 items-center border border-white/20 bg-black/80 px-2 text-xs font-medium text-white">
                 +{uniqueProviders.length - 1}
               </span>
             )}

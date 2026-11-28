@@ -71,7 +71,7 @@ export function ScorePopover({
         ) : null}
 
         <div className="space-y-1.5">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+          <p className="text-xs font-medium text-muted-foreground">
             All sources
           </p>
           {ratings.map((item) => {
@@ -101,7 +101,7 @@ export function ScorePopover({
 
         {stats ? (
           <div className="space-y-1.5 border-t pt-2">
-            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs font-medium text-muted-foreground">
               IMDb score distribution
             </p>
             <div className="flex h-20 items-end gap-[2px]">
