@@ -98,7 +98,7 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                 )}
               </div>
 
-              <div className="mt-3 grid grid-cols-2 justify-items-start gap-1.5">
+              <div className="mt-3 flex flex-wrap gap-1.5">
                 {title.ratings.map((rating) => (
                   <ScorePopover
                     key={rating.source}
