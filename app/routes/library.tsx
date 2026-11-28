@@ -5,6 +5,7 @@ import {
   CheckmarkCircle02Icon,
   SparklesIcon,
 } from "@hugeicons/core-free-icons";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { LibraryGrid } from "~/components/library-grid";
 import { Button, buttonVariants } from "~/components/ui/button";
 import { useProfile } from "~/components/profile-provider";
@@ -50,7 +51,14 @@ export default function Library({ loaderData }: Route.ComponentProps) {
     <main>
       <section className="border-b border-border/70">
         <div className="mx-auto max-w-7xl px-4 pt-10 pb-8 md:pt-12">
-          <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+          <Breadcrumbs
+            items={[
+              { label: "My profile", to: "/profile" },
+              { label: "Your library" },
+              { label },
+            ]}
+          />
+          <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
             <div>
               <h1 className="text-xl font-semibold tracking-tight">{label}</h1>
               <p className="mt-2 text-sm text-muted-foreground">

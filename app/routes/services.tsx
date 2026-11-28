@@ -10,6 +10,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { cn } from "cn";
 import { ProviderLogo } from "~/components/provider-logo";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { useProfile } from "~/components/profile-provider";
 import { buttonVariants } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -57,7 +58,13 @@ export default function Services() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-10 md:py-12">
-      <header className="flex flex-wrap items-end justify-between gap-4">
+      <Breadcrumbs
+        items={[
+          { label: "My profile", to: "/profile" },
+          { label: "Your services" },
+        ]}
+      />
+      <header className="mt-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-xl font-semibold tracking-tight">
             Your services

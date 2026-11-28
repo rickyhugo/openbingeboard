@@ -1,9 +1,7 @@
 import { data, isRouteErrorResponse, Link } from "react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowLeft01Icon,
-  ArrowUpRight01Icon,
-} from "@hugeicons/core-free-icons";
+import { ArrowUpRight01Icon } from "@hugeicons/core-free-icons";
+import { Breadcrumbs } from "~/components/breadcrumbs";
 import { Badge } from "~/components/ui/badge";
 import { buttonVariants } from "~/components/ui/button";
 import { ScorePopover } from "~/components/score-popover";
@@ -70,17 +68,9 @@ export default function Title({ loaderData }: Route.ComponentProps) {
     <main>
       <section className="border-b border-border/70">
         <div className="mx-auto max-w-7xl px-4 pt-6 pb-10 md:pb-12">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
-          >
-            <HugeiconsIcon
-              icon={ArrowLeft01Icon}
-              strokeWidth={2}
-              className="size-3.5"
-            />
-            All titles
-          </Link>
+          <Breadcrumbs
+            items={[{ label: "All titles", to: "/" }, { label: title.name }]}
+          />
 
           <div className="mt-7 grid gap-8 md:grid-cols-[220px_1fr] lg:grid-cols-[260px_1fr] lg:gap-12">
             <div className="mx-auto w-full max-w-[220px] md:mx-0 md:max-w-none">

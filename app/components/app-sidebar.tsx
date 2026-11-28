@@ -93,7 +93,9 @@ export function AppSidebar({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   isActive={
-                    pathname === "/" && kind !== "movie" && kind !== "series"
+                    (pathname === "/" || pathname.startsWith("/title")) &&
+                    kind !== "movie" &&
+                    kind !== "series"
                   }
                   render={<Link to="/" />}
                 >
@@ -191,7 +193,10 @@ export function AppSidebar({
                 </SidebarMenuItem>
               ) : null}
               <SidebarMenuItem>
-                <SidebarMenuButton render={<Link to="/services" />}>
+                <SidebarMenuButton
+                  isActive={pathname === "/services"}
+                  render={<Link to="/services" />}
+                >
                   <HugeiconsIcon icon={Settings02Icon} strokeWidth={2} />
                   {selectedServices.length > 0
                     ? "Manage services"
