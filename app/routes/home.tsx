@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router";
 import {
   ArrowLeft,
@@ -86,7 +86,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   const [enhanced, setEnhanced] = useState<SemanticResult | null>(null);
   const [refining, setRefining] = useState(false);
-  const resultsRef = useRef<HTMLElement>(null);
 
   // Keyword results come from the full-text index on the server. When a query
   // reads like a description, the browser re-ranks it by meaning once the
@@ -154,14 +153,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.search]);
 
-  useEffect(() => {
-    if (!enhanced) return;
-    resultsRef.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, [enhanced]);
-
   const titles = enhanced ? enhanced.titles : result.titles;
   const offers = enhanced ? enhanced.offers : result.offers;
 
@@ -198,10 +189,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
       <FilterBar filters={filters} providers={providers} genres={genres} />
 
-      <section
-        ref={resultsRef}
-        className="mx-auto max-w-7xl px-4 py-8 md:py-10"
-      >
+      <section className="mx-auto max-w-7xl px-4 py-8 md:py-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <p className="eyebrow">
             {active ? "Filtered" : "All titles"} / {sorted}
