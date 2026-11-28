@@ -10,7 +10,6 @@ import {
   useLocation,
 } from "react-router";
 import { AppSidebar } from "~/components/app-sidebar";
-import { useSidebar } from "~/components/ui/sidebar";
 import { AuthActions } from "~/components/auth-actions";
 import { Brand } from "~/components/brand";
 import { HeaderSearch } from "~/components/header-search";
@@ -72,15 +71,10 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 function Header() {
-  const { state } = useSidebar();
-
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-card/80 px-4 backdrop-blur-xl">
       <SidebarTrigger />
-      <Brand
-        className={state === "collapsed" ? "" : "md:hidden"}
-        wordmarkClassName="text-lg sm:text-xl"
-      />
+      <Brand className="md:hidden" wordmarkClassName="text-lg sm:text-xl" />
       <HeaderSearch />
       <div className="ml-auto flex shrink-0 items-center gap-1.5">
         <AuthActions />

@@ -8,7 +8,6 @@ import {
   ArrowRight,
   BookmarkSimple,
   Check,
-  Globe,
   PlayCircle,
 } from "@phosphor-icons/react/dist/ssr";
 import { AccountPanel } from "~/components/account-panel";
@@ -290,20 +289,6 @@ export default function Profile() {
                 </div>
                 <ThemeToggle initial={data?.theme ?? "light"} />
               </div>
-            </div>
-
-            <div className=" border border-border bg-card p-4">
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <Globe weight="bold" className="size-4" />
-                <h2 className="text-sm font-semibold text-foreground">
-                  Your data
-                </h2>
-              </div>
-              <p className="mt-2 text-[11px] leading-5 text-muted-foreground">
-                {profile.user
-                  ? "Your library, services, and saved views sync with your account."
-                  : "Guest lists stay in this browser. Sign in to sync them across devices."}
-              </p>
             </div>
           </aside>
         </div>

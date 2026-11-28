@@ -1,6 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useRevalidator, useRouteLoaderData } from "react-router";
-import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { useProfile } from "~/components/profile-provider";
@@ -117,12 +116,6 @@ export function AccountPanel() {
     }
   }
 
-  async function signOut() {
-    await authClient.signOut().catch(() => {});
-    profile.reset();
-    window.location.assign("/");
-  }
-
   async function resendVerification() {
     setVerifyMessage("");
     setVerifyError(false);
@@ -150,17 +143,7 @@ export function AccountPanel() {
 
   return (
     <section id="account">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <h2 className="text-sm font-semibold">Account</h2>
-        <div className="flex items-center gap-2">
-          <Badge variant={user.emailVerified ? "secondary" : "outline"}>
-            {user.emailVerified ? "Verified" : "Unverified"}
-          </Badge>
-          <Button variant="outline" size="sm" onClick={signOut}>
-            Sign out
-          </Button>
-        </div>
-      </div>
+      <h2 className="text-sm font-semibold">Account</h2>
 
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
         <div className=" border border-border bg-card p-5">
