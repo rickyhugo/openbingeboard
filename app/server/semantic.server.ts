@@ -33,6 +33,8 @@ interface SemanticOptions {
   limit?: number;
   minRating?: number;
   decade?: number;
+  genre?: number;
+  monetization?: "flatrate" | "rent" | "buy" | "ads" | "free";
   reference?: string | null;
 }
 
@@ -175,6 +177,18 @@ export const searchSemanticTitles = (
         ${
           options.decade !== undefined
             ? sql`AND t.year >= ${options.decade} AND t.year < ${options.decade + 10}`
+            : sql``
+        }
+        ${
+          options.genre !== undefined
+            ? sql`AND t.id IN (
+                SELECT title_id FROM title_genre WHERE genre_id = ${options.genre}
+              )`
+            : sql``
+        }
+        ${
+          options.monetization
+            ? sql`AND o.monetization = ${options.monetization}`
             : sql``
         }
         ${

@@ -7,7 +7,6 @@ import {
   GithubLogo,
   PlayCircle,
   SignOut,
-  Sparkle,
   SquaresFour,
   Television,
 } from "@phosphor-icons/react/dist/ssr";
@@ -118,15 +117,6 @@ export function AppSidebar({
                 >
                   <Television weight="bold" />
                   Series
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  isActive={pathname === "/ask"}
-                  render={<Link to="/ask" />}
-                >
-                  <Sparkle weight="bold" />
-                  Ask
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

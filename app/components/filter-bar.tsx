@@ -154,7 +154,7 @@ export function FilterBar({
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search titles"
+              placeholder="Search or describe what you want to watch"
               aria-label="Search titles"
               enterKeyHint="search"
               className=" pr-10 pl-9"

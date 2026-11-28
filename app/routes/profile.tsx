@@ -10,7 +10,6 @@ import {
   CheckCircle,
   Globe,
   PlayCircle,
-  Sparkle,
 } from "@phosphor-icons/react/dist/ssr";
 import { AccountPanel } from "~/components/account-panel";
 import { useProfile } from "~/components/profile-provider";
@@ -37,7 +36,6 @@ const quickLinks = [
   { label: "Watched", to: "/library/watched", icon: CheckCircle },
   { label: "Want to watch", to: "/library/want", icon: BookmarkSimple },
   { label: "Your services", to: "/services", icon: PlayCircle },
-  { label: "Ask the catalogue", to: "/ask", icon: Sparkle },
 ];
 
 export default function Profile() {
@@ -95,13 +93,6 @@ export default function Profile() {
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              <Link
-                to="/ask"
-                className={buttonVariants({ variant: "outline", size: "sm" })}
-              >
-                <Sparkle weight="bold" />
-                Ask
-              </Link>
               {!profile.user ? (
                 <Link to="/login" className={buttonVariants({ size: "sm" })}>
                   Sign in to sync

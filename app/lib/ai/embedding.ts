@@ -19,10 +19,6 @@ export const EMBEDDING_MODEL_KEY =
   "#" +
   EMBEDDING_MODEL.dtype;
 
-// Sum of the model, tokenizer, and ONNX runtime files. Used only to show
-// download progress before the first file reports its size.
-export const EMBEDDING_DOWNLOAD_BYTES = 61_600_000;
-
 export function queryEmbeddingText(query: string): string {
   return EMBEDDING_MODEL.queryPrefix + query.trim();
 }

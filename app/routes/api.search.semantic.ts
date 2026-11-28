@@ -10,6 +10,8 @@ interface SearchBody {
   kind?: unknown;
   minRating?: unknown;
   decade?: unknown;
+  genre?: unknown;
+  monetization?: unknown;
   reference?: unknown;
   model?: unknown;
   dim?: unknown;
@@ -83,6 +85,22 @@ export async function action({ request }: Route.ActionArgs) {
       ? body.decade
       : undefined;
 
+  const genre =
+    typeof body.genre === "number" &&
+    Number.isInteger(body.genre) &&
+    body.genre > 0
+      ? body.genre
+      : undefined;
+
+  const monetization =
+    body.monetization === "flatrate" ||
+    body.monetization === "rent" ||
+    body.monetization === "buy" ||
+    body.monetization === "ads" ||
+    body.monetization === "free"
+      ? body.monetization
+      : undefined;
+
   const reference =
     typeof body.reference === "string"
       ? body.reference.trim().slice(0, 120) || null
@@ -95,6 +113,8 @@ export async function action({ request }: Route.ActionArgs) {
       limit: 18,
       minRating,
       decade,
+      genre,
+      monetization,
       reference,
     }),
   );

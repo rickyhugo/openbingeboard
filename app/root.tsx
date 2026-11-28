@@ -9,7 +9,6 @@ import {
   useLoaderData,
   useLocation,
 } from "react-router";
-import { Sparkle } from "@phosphor-icons/react/dist/ssr";
 import { AppSidebar } from "~/components/app-sidebar";
 import { useSidebar } from "~/components/ui/sidebar";
 import { AuthActions } from "~/components/auth-actions";
@@ -84,15 +83,6 @@ function Header() {
       />
       <HeaderSearch />
       <div className="ml-auto flex shrink-0 items-center gap-1.5">
-        <div className="hidden items-center gap-1.5 lg:flex">
-          <Link
-            to="/ask"
-            className={buttonVariants({ variant: "ghost", size: "sm" })}
-          >
-            <Sparkle weight="bold" />
-            Ask
-          </Link>
-        </div>
         <AuthActions />
       </div>
     </header>

@@ -36,14 +36,6 @@ function getExtractor() {
   extractor ??= pipeline("feature-extraction", EMBEDDING_MODEL.id, {
     dtype: EMBEDDING_MODEL.dtype,
     device: "wasm",
-    progress_callback: (event) => {
-      if (event.status !== "progress_total") return;
-      scope.postMessage({
-        type: "progress",
-        loaded: event.loaded,
-        total: event.total,
-      });
-    },
   }).catch((error) => {
     extractor = null;
     throw error;

@@ -101,15 +101,13 @@ wrangler secret put BETTER_AUTH_SECRET
 
 `pnpm ingest:apply` and `pnpm ingest:apply:prd` refuse to write to the remote database unless `CI=true` or `CONFIRM=1` is set.
 
-## Semantic search
+## Search
 
-`/ask` embeds the query in a Web Worker with `Xenova/bge-small-en-v1.5` and sends the vector, parsed filters, and a reference title name when one is present to the search API. The description itself is not sent. `title_embedding` stores the matching title vectors as base64 float32 data.
+Catalogue search (`/?q=`) matches keywords through the `title_fts` index on the server. When a query reads like a description — "similar to Breaking Bad, but with a female lead, +7 IMDb" — the browser embeds it with `Xenova/bge-small-en-v1.5` and re-ranks the results by meaning, applying parsed filters (rating, decade, kind) and the active catalogue filters on the server. The description text never leaves the device; only the vector, filters, and a reference title name are sent.
 
-The model revision is pinned in `app/lib/ai/embedding.ts`. Both the model files and the ONNX runtime come from the `openbingeboard-models` R2 bucket at `models.openbingeboard.com`, so the site does not depend on Hugging Face or a public CDN at runtime.
+The model downloads in the background on first use and is cached by the browser. The model revision is pinned in `app/lib/ai/embedding.ts`. Both the model files and the ONNX runtime come from the `openbingeboard-models` R2 bucket at `models.openbingeboard.com`, so the site does not depend on Hugging Face or a public CDN at runtime.
 
-Ask parses structured constraints from the prompt. "IMDb 7+", "at least 8 on IMDb", "from the 90s", and "series" become server filters. A prompt that names a title, such as "similar to Breaking Bad", uses that title's stored vector to anchor the candidate pool, and the named title is left out of the results. The rating and decade filters are hard constraints; the title anchor and the rest of the description only influence ranking.
-
-Semantic search is opt-in. Enabling it downloads about 62 MB once; the browser caches the files. `title_embedding` stores base64 float32 vectors and a hash of the embedding input, so `pnpm embed:apply:prd` only re-embeds titles that changed. Changing the revision or dtype changes `EMBEDDING_MODEL_KEY`, which invalidates every stored vector and forces a full re-embed. Run `pnpm models:sync` before deploying a new revision.
+`title_embedding` stores base64 float32 vectors and a hash of the embedding input, so `pnpm embed:apply:prd` only re-embeds titles that changed. Changing the revision or dtype changes `EMBEDDING_MODEL_KEY`, which invalidates every stored vector and forces a full re-embed. Run `pnpm models:sync` before deploying a new revision. `pnpm eval:semantic` runs ranking spot checks against the live API.
 
 ## Data model
 

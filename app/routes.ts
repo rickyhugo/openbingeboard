@@ -8,7 +8,6 @@ export default [
   route("login", "routes/login.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
   route("about", "routes/about.tsx"),
-  route("ask", "routes/ask.tsx"),
   route("title/:id", "routes/title.tsx"),
   route("api/titles", "routes/api.titles.ts"),
   route("api/search/semantic", "routes/api.search.semantic.ts"),

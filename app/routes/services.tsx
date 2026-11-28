@@ -5,7 +5,6 @@ import {
   CheckCircle,
   MagnifyingGlass,
   PlayCircle,
-  Sparkle,
 } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "cn";
 import { ProviderLogo } from "~/components/provider-logo";
@@ -74,13 +73,6 @@ export default function Services() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Link
-            to="/ask"
-            className={buttonVariants({ variant: "outline", size: "sm" })}
-          >
-            <Sparkle weight="bold" />
-            Ask
-          </Link>
           <Link to={servicesQuery} className={buttonVariants({ size: "sm" })}>
             <PlayCircle weight="bold" />
             Browse {selected.length > 0 ? "my services" : "catalogue"}
