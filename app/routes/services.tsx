@@ -3,7 +3,6 @@ import { Link, useRouteLoaderData } from "react-router";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowRight01Icon,
-  Cancel01Icon,
   CheckmarkCircle02Icon,
   PlayCircleIcon,
   Search01Icon,
@@ -11,9 +10,8 @@ import {
 } from "@hugeicons/core-free-icons";
 import { cn } from "cn";
 import { ProviderLogo } from "~/components/provider-logo";
-import { countryName } from "~/lib/countries";
 import { useProfile } from "~/components/profile-provider";
-import { Button, buttonVariants } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import type { loader as rootLoader } from "~/root";
 
@@ -85,71 +83,6 @@ export default function Services() {
       </header>
 
       <section className="mt-10">
-        <div className="flex flex-wrap items-baseline justify-between gap-2">
-          <h2 className="text-sm font-semibold">Selected</h2>
-          <p className="text-[11px] text-muted-foreground">
-            {selected.length} of {providers.length} selected
-          </p>
-        </div>
-
-        {selected.length === 0 ? (
-          <div className="mt-3 flex items-center gap-3 border border-dashed border-border bg-card/40 p-5">
-            <span className="grid size-10 place-items-center bg-muted text-muted-foreground">
-              <HugeiconsIcon
-                icon={PlayCircleIcon}
-                strokeWidth={1.8}
-                className="size-5"
-              />
-            </span>
-            <p className="text-sm text-muted-foreground">
-              {state.services.length > 0
-                ? `Your selected services are not available in ${countryName(data?.country ?? "SE")}.`
-                : "None selected. Choose the services you can watch below."}
-            </p>
-          </div>
-        ) : (
-          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {selected.map((provider) => (
-              <div
-                key={provider.id}
-                className="flex items-center gap-3 border border-border bg-card p-3 shadow-[0_1px_2px_oklch(0_0_0/3%)]"
-              >
-                <ProviderLogo
-                  path={provider.logoPath}
-                  name={provider.name}
-                  className="size-10"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">
-                    {provider.name}
-                  </p>
-                  <Link
-                    to={"/?providers=" + provider.id}
-                    className="inline-flex items-center gap-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    Browse titles
-                    <HugeiconsIcon
-                      icon={ArrowRight01Icon}
-                      strokeWidth={2}
-                      className="size-3"
-                    />
-                  </Link>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={`Remove ${provider.name}`}
-                  onClick={() => toggleService(provider.id)}
-                >
-                  <HugeiconsIcon icon={Cancel01Icon} strokeWidth={2} />
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="mt-12">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold">All services</h2>
@@ -158,7 +91,7 @@ export default function Services() {
             </p>
           </div>
           <p className="text-[11px] text-muted-foreground">
-            {filtered.length} of {alpha.length}
+            {selected.length} of {alpha.length} selected
           </p>
         </div>
 
