@@ -12,7 +12,6 @@ import {
 import { AppSidebar } from "~/components/app-sidebar";
 import { AuthActions } from "~/components/auth-actions";
 import { Brand } from "~/components/brand";
-import { HeaderSearch } from "~/components/header-search";
 import { ProfileProvider } from "~/components/profile-provider";
 import { buttonVariants } from "~/components/ui/button";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
@@ -75,7 +74,6 @@ function Header() {
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-card/80 px-4 backdrop-blur-xl">
       <SidebarTrigger />
       <Brand className="md:hidden" wordmarkClassName="text-lg sm:text-xl" />
-      <HeaderSearch />
       <div className="ml-auto flex shrink-0 items-center gap-1.5">
         <AuthActions />
       </div>

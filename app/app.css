@@ -1,14 +1,17 @@
 @import "tailwindcss" source(".");
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans:
-    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+  --font-mono:
+    "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
   --font-heading: var(--font-sans);
 }
 
