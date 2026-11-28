@@ -162,14 +162,27 @@ export function FilterBar({
               className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
-              type="search"
+              type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Search or describe what you want to watch"
               aria-label="Search titles"
               enterKeyHint="search"
-              className=" pr-10 pl-9"
+              className="pr-16 pl-9"
             />
+            {query ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={() => {
+                  setQuery("");
+                  apply({ q: "" });
+                }}
+                className="absolute top-1/2 right-9 grid size-6 -translate-y-1/2 place-items-center text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X weight="bold" className="size-3.5" />
+              </button>
+            ) : null}
             <button
               type="submit"
               aria-label="Search"

@@ -135,7 +135,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               <div
                 className={`flex min-w-0 flex-col bg-card md:peer-data-[variant=inset]:my-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-sidebar-border md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 ${
                   isCatalogue
-                    ? "h-[calc(100dvh-1rem)] overflow-hidden"
+                    ? "h-dvh flex-1 overflow-hidden md:h-[calc(100dvh-1rem)]"
                     : "min-h-dvh flex-1"
                 }`}
               >

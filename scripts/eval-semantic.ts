@@ -38,6 +38,16 @@ interface Case {
 
 const CASES: Case[] = [
   {
+    query: "action",
+    note: "genre match",
+    check: ({ titles }) => {
+      assert.ok(
+        titles.length >= 5,
+        "Expected a genre-name query to return a full genre page",
+      );
+    },
+  },
+  {
     query: "similar to breaking bad but female main character, +7 IMDb",
     note: "anchor + rating",
     check: ({ titles, reference }) => {

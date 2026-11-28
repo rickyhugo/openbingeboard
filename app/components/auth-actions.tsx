@@ -65,7 +65,11 @@ export function AuthActions({ compact = false }: { compact?: boolean }) {
       ) : (
         <Link
           to="/profile"
-          className={buttonVariants({ variant: "ghost", size: "sm" })}
+          className={buttonVariants({
+            variant: "ghost",
+            size: "sm",
+            className: "hidden sm:inline-flex",
+          })}
         >
           My profile
         </Link>

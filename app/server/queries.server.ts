@@ -53,6 +53,33 @@ export interface TitlePage {
   pageCount: number;
 }
 
+const STOP_WORDS = new Set([
+  "the",
+  "a",
+  "an",
+  "and",
+  "or",
+  "of",
+  "in",
+  "on",
+  "for",
+  "with",
+  "to",
+  "watch",
+  "film",
+  "films",
+  "movie",
+  "movies",
+  "series",
+  "show",
+  "shows",
+  "tv",
+  "title",
+  "titles",
+  "something",
+  "like",
+]);
+
 const ftsQuery = (input: string) =>
   input
     .split(/\s+/)
@@ -116,12 +143,40 @@ export const listTitles = (region: string, filters: Filters) =>
     ];
 
     if (filters.q) {
-      conditions.push(
-        sql`t.id IN (
-          SELECT title_id FROM title_fts
-          WHERE title_fts MATCH ${ftsQuery(filters.q)}
-        )`,
+      // A query token that names a genre filters by that genre instead of
+      // flooding the text index with it ("action", "comedy", ...).
+      const tokens = filters.q.trim().split(/\s+/).filter(Boolean);
+      const lowered = tokens.map((token) => token.toLowerCase());
+      const genres = yield* sql<{ id: number; name: string }>`
+        SELECT id, name FROM genre
+      `;
+      const matched = genres.filter((genre) =>
+        lowered.includes(genre.name.toLowerCase()),
       );
+
+      if (matched.length > 0) {
+        conditions.push(
+          sql`t.id IN (
+            SELECT title_id FROM title_genre
+            WHERE genre_id IN ${sql.in(matched.map((genre) => genre.id))}
+          )`,
+        );
+      }
+
+      const noise = new Set([
+        ...matched.map((genre) => genre.name.toLowerCase()),
+        ...STOP_WORDS,
+      ]);
+      const searchTokens = lowered.filter((token) => !noise.has(token));
+
+      if (searchTokens.length > 0) {
+        conditions.push(
+          sql`t.id IN (
+            SELECT title_id FROM title_fts
+            WHERE title_fts MATCH ${ftsQuery(searchTokens.join(" "))}
+          )`,
+        );
+      }
     }
 
     if (filters.kind !== "all") {

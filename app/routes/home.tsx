@@ -105,7 +105,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       constraints.reference !== null ||
       constraints.minRating > 0 ||
       constraints.decade !== undefined ||
-      result.titles.length === 0 ||
+      result.titles.length <= 3 ||
       q.split(/\s+/).filter(Boolean).length >= 5;
 
     if (!needsMeaning) {
