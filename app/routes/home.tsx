@@ -157,9 +157,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const offers = enhanced ? enhanced.offers : result.offers;
 
   return (
-    <main>
+    <main className="flex min-h-0 flex-1 flex-col">
       {active ? (
-        <section className="border-b border-border/70">
+        <section className="shrink-0 border-b border-border/70">
           <div className="mx-auto max-w-7xl px-4 py-5">
             <div className="flex flex-wrap items-end justify-between gap-3">
               <h1 className="text-xl font-semibold tracking-tight">
@@ -174,7 +174,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           </div>
         </section>
       ) : (
-        <section className="border-b border-border/70">
+        <section className="shrink-0 border-b border-border/70">
           <div className="mx-auto max-w-7xl px-4 py-6">
             <h1 className="text-xl font-semibold tracking-tight">
               Films and series available in {countryName(country)}
@@ -189,105 +189,104 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
       <FilterBar filters={filters} providers={providers} genres={genres} />
 
-      <section className="mx-auto max-w-7xl px-4 py-8 md:py-10">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <p className="eyebrow">
-            {active ? "Filtered" : "All titles"} / {sorted}
-          </p>
-          <p className="font-mono text-[10px] text-muted-foreground">
-            {refining
-              ? "refining results…"
-              : enhanced
-                ? `${enhanced.titles.length} matches for your description`
-                : `page ${filters.page} of ${result.pageCount}`}
-          </p>
-        </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <section className="mx-auto max-w-7xl px-4 py-6">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <p className="eyebrow">
+              {active ? "Filtered" : "All titles"} / {sorted}
+            </p>
+            <p className="font-mono text-[10px] text-muted-foreground">
+              {refining
+                ? "refining results…"
+                : enhanced
+                  ? `${enhanced.titles.length} matches for your description`
+                  : `page ${filters.page} of ${result.pageCount}`}
+            </p>
+          </div>
 
-        {enhanced?.reference ? (
-          <p className="mt-2 text-xs text-muted-foreground">
-            Anchored to{" "}
-            <Link
-              to={"/title/" + encodeURIComponent(enhanced.reference.id)}
-              className="font-medium text-foreground underline underline-offset-4"
-            >
-              {enhanced.reference.name}
-            </Link>
-          </p>
-        ) : null}
+          {enhanced?.reference ? (
+            <p className="mt-2 text-xs text-muted-foreground">
+              Anchored to{" "}
+              <Link
+                to={"/title/" + encodeURIComponent(enhanced.reference.id)}
+                className="font-medium text-foreground underline underline-offset-4"
+              >
+                {enhanced.reference.name}
+              </Link>
+            </p>
+          ) : null}
 
-        {titles.length === 0 ? (
-          <div className="mt-6 flex flex-col items-start gap-4 border border-dashed border-border bg-card/40 p-8 md:p-12">
-            <span className="grid size-11 place-items-center bg-muted text-muted-foreground">
-              <MagnifyingGlass weight="regular" className="size-5" />
-            </span>
-            <div>
-              <p className="text-base font-semibold">
-                {refining
-                  ? "No exact matches."
-                  : enhanced
-                    ? "No close matches."
-                    : active
-                      ? "Nothing matches those filters."
-                      : "No titles for " + countryName(country) + " yet."}
-              </p>
-              <p className="mt-1 max-w-md text-sm leading-6 text-muted-foreground">
-                {refining
-                  ? "Looking for close matches. This can take a moment on first use."
-                  : "Try a broader description, a wider rating range, or choose another country in the sidebar."}
-              </p>
+          {titles.length === 0 ? (
+            <div className="mt-6 flex flex-col items-start gap-4 border border-dashed border-border bg-card/40 p-8 md:p-12">
+              <span className="grid size-11 place-items-center bg-muted text-muted-foreground">
+                <MagnifyingGlass weight="regular" className="size-5" />
+              </span>
+              <div>
+                <p className="text-base font-semibold">
+                  {refining
+                    ? "No exact matches."
+                    : enhanced
+                      ? "No close matches."
+                      : active
+                        ? "Nothing matches those filters."
+                        : "No titles for " + countryName(country) + " yet."}
+                </p>
+                <p className="mt-1 max-w-md text-sm leading-6 text-muted-foreground">
+                  {refining
+                    ? "Looking for close matches. This can take a moment on first use."
+                    : "Try a broader description, a wider rating range, or choose another country in the sidebar."}
+                </p>
+              </div>
+              <Link
+                to="/"
+                className={buttonVariants({ variant: "outline", size: "sm" })}
+              >
+                Clear filters
+              </Link>
             </div>
-            <Link
-              to="/"
-              className={buttonVariants({ variant: "outline", size: "sm" })}
-            >
-              Clear filters
-            </Link>
-          </div>
-        ) : (
-          <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
-            {titles.map((title) => (
-              <TitleCard
-                key={title.id}
-                title={title}
-                offers={offers[title.id] ?? []}
-              />
-            ))}
-          </div>
-        )}
+          ) : (
+            <div className="mt-5 grid grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 sm:gap-x-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+              {titles.map((title) => (
+                <TitleCard
+                  key={title.id}
+                  title={title}
+                  offers={offers[title.id] ?? []}
+                />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
 
-        {result.pageCount > 1 && !enhanced && (
-          <nav className="mt-10 flex items-center justify-between gap-3 border-t border-border/70 pt-5">
-            <Link
-              to={pageHref(filters, Math.max(1, filters.page - 1))}
-              aria-disabled={filters.page <= 1}
-              className={`${buttonVariants({ variant: "outline", size: "sm" })} ${
-                filters.page <= 1 ? "pointer-events-none opacity-40" : ""
-              }`}
-            >
-              <ArrowLeft weight="bold" />
-              Previous
-            </Link>
-            <span className="text-[11px] text-muted-foreground">
-              Page {filters.page} of {result.pageCount}
-            </span>
-            <Link
-              to={pageHref(
-                filters,
-                Math.min(result.pageCount, filters.page + 1),
-              )}
-              aria-disabled={filters.page >= result.pageCount}
-              className={`${buttonVariants({ variant: "outline", size: "sm" })} ${
-                filters.page >= result.pageCount
-                  ? "pointer-events-none opacity-40"
-                  : ""
-              }`}
-            >
-              Next
-              <ArrowRight weight="bold" />
-            </Link>
-          </nav>
-        )}
-      </section>
+      {result.pageCount > 1 && !enhanced && (
+        <nav className="flex shrink-0 items-center justify-between gap-3 border-t border-border/70 px-4 py-3">
+          <Link
+            to={pageHref(filters, Math.max(1, filters.page - 1))}
+            aria-disabled={filters.page <= 1}
+            className={`${buttonVariants({ variant: "outline", size: "sm" })} ${
+              filters.page <= 1 ? "pointer-events-none opacity-40" : ""
+            }`}
+          >
+            <ArrowLeft weight="bold" />
+            Previous
+          </Link>
+          <span className="text-[11px] text-muted-foreground">
+            Page {filters.page} of {result.pageCount}
+          </span>
+          <Link
+            to={pageHref(filters, Math.min(result.pageCount, filters.page + 1))}
+            aria-disabled={filters.page >= result.pageCount}
+            className={`${buttonVariants({ variant: "default", size: "sm" })} ${
+              filters.page >= result.pageCount
+                ? "pointer-events-none opacity-40"
+                : ""
+            }`}
+          >
+            Next
+            <ArrowRight weight="bold" />
+          </Link>
+        </nav>
+      )}
     </main>
   );
 }

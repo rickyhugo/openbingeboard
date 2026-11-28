@@ -150,7 +150,7 @@ export function FilterBar({
   }
 
   return (
-    <div className="sticky top-16 z-30 border-b border-border/70 bg-background/85 backdrop-blur-xl">
+    <div className="z-30 shrink-0 border-b border-border/70 bg-background/85 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 py-3">
         <div className="flex flex-wrap items-center gap-2">
           <form
