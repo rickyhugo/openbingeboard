@@ -92,7 +92,6 @@ export default function Title({ loaderData }: Route.ComponentProps) {
                   <ScorePopover
                     key={rating.source}
                     rating={rating}
-                    ratings={title.ratings}
                     stats={stats}
                   />
                 ))}
@@ -100,8 +99,11 @@ export default function Title({ loaderData }: Route.ComponentProps) {
             </div>
 
             <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2.5 text-[11px] text-muted-foreground">
-                <Badge variant="outline">
+              <div className="flex flex-wrap items-center gap-2.5 font-mono text-[11px] text-muted-foreground">
+                <Badge
+                  variant="outline"
+                  className="font-mono text-[9px] uppercase tracking-widest"
+                >
                   {title.kind === "series" ? "Series" : "Film"}
                 </Badge>
                 {meta.map((value, index) => (

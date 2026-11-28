@@ -71,7 +71,7 @@ export function AppSidebar({
   }
 
   return (
-    <Sidebar collapsible="offcanvas">
+    <Sidebar collapsible="offcanvas" variant="inset">
       <SidebarHeader className="px-4 pt-5 pb-2">
         <Brand />
       </SidebarHeader>
@@ -79,9 +79,7 @@ export function AppSidebar({
       <SidebarContent className="px-2">
         <SidebarGroup className="p-2">
           <SidebarGroupLabel>Region</SidebarGroupLabel>
-          <div className=" border border-sidebar-border bg-card/50 p-2">
-            <CountrySelect />
-          </div>
+          <CountrySelect />
         </SidebarGroup>
 
         <SidebarGroup className="p-2">

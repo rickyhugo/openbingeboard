@@ -38,7 +38,7 @@ export function RatingBadge({
     <Badge
       variant="outline"
       className={cn(
-        "gap-1",
+        "gap-1 font-mono text-[10px] tracking-tight",
         tone === "overlay"
           ? OVERLAY_STYLE
           : "border-border bg-muted text-foreground",

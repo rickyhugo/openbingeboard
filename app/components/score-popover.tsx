@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import type { RatingRow } from "~/server/queries.server";
 import type { ImdbStats } from "~/server/extras.server";
 import { formatScore, RatingBadge } from "~/components/rating-badge";
@@ -24,26 +26,30 @@ function votes(value: number | null) {
 
 export function ScorePopover({
   rating,
-  ratings,
   stats,
 }: {
   rating: RatingRow;
-  ratings: readonly RatingRow[];
   stats: ImdbStats | null;
 }) {
-  const buckets = stats
-    ? Array.from({ length: 11 }, (_, bucket) => {
-        const entry = stats.histogram.find((item) => item.bucket === bucket);
-        return entry?.count ?? 0;
-      })
-    : [];
+  const percent = Math.max(
+    2,
+    Math.min(100, (rating.score / rating.scale) * 100),
+  );
+  const imdb = rating.source === "imdb";
+  const buckets =
+    imdb && stats
+      ? Array.from({ length: 11 }, (_, bucket) => {
+          const entry = stats.histogram.find((item) => item.bucket === bucket);
+          return entry?.count ?? 0;
+        })
+      : [];
   const max = Math.max(1, ...buckets);
   const currentBucket = Math.floor(rating.score);
 
   return (
     <Popover>
       <PopoverTrigger
-        className="rounded-none align-middle focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring/50"
+        className="rounded-none align-middle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40"
         aria-label={"Show " + LABELS[rating.source] + " score details"}
       >
         <RatingBadge
@@ -52,7 +58,7 @@ export function ScorePopover({
           scale={rating.scale}
         />
       </PopoverTrigger>
-      <PopoverContent className="w-80" align="start">
+      <PopoverContent className="w-64" align="start">
         <PopoverHeader>
           <PopoverTitle className="flex items-baseline justify-between gap-3">
             <span>{LABELS[rating.source]}</span>
@@ -63,7 +69,7 @@ export function ScorePopover({
           <PopoverDescription>{votes(rating.votes)}</PopoverDescription>
         </PopoverHeader>
 
-        {stats && rating.source === "imdb" ? (
+        {imdb && stats ? (
           <p className="text-[11px] text-muted-foreground">
             Higher than {stats.percentile}% of {stats.total} rated titles in
             this catalogue.
@@ -71,38 +77,21 @@ export function ScorePopover({
         ) : null}
 
         <div className="space-y-1.5">
-          <p className="text-xs font-medium text-muted-foreground">
-            All sources
+          <div className="h-1.5 w-full bg-muted">
+            <div
+              className="h-full bg-foreground"
+              style={{ width: percent + "%" }}
+            />
+          </div>
+          <p className="text-[10px] text-muted-foreground">
+            {rating.scale === 100 ? "Out of 100." : "Out of 10."}
           </p>
-          {ratings.map((item) => {
-            const percent =
-              item.scale === 100 ? item.score : (item.score / 10) * 100;
-            return (
-              <div key={item.source} className="space-y-0.5">
-                <div className="flex items-baseline justify-between gap-2 text-[11px]">
-                  <span>{LABELS[item.source]}</span>
-                  <span className="font-mono">
-                    {formatScore(item.score, item.scale, item.source)}
-                  </span>
-                </div>
-                <div className="h-1.5 w-full bg-muted">
-                  <div
-                    className="h-full bg-foreground"
-                    style={{ width: Math.max(2, Math.min(100, percent)) + "%" }}
-                  />
-                </div>
-                <p className="text-[10px] text-muted-foreground">
-                  {votes(item.votes)}
-                </p>
-              </div>
-            );
-          })}
         </div>
 
-        {stats ? (
+        {imdb && stats ? (
           <div className="space-y-1.5 border-t pt-2">
-            <p className="text-xs font-medium text-muted-foreground">
-              IMDb score distribution
+            <p className="text-[10px] text-muted-foreground">
+              IMDb scores in this catalogue
             </p>
             <div className="flex h-20 items-end gap-[2px]">
               {buckets.map((count, bucket) => (
@@ -119,16 +108,25 @@ export function ScorePopover({
                 />
               ))}
             </div>
-            <div className="flex justify-between font-mono text-[9px] text-muted-foreground">
+            <div className="flex justify-between text-[9px] text-muted-foreground">
               <span>0</span>
               <span>5</span>
               <span>10</span>
             </div>
             <p className="text-[10px] text-muted-foreground">
-              Number of catalogue titles per score bucket. The highlighted bar
-              is this title.
+              The highlighted bar is this title.
             </p>
           </div>
+        ) : null}
+
+        {rating.url ? (
+          <Link
+            to={rating.url}
+            className="inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+          >
+            Open on {LABELS[rating.source]}
+            <ArrowUpRight weight="bold" className="size-3" />
+          </Link>
         ) : null}
       </PopoverContent>
     </Popover>

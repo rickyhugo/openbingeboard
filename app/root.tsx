@@ -75,7 +75,7 @@ function Header() {
   const { state } = useSidebar();
 
   return (
-    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-background/80 px-4 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-3 border-b border-border/80 bg-card/80 px-4 backdrop-blur-xl">
       <SidebarTrigger />
       <Brand
         className={state === "collapsed" ? "" : "md:hidden"}
@@ -98,11 +98,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { pathname } = useLocation();
   const bare = pathname === "/login" || pathname === "/reset-password";
 
+  // Applied before first paint. "system" follows the OS preference; the
+  // class is re-applied live by the theme toggle.
+  const themeScript =
+    theme === "dark"
+      ? "document.documentElement.classList.add('dark')"
+      : theme === "system"
+        ? "if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}"
+        : "document.documentElement.classList.remove('dark')";
+
   return (
-    <html lang="en" className={theme === "dark" ? "dark" : ""}>
+    <html
+      lang="en"
+      className={theme === "dark" ? "dark" : ""}
+      suppressHydrationWarning
+    >
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <Meta />
         <Links />
       </head>
@@ -123,7 +137,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
               <AppSidebar providers={providers} theme={theme} />
 
-              <div className="flex min-w-0 flex-1 flex-col">
+              <div className="flex min-w-0 flex-1 flex-col bg-card md:peer-data-[variant=inset]:my-2 md:peer-data-[variant=inset]:mr-2 md:peer-data-[variant=inset]:border md:peer-data-[variant=inset]:border-sidebar-border md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2">
                 <Header />
 
                 <div id="main" className="min-h-[calc(100dvh-4rem)] flex-1">

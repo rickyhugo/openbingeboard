@@ -10,9 +10,6 @@ export function AuthShell({ children }: { children: ReactNode }) {
           <h1 className="text-2xl font-semibold tracking-tight">
             Your library, services, and saved views.
           </h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            Synced across devices when you sign in.
-          </p>
         </div>
       </section>
 

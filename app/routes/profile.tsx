@@ -7,7 +7,7 @@ import {
 import {
   ArrowRight,
   BookmarkSimple,
-  CheckCircle,
+  Check,
   Globe,
   PlayCircle,
 } from "@phosphor-icons/react/dist/ssr";
@@ -33,7 +33,7 @@ export function meta() {
 }
 
 const quickLinks = [
-  { label: "Watched", to: "/library/watched", icon: CheckCircle },
+  { label: "Watched", to: "/library/watched", icon: Check },
   { label: "Want to watch", to: "/library/want", icon: BookmarkSimple },
   { label: "Your services", to: "/services", icon: PlayCircle },
 ];
@@ -56,17 +56,6 @@ export default function Profile() {
     selected.length > 0
       ? "/?providers=" + selected.map((provider) => provider.id).join(",")
       : "/";
-
-  const stats = [
-    { label: "Watched", value: state.watched.length, to: "/library/watched" },
-    {
-      label: "Want to watch",
-      value: state.want.length,
-      to: "/library/want",
-    },
-    { label: "Services", value: state.services.length, to: "/services" },
-    { label: "Saved views", value: state.saved.length, to: "#saved" },
-  ];
 
   if (!profile.hydrated) {
     return (
@@ -104,20 +93,7 @@ export default function Profile() {
       </section>
 
       <div className="mx-auto max-w-6xl px-4 py-8 md:py-10">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <Link key={stat.label} to={stat.to} className="group">
-              <div className=" border border-border bg-card p-4 transition-colors group-hover:bg-muted/60">
-                <p className="eyebrow">{stat.label}</p>
-                <p className="mt-1 text-2xl font-semibold tracking-tight">
-                  {stat.value}
-                </p>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div className="min-w-0 space-y-12">
             {!profile.user ? (
               <div className="flex flex-wrap items-center justify-between gap-4 border border-dashed border-border bg-card/40 p-5">
@@ -170,14 +146,14 @@ export default function Profile() {
                           : "border-border bg-card hover:border-foreground/20 hover:bg-muted/40",
                       )}
                     >
-                      <span className="text-[10px] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                      <span className="font-mono text-[10px] text-muted-foreground">
                         {country.code}
                       </span>
                       <span className="text-xs font-medium">
                         {country.name}
                       </span>
                       {active ? (
-                        <CheckCircle
+                        <Check
                           weight="bold"
                           className="absolute top-2.5 right-2.5 size-4 text-foreground"
                         />
@@ -309,7 +285,7 @@ export default function Profile() {
                 <div>
                   <h2 className="text-sm font-semibold">Appearance</h2>
                   <p className="mt-0.5 text-[11px] text-muted-foreground">
-                    Light or dark.
+                    Light, dark, or follow your system.
                   </p>
                 </div>
                 <ThemeToggle initial={data?.theme ?? "light"} />

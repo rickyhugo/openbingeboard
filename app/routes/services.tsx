@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useRouteLoaderData } from "react-router";
 import {
   ArrowRight,
-  CheckCircle,
+  Check,
   MagnifyingGlass,
   PlayCircle,
 } from "@phosphor-icons/react/dist/ssr";
@@ -68,8 +68,7 @@ export default function Services() {
             Your services
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-            Select the services you can watch. They filter the catalogue, shape
-            your recommendations, and appear in the sidebar.
+            They filter the catalogue and appear in the sidebar.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -84,9 +83,6 @@ export default function Services() {
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <h2 className="text-sm font-semibold">All services</h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Select everything you can watch. You can change this any time.
-            </p>
           </div>
           <p className="text-[11px] text-muted-foreground">
             {selected.length} of {alpha.length} selected
@@ -145,7 +141,7 @@ export default function Services() {
                         : "border-border text-transparent",
                     )}
                   >
-                    <CheckCircle weight="bold" className="size-3.5" />
+                    <Check weight="bold" className="size-3" />
                   </span>
                 </button>
               );

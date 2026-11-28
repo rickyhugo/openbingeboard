@@ -295,18 +295,11 @@ export default function Login() {
       : mode === "signup"
         ? "Create an account"
         : "Reset your password";
-  const subtitle =
-    mode === "signin"
-      ? "Pick up where you left off."
-      : mode === "signup"
-        ? "Keep your services and lists in sync."
-        : "We will email you a link to choose a new password.";
 
   return (
     <AuthShell>
       <div className=" border border-border bg-card p-6 shadow-sm sm:p-7">
         <h1 className="text-xl font-semibold tracking-tight">{title}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>
 
         <form onSubmit={submit} className="mt-6 space-y-3">
           {mode === "signup" ? (

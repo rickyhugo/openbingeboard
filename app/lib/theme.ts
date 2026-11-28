@@ -1,7 +1,10 @@
-export type Theme = "light" | "dark";
+export type Theme = "light" | "dark" | "system";
 
 export const THEME_COOKIE = "theme";
 
 export function parseTheme(value: string | null | undefined): Theme {
-  return value === "dark" ? "dark" : "light";
+  if (value === "dark" || value === "light" || value === "system") {
+    return value;
+  }
+  return "light";
 }
